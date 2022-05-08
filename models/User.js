@@ -34,6 +34,10 @@ class User {
     }
   }
 
+  users() {
+    return this.users;
+  }
+
 }
 
 module.exports = new User();

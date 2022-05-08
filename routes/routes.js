@@ -5,5 +5,6 @@ const UserController = require("../controllers/UserController")
 
 router.get('/', HomeController.index)
 router.post('/api/newUser', UserController.newUser)
+router.get('/api/users', UserController.users)
 
 module.exports = router

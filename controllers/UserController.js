@@ -26,7 +26,7 @@ class UserController {
 
       if (user) {
         // Usuário existe
-        res.status(200).json(user);
+        res.status(201).json(user);
       } else {
         // Salvar no BD
         const resp = await User.register(name, email, picture);
@@ -43,7 +43,19 @@ class UserController {
     }
   }
 
+  users(req, res) {
+    try {
+      const users = User.users();
 
+      if (users) {
+        res.status(200).json(users);
+      } else {
+        res.status(500).json('Erro ao ver usuários');
+      }
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
 
 }
 
