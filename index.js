@@ -1,5 +1,6 @@
 const express = require("express")
 //const bodyParser = require('body-parser')
+const cors = require("cors")
 const router = require("./routes/routes")
 const app = express()
 const http = require("http").createServer(app)
@@ -9,6 +10,7 @@ const http = require("http").createServer(app)
 
 //const urlencodedParser = bodyParser.urlencoded({ extended: true })
 
+app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use("/", router)
