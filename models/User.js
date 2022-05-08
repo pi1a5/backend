@@ -3,7 +3,7 @@ const knex = require("../database/connection");
 
 class User {
 
-  client = new OAuth2Client('376654667965-lq5rc8l7q8c6cdtl2gdc6baj6d15n3bs.apps.googleusercontent.com');
+  client = new OAuth2Client('961754812465-2ovtm0ao3pdnrnk9letc5d8g5arifl9v.apps.googleusercontent.com');
 
   async verifyToken(token) {
     try {
