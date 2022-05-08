@@ -10,6 +10,7 @@ class User {
       // Exemplo dos campos
       //await knex.insert({ email, curso: 'ADS', name, picture }).table("users");
       this.users.push({name, email, picture});
+      console.log(this.users)
       return {name, email, picture};
     } catch (error) {
       console.log(error);
