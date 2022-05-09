@@ -1,28 +1,19 @@
-const { OAuth2Client } = require('google-auth-library');
 const knex = require("../database/connection");
 
 class User {
 
-  users = []
-
   async register(name, email, picture) {
     try {
       // Exemplo dos campos
-      //await knex.insert({ email, curso: 'ADS', name, picture }).table("users");
-      this.users.push({name, email, picture});
-      console.log(this.users)
-      return {name, email, picture};
+      await knex.insert({ id_curso: 0, nome: name, email: email, foto: picture, sub: '0' }).table("usuario");
     } catch (error) {
       console.log(error);
-      return undefined;
     }
   }
 
   async findByEmail(email) {
     try {
-      // Exemplo dos campos
-      //var result = await knex.select(['id', 'email', 'curso', 'name', 'picture']).table("users").where({ email: email });
-      const result = this.users.filter(u => u.email === email)
+      var result = await knex.select(['email', 'nome', 'foto']).table("usuario").where({ email: email });
 
       if (result.length > 0) {
         return result[0];
@@ -35,9 +26,44 @@ class User {
     }
   }
 
-  users() {
-    return this.users;
+  async findAll() {
+    try {
+      var result = await knex.select('*').table("usuario");
+      return result;
+    } catch (error) {
+      console.log(error);
+      return [];
+    }
   }
+
+  // async findById(id) {
+  //   try {
+  //     var result = await knex.select(['id', 'email', 'name', 'role']).table("users").where({ id: id });
+
+  //     if (result.length > 0) {
+  //       return result[0];
+  //     } else {
+  //       return undefined;
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     return undefined;
+  //   }
+  // }
+
+  // async findEmail(email) {
+  //   try {
+  //     var result = await knex.select("*").from("users").where({ email: email });
+  //     if (result.length > 0) {
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     return false;
+  //   }
+  // }
 
 }
 

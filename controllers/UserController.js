@@ -2,6 +2,15 @@ const User = require('../models/User');
 
 class UserController {
 
+  async index(req, res) {
+    try {
+      var users = await User.findAll();
+      res.status(200).json(users);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
   async newUser(req, res) {
     try {
       const { name, email, picture } = req.body;
@@ -26,16 +35,12 @@ class UserController {
 
       if (user) {
         // Usuário existe
-        res.status(201).json(user);
+        res.status(200).json(user);
       } else {
         // Salvar no BD
-        const resp = await User.register(name, email, picture);
-        if (resp) {
-          // Usuário existe
-          res.status(200).json(resp);
-        } else {
-          res.status(500).json('Erro ao salvar no banco de dados');
-        }
+        await User.register(name, email, picture);
+        const user = await User.findByEmail(email);
+        res.status(201).json(user);
       }
 
     } catch (error) {
@@ -43,15 +48,10 @@ class UserController {
     }
   }
 
-  users(req, res) {
+  async users(req, res) {
     try {
-      const users = User.users();
-
-      if (users) {
-        res.status(200).json(users);
-      } else {
-        res.status(500).json('Erro ao ver usuários');
-      }
+      var users = await User.findAll();
+      res.status(200).json(users);
     } catch (error) {
       res.status(500).json(error);
     }
