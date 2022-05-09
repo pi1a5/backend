@@ -5,7 +5,8 @@ class User {
   async register(name, email, picture) {
     try {
       // Exemplo dos campos
-      await knex.insert({ id_curso: 0, nome: name, email: email, foto: picture, sub: '0' }).table("usuario");
+      //await knex.insert({ id_curso: 0, nome: name, email: email, foto: picture, sub: '0' }).table("usuario");
+      await knex.insert({ nome: name, email: email, foto: picture, sub: '0' }).table("usuario");
     } catch (error) {
       console.log(error);
     }
