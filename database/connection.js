@@ -1,14 +1,14 @@
 const knex = require('knex')({
   client: 'postgresql',
   connection: {
-    host: 'ec2-54-172-175-251.compute-1.amazonaws.com',
+    host: 'ec2-52-4-104-184.compute-1.amazonaws.com',
     port: 5432,
-    user: 'elluzlxbymnibj',
-    password: 'd916b2fdd9753c2cbb9c656ef9dad387f838b57f4d6f184547174fdf83584a96',
-    database: 'd1f9dqpn25am03',
+    user: 'rojffajrdflnho',
+    password: '26d7426815121263da04cbd5b140ba5064dcff582cbed8da9aedaca8b6d11ab7',
+    database: 'df0h2i2l2pfcdr',
     ssl: {
-      require: true, // This will help you. But you will see nwe error
-      rejectUnauthorized: false // This line will fix new error
+      require: true, 
+      rejectUnauthorized: false 
     }
   }
 });
