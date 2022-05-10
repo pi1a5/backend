@@ -5,6 +5,7 @@ const UserController = require("../controllers/UserController")
 
 router.get('/', HomeController.index)
 router.post('/api/newUser', UserController.newUser)
+router.post('/api/user', UserController.user)
 router.get('/api/users', UserController.users)
 router.get('/api/test', UserController.test)
 

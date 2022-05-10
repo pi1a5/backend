@@ -48,6 +48,22 @@ class UserController {
     }
   }
 
+  async user(req, res) {
+    try {
+      const { email } = req.body;
+
+      if (email === '' || email === ' ' || email === undefined) {
+        res.status(400).json('Email inválido')
+        return
+      }
+
+      var user = await User.findByEmail(email);
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
   async users(req, res) {
     try {
       var users = await User.findAll();
