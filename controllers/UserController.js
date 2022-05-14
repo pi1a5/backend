@@ -13,18 +13,28 @@ class UserController {
 
   async login(req, res) {
     try {
-      const { idToken } = req.body;
+      const { idToken, sub } = req.body;
+
+      if (sub === '' || sub === ' ' || sub === undefined) {
+        res.status(400).json('Sub inválido');
+        return
+      }
 
       if (idToken === '' || idToken === ' ' || idToken === undefined) {
-        res.status(400).json('Token inválido')
+        res.status(400).json('Token inválido');
         return
       }
 
       // Verifica se está cadastrado no banco de dados
-      const user = await User.findByToken(idToken);
+      const user = await User.findBySub(sub);
 
       if (user) {
-        res.status(200).json(user);
+        // Salva id token gerado na autenticação
+        if (await User.saveIdToken(idToken)) {
+          res.status(200).json(user);
+        } else {
+          res.status(500).json('Erro ao salvar id token');
+        }
       } else {
         res.status(404).json('Usuário não encontrado');
       }
@@ -64,9 +74,7 @@ class UserController {
       }
 
       // Salvar no BD
-      const resp = await User.register(name, email, picture, idToken, sub);
-
-      if (resp === 'ok') {
+      if (await User.register(name, email, picture, idToken, sub)) {
         res.status(201).json('Usuário cadastrado');
       } else {
         res.status(500).json('Não foi possível cadastrar');
@@ -79,15 +87,20 @@ class UserController {
 
   async user(req, res) {
     try {
-      const { email } = req.body;
+      const { idToken } = req.body;
 
-      if (email === '' || email === ' ' || email === undefined) {
-        res.status(400).json('Email inválido')
+      if (idToken === '' || idToken === ' ' || idToken === undefined) {
+        res.status(400).json('Token inválido')
         return
       }
 
-      var user = await User.findByEmail(email);
-      res.status(200).json(user);
+      var user = await User.findByToken(idToken);
+      if (user) {
+        res.status(200).json(user);
+      } else {
+        res.status(404).json('Token não encontrado');
+      }
+      
     } catch (error) {
       res.status(500).json(error);
     }
