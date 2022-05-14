@@ -87,20 +87,21 @@ class UserController {
 
   async user(req, res) {
     try {
-      const { idToken } = req.body;
+      const { sub } = req.body;
 
-      if (idToken === '' || idToken === ' ' || idToken === undefined) {
-        res.status(400).json('Token inválido')
+      if (sub === '' || sub === ' ' || sub === undefined) {
+        res.status(400).json('Sub inválido')
         return
       }
 
-      var user = await User.findByToken(idToken);
+      var user = await User.findBySub(sub);
+
       if (user) {
         res.status(200).json(user);
       } else {
-        res.status(404).json('Token não encontrado');
+        res.status(404).json('Usuário não encontrado');
       }
-      
+
     } catch (error) {
       res.status(500).json(error);
     }
