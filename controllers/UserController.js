@@ -11,9 +11,32 @@ class UserController {
     }
   }
 
+  async login(req, res) {
+    try {
+      const { idToken } = req.body;
+
+      if (idToken === '' || idToken === ' ' || idToken === undefined) {
+        res.status(400).json('Token inválido')
+        return
+      }
+
+      // Verifica se está cadastrado no banco de dados
+      const user = await User.findByToken(idToken);
+
+      if (user) {
+        res.status(200).json(user);
+      } else {
+        res.status(404).json('Usuário não encontrado');
+      }
+
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
   async newUser(req, res) {
     try {
-      const { name, email, picture } = req.body;
+      const { name, email, picture, idToken, sub } = req.body;
 
       if (name === '' || name === ' ' || name === undefined) {
         res.status(400).json('Nome inválido')
@@ -30,17 +53,23 @@ class UserController {
         return
       }
 
-      // Verifica se está cadastrado no banco de dados
-      const user = await User.findByEmail(email);
+      if (idToken === '' || idToken === ' ' || idToken === undefined) {
+        res.status(400).json('Token inválido')
+        return
+      }
 
-      if (user) {
-        // Usuário existe
-        res.status(200).json(user);
+      if (sub === '' || sub === ' ' || sub === undefined) {
+        res.status(400).json('Sub inválido')
+        return
+      }
+
+      // Salvar no BD
+      const resp = await User.register(name, email, picture, idToken, sub);
+
+      if (resp === 'ok') {
+        res.status(201).json('Usuário cadastrado');
       } else {
-        // Salvar no BD
-        await User.register(name, email, picture);
-        const user = await User.findByEmail(email);
-        res.status(201).json(user);
+        res.status(500).json('Não foi possível cadastrar');
       }
 
     } catch (error) {

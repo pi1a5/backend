@@ -2,12 +2,14 @@ const knex = require("../database/connection");
 
 class User {
 
-  async register(name, email, picture) {
+  async register(name, email, picture, idToken, sub) {
     try {
       // Exemplo dos campos
-      await knex.insert({ id_curso: 0, nome: name, email: email, foto: picture, sub: '0' }).table("usuario");
+      await knex.insert({ id_curso: 0, nome: name, email: email, foto: picture, idToken: idToken, sub: sub }).table("usuario");
+      return 'ok';
     } catch (error) {
       console.log(error);
+      return undefined;
     }
   }
 
@@ -20,6 +22,22 @@ class User {
       } else {
         return undefined;
       }
+    } catch (error) {
+      console.log(error);
+      return undefined;
+    }
+  }
+
+  async findByToken(idToken) {
+    try {
+      var result = await knex.select(['email', 'nome', 'foto']).table("usuario").where({ idToken: idToken });
+
+      if (result.length > 0) {
+        return result[0];
+      } else {
+        return undefined;
+      }
+
     } catch (error) {
       console.log(error);
       return undefined;
