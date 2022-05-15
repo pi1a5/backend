@@ -71,7 +71,7 @@ class User {
 
   async findAll() {
     try {
-      var result = await knex.select('*').table("usuario");
+      var result = await knex.select('*').table("usuario").orderBy('id', 'asc');
       return result;
     } catch (error) {
       console.log(error);
