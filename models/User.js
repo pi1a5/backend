@@ -79,14 +79,6 @@ class User {
     }
   }
 
-  async test() {
-    try {
-      await knex.insert({ nome: 'ADS' }).table("curso");
-    } catch (error) {
-      console.log(error);
-      return undefined;
-    }
-  }
 
   // async findById(id) {
   //   try {
