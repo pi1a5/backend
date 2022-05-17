@@ -116,14 +116,6 @@ class UserController {
     }
   }
 
-  async test(req, res) {
-    try {
-      await User.test();
-      res.status(200).json('Curso criado');
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  }
 
 }
 
