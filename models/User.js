@@ -24,7 +24,7 @@ class User {
 
   async register(name, email, picture, idToken, sub) {
     try {
-      await knex.insert({ id_curso: 0, nome: name, email: email, foto: picture, idToken: idToken, sub: sub }).table("usuario");
+      await knex.insert({ id_curso: null, nome: name, email: email, foto: picture, idToken: idToken, sub: sub }).table("usuario");
       return true;
     } catch (error) {
       console.log(error);
