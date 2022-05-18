@@ -12,9 +12,9 @@ class User {
     }
   }
 
-  async saveIdCurso(id_curso, email) {
+  async saveIdCurso(id_curso, sub) {
     try {
-      await knex.update({ id_curso: id_curso }).table("usuario").where({ email: email});
+      await knex.update({ id_curso: id_curso }).table("usuario").where({ sub: sub});
       return true;
     } catch (error) {
       console.log(error);

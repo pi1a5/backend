@@ -87,22 +87,22 @@ class UserController {
 
   async setCourse(req, res){
     try{
-      const { id_curso, email } = req.body;
+      const { id_curso, sub } = req.body;
 
       if (id_curso === '' || id_curso === ' ' || id_curso === undefined) {
         res.status(400).json('Id inválido')
         return
       }
 
-      if (email === '' || email === ' ' || email === undefined) {
-        res.status(400).json('Email inválido')
+      if (sub === '' || sub === ' ' || sub === undefined) {
+        res.status(400).json('Sub inválido')
         return
       }
 
-      var user = await User.findByEmail(email);
+      var user = await User.findBySub(sub);
 
       if (user) {
-        if (await User.saveIdCurso(id_curso, email)) {
+        if (await User.saveIdCurso(id_curso, sub)) {
           res.status(200).json(user);
         } else {
           res.status(500).json('Erro ao salvar id curso');
