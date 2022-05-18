@@ -12,6 +12,16 @@ class User {
     }
   }
 
+  async saveIdCurso(id_curso, email) {
+    try {
+      await knex.update({ id_curso: id_curso }).table("usuario").where({ email: email});
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  }
+
   async register(name, email, picture, idToken, sub) {
     try {
       await knex.insert({ id_curso: 0, nome: name, email: email, foto: picture, idToken: idToken, sub: sub }).table("usuario");

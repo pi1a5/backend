@@ -85,6 +85,37 @@ class UserController {
     }
   }
 
+  async setCourse(req, res){
+    try{
+      const { id_curso, email } = req.body;
+
+      if (id_curso === '' || id_curso === ' ' || id_curso === undefined) {
+        res.status(400).json('Id inválido')
+        return
+      }
+
+      if (email === '' || email === ' ' || email === undefined) {
+        res.status(400).json('Email inválido')
+        return
+      }
+
+      var user = await User.findByEmail(email);
+
+      if (user) {
+        if (await User.saveIdCurso(id_curso, email)) {
+          res.status(200).json(user);
+        } else {
+          res.status(500).json('Erro ao salvar id curso');
+        }
+      } else {
+        res.status(404).json('Usuário não encontrado');
+      }
+    } catch(error){
+      res.status(500).json(error);
+    }
+
+  }
+
   async user(req, res) {
     try {
       const { sub } = req.body;

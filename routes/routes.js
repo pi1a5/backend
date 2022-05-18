@@ -8,6 +8,7 @@ router.get('/', HomeController.index);
 router.post('/api/login', UserController.login);
 router.post('/api/newUser', UserController.newUser);
 router.post('/api/user', UserController.user);
+router.post('/api/setCourse', UserController.setCourse);
 
 // Para teste
 router.get('/api/users', UserController.users);
