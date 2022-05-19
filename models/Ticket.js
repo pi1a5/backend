@@ -18,7 +18,7 @@ class Ticket {
       if (result.length > 0) {
         for(var k in result){
           if (result[k] == null){
-            return true;
+            return result[k];
           }
         }
         return undefined;
