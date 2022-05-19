@@ -48,6 +48,25 @@ class Ticket {
     }
   }
 
+  async checkIfinAcompanhamento(sub){
+      try{
+        var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
+        var result = await knex.select(['feedback']).table('ticket').where({ id_usuario_aluno: id.id });
+        if (result.length > 0) {
+            for(var k in result){
+                if (result[k].eAceito){
+                  return true;
+                }
+            }
+        } else {
+            return false;
+        }
+      } catch(error){
+        console.log(error);
+        return false;
+      }
+  }
+
   async createTicket(corpo_texto, data_limite, sub){
     try{
       var data_criado = new Date().toISOString().split('T')[0];
