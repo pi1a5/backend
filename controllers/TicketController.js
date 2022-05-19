@@ -50,14 +50,14 @@ class TicketController {
 
   async checkIfAcompanhamento(req, res){
       try{
-          const { sub } = req.body
+          //const { sub } = req.body
 
-          if (sub === '' || sub === ' ' || sub === undefined) {
-            res.status(400).json('Sub inválido');
-            return
-          }
+          //if (sub === '' || sub === ' ' || sub === undefined) {
+          //  res.status(400).json('Sub inválido');
+          //  return
+          //}
 
-          if (await Ticket.checkIfinAcompanhamento(sub)){
+          if (await Ticket.checkIfinAcompanhamento("115840656247776377946")){
             res.status(200).json(true);
           } else{
             res.status(403).json(false);
