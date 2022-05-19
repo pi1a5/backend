@@ -33,8 +33,9 @@ class Ticket {
 
   async createTicket(corpo_texto, data_limite, sub){
     try{
+      var data_criado = new Date().toISOString().split('T')[0];
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      await knex.insert({id_usuario_aluno: id.id, corpo_texto: corpo_texto, data_criado: new Date(), data_fechado: null, data_limite: data_limite, feedback: null, id_processo_estagio: null, id_usuario_orientador: null})
+      await knex.insert({id_usuario_aluno: id.id, corpo_texto: corpo_texto, data_criado: data_criado, data_fechado: null, data_limite: data_limite, feedback: null, id_processo_estagio: null, id_usuario_orientador: null})
     } catch(error){
       console.log(error);
       return false;
