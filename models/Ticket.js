@@ -51,7 +51,7 @@ class Ticket {
   async checkIfinAcompanhamento(sub){
       try{
         var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-        var result = await knex.select(['feedback']).table('ticket').where({ id_usuario_aluno: id.id });
+        var result = await knex.select(['eAceito']).table('ticket').where({ id_usuario_aluno: id.id });
         console.log(result);
         if (result.length > 0) {
             for(var k in result){
