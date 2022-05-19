@@ -13,8 +13,8 @@ class Ticket {
 
   async checkIfHasTicket(sub){
     try{
-      var id = await knex.select(['id']).table('usuario').where({ sub: sub });
-      var result = await knex.select(['feedback']).table('ticket').where({ id_usuario_aluno: parseInt(id) });
+      var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
+      var result = await knex.select(['feedback']).table('ticket').where({ id_usuario_aluno: id });
       if (result.length > 0) {
         return result[0];
       } else {
