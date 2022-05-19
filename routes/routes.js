@@ -17,10 +17,10 @@ router.get('/api/users', UserController.users);
 router.get('/api/courses', CourseController.courses);
 router.get('/api/tickets', TicketController.tickets);
 
-router.get('/api/newTicket', TicketController.newTicket);
-router.get('/api/getTicketsUser', TicketController.getTicketsUser);
+router.post('/api/newTicket', TicketController.newTicket);
+router.post('/api/getTicketsUser', TicketController.getTicketsUser);
 
-router.get('/api/documents', DocumentController.documents);
+router.post('/api/documents', DocumentController.documents);
 
 
 module.exports = router;
