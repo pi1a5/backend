@@ -34,7 +34,7 @@ class TicketController {
       const checkIfTicket = await Ticket.checkIfHasTicket("115840656247776377946"); // sub
 
       if (checkIfTicket){
-        if(await Ticket.createTicket( "ola", 2012-12-12, "115840656247776377946")){ // corpo e data
+        if(await Ticket.createTicket( "ola", "2012-12-12", "115840656247776377946")){ // corpo e data
           res.status(200).json('Ticket criado com sucesso.');
         } else{
           res.status(500).json('Erro ao criar Ticket.');
