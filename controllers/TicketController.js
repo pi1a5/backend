@@ -50,14 +50,14 @@ class TicketController {
 
   async getTicketsUser(req, res){
     try{
-      //const { sub } = req.body
+      const { sub } = req.body
 
-      //if (sub === '' || sub === ' ' || sub === undefined) {
-      //  res.status(400).json('Sub inválido');
-      //  return
-      //}
+      if (sub === '' || sub === ' ' || sub === undefined) {
+        res.status(400).json('Sub inválido');
+        return
+      }
 
-      const getAllTickets = await Ticket.findAllbyUserId("115840656247776377946");
+      const getAllTickets = await Ticket.findAllbyUserId(sub);
 
       if (getAllTickets){
         res.status(200).json(getAllTickets);
