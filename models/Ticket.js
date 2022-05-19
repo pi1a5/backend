@@ -17,7 +17,9 @@ class Ticket {
       var result = await knex.select(['feedback']).table('ticket').where({ id_usuario_aluno: id.id });
       if (result.length > 0) {
         for(var k in result){
-          return k;
+          if (result[k].feedback == null){
+            return true;
+          }
         }
         return undefined;
       } else {
