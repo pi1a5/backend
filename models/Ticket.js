@@ -21,14 +21,18 @@ class Ticket {
             return true;
           }
         }
-        return undefined;
+        return false;
       } else {
-        return undefined;
+        return true;
       }
     } catch(error){
       console.log(error);
       return false;
     }
+  }
+
+  async createTicket(){
+
   }
 }
 

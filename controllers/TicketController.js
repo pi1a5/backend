@@ -32,7 +32,14 @@ class TicketController {
       //}
 
       const checkIfTicket = await Ticket.checkIfHasTicket("115840656247776377946"); // sub
-      res.status(200).json(checkIfTicket);
+
+      if (checkIfTicket){
+        if(await Ticket.createTicket()){
+          res.status(200).json(Ticket);
+        }
+      } else{
+        res.status(500).json('Usuário já tem ticket');
+      }
     } catch(error){
       res.status(500).json(error);
     }
