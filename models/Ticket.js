@@ -11,6 +11,23 @@ class Ticket {
     }
   }
 
+  async findAllbyUserId(sub) {
+    try {
+      var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
+      var result = await knex.select(['id', 'id_usuario_aluno', 'corpo_texto', 'data_criado', 'data_fechado', 'data_limite','feedback', 'id_processo_estagio', 'id_usuario_orientado', 'eAceito']).table('ticket').where({ id_usuario_aluno: id.id });
+      
+      if (result.length > 0) {
+        return result[0];
+      } else {
+        return undefined;
+      }
+
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  }
+
   async checkIfHasTicket(sub){
     try{
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();

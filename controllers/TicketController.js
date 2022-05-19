@@ -27,7 +27,7 @@ class TicketController {
       }
 
       if (sub === '' || sub === ' ' || sub === undefined) {
-        res.status(400).json('Data limite inválida');
+        res.status(400).json('Sub inválido');
         return
       }
 
@@ -42,6 +42,29 @@ class TicketController {
       } else{
         res.status(500).json('Usuário já tem ticket.');
       }
+    } catch(error){
+      res.status(500).json(error);
+    }
+
+  }
+
+  async getTicketsUser(req, res){
+    try{
+      //const { sub } = req.body
+
+      //if (sub === '' || sub === ' ' || sub === undefined) {
+      //  res.status(400).json('Sub inválido');
+      //  return
+      //}
+
+      const getAllTickets = await Ticket.findAllbyUserId("115840656247776377946");
+
+      if (getAllTickets){
+        res.status(200).json(getAllTickets);
+      } else{
+        res.status(404).json('Tickets não encontrados');
+      }
+
     } catch(error){
       res.status(500).json(error);
     }
