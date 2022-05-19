@@ -10,6 +10,21 @@ class Ticket {
       return [];
     }
   }
+
+  async checkIfHasTicket(sub){
+    try{
+      var id = await knex.select('id').table('usuario').where({ sub: sub });
+      var result = await knex.select('feedback').table('ticket').where({ id_usuario_aluno: id });
+      if (result.length > 0) {
+        return result[0];
+      } else {
+        return undefined;
+      }
+    } catch(error){
+      console.log(error);
+      return false;
+    }
+  }
 }
 
 module.exports = new Ticket();
