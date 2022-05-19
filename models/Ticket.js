@@ -17,11 +17,11 @@ class Ticket {
       var result = await knex.select(['feedback']).table('ticket').where({ id_usuario_aluno: id.id });
       if (result.length > 0) {
         for(var k in result){
-          if (result[k].feedback != null){
-            return true;
+          if (result[k].feedback == null){
+            return false;
           }
         }
-        return false;
+        return true;
       } else {
         return true;
       }
