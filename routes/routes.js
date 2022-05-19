@@ -18,6 +18,7 @@ router.get('/api/courses', CourseController.courses);
 router.get('/api/tickets', TicketController.tickets);
 
 router.get('/api/newTicket', TicketController.newTicket);
+router.get('/api/newTicket', TicketController.getTicketsUser);
 
 router.get('/api/documents', DocumentController.documents);
 
