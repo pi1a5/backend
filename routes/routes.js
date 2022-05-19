@@ -16,6 +16,10 @@ router.post('/api/setCourse', UserController.setCourse);
 router.get('/api/users', UserController.users);
 router.get('/api/courses', CourseController.courses);
 router.get('/api/tickets', TicketController.tickets);
+
+router.get('/api/newTicket', TicketController.newTicket);
+
 router.get('/api/documents', DocumentController.documents);
+
 
 module.exports = router;
