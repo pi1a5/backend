@@ -31,7 +31,7 @@ class TicketController {
       //  return
       //}
 
-      const checkIfTicket = await Ticket.checkIfHasTicket(115840656247776377946); // sub
+      const checkIfTicket = await Ticket.checkIfHasTicket("115840656247776377946"); // sub
       res.status(200).json(checkIfTicket);
     } catch(error){
       res.status(500).json(ticket);
