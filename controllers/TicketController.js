@@ -35,7 +35,7 @@ class TicketController {
 
       if (checkIfTicket){
         if(await Ticket.createTicket()){
-          res.status(200).json(Ticket);
+          res.status(200).json('Usuário não tem ticket');
         }
       } else{
         res.status(500).json('Usuário já tem ticket');
