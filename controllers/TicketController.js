@@ -62,7 +62,7 @@ class TicketController {
       if (getAllTickets){
         res.status(200).json(getAllTickets);
       } else{
-        res.status(404).json('Tickets não encontrados');
+        res.status(404).json(getAllTickets);
       }
 
     } catch(error){
