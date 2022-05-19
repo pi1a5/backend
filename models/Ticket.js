@@ -22,7 +22,7 @@ class Ticket {
       }
     } catch(error){
       console.log(error);
-      return false;
+      return true;
     }
   }
 }
