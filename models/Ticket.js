@@ -73,7 +73,7 @@ class Ticket {
       var data_criado = new Date().toISOString().split('T')[0];
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
       await knex.insert({id_usuario_aluno: id.id, corpo_texto: corpo_texto, data_criado: data_criado, data_fechado: null, data_limite: data_limite, feedback: null, id_processo_estagio: null, id_usuario_orientador: null}).table("ticket");
-      var id_ticket = await knex.select(['id']).table('ticket').where({feedback: null, id_usuario_aluno: id.id})
+      var id_ticket = await knex.select(['id']).table('ticket').where({feedback: null}).andWhere({id_usuario_aluno: id.id})
       await knex.insert({ id_ticket: id_ticket.id, arquivo: doc1, tipo: "TCE", eProfessor: eProfessor}).table("documento");
       await knex.insert({ id_ticket: id_ticket.id, arquivo: doc2, tipo: "PA", eProfessor: eProfessor}).table("documento");
       return true;  
