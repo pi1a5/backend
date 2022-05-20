@@ -126,6 +126,7 @@ class Ticket {
     try{
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
       var result = await knex.update({feedback: feedback, eAceito: eAceito, id_usuario_orientador: id.id}).table('ticket').where({id: id_ticket});
+      console.log(result);
       return result;
     } catch(error){
       console.log(error);
