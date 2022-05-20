@@ -21,6 +21,48 @@ class TicketController {
     }
   }
 
+  async getTicketsWithSupervisor(req, res) {
+    try {
+      const { sub } = req.body
+
+      if (sub === '' || sub === ' ' || sub === undefined) {
+        res.status(400).json('Sub inválido');
+        return
+      }
+
+      var ticket = await Ticket.getJoinWithSupervisorOpen(sub);
+      if (ticket){
+        res.status(200).json(ticket);
+      } else{
+        res.status(500).json('Erro ao encontrar tickets.');
+      }
+    } catch (error) {
+      res.status(500).json(ticket);
+    }
+  }
+
+  async getClosedTicketsWithSupervisor(req, res) {
+    try {
+      //const { sub } = req.body
+
+      //if (sub === '' || sub === ' ' || sub === undefined) {
+      //  res.status(400).json('Sub inválido');
+      //  return
+      //}
+
+      var ticket = await Ticket.getJoinWithSupervisorClosed("115840656247776377946");
+      if (ticket){
+        res.status(200).json(ticket);
+      } else{
+        res.status(500).json('Erro ao encontrar tickets.');
+      }
+    } catch (error) {
+      res.status(500).json(ticket);
+    }
+  }
+
+
+
   async newTicketInicio(req, res){
 
     try{
