@@ -121,6 +121,17 @@ class Ticket {
       return false;
     }
   }
+
+  async updateFeedback(sub, id_ticket, feedback, eAceito){
+    try{
+      var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
+      var result = await knex.update({feedback: feedback, eAceito: eAceito, id_usuario_orientador: id.id}).table('ticket').where({id: id_ticket});
+      return result;
+    } catch(error){
+      console.log(error);
+      return false;
+    }
+  }
 }
 
 module.exports = new Ticket();

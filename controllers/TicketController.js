@@ -21,6 +21,42 @@ class TicketController {
     }
   }
 
+  async feedbackTicket(req, res) {
+    try {
+      const {sub, id_ticket, feedback, eAceito} = req.body;
+
+      if (sub === '' || sub === ' ' || sub === undefined) {
+        res.status(400).json('Sub inválido');
+        return
+      }
+
+      if (id_ticket === '' || id_ticket === ' ' || id_ticket === undefined) {
+        res.status(400).json('id_ticket inválido');
+        return
+      }
+
+      if (feedback === '' || feedback === ' ' || feedback === undefined) {
+        res.status(400).json('feedback inválido');
+        return
+      }
+
+      if (eAceito === '' || eAceito === ' ' || eAceito === undefined) {
+        res.status(400).json('Sub inválido');
+        return
+      }
+
+      var ticket = await Ticket.updateFeedback(sub, id_ticket, feedback, eAceito);
+
+      if (ticket){
+        res.status(200).json(ticket);
+      } else{
+        res.status(500).json('Erro ao encontrar tickets.');
+      }
+    } catch (error) {
+      res.status(500).json(ticket);
+    }
+  }
+
   async getTicketsWithSupervisor(req, res) {
     try {
       const { sub } = req.body

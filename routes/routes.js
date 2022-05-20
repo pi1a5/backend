@@ -6,6 +6,7 @@ var router = express.Router();
 const HomeController = require("../controllers/HomeController");
 const TicketController = require("../controllers/TicketController");
 const UserController = require("../controllers/UserController");
+const Ticket = require("../models/Ticket");
 
 router.get('/', HomeController.index);
 
@@ -25,6 +26,7 @@ router.post('/api/checkIfAcompanhemento', TicketController.checkIfAcompanhamento
 router.get('/api/getTicketsWithoutSupervisor', TicketController.getTicketsWithoutSupervisor);
 router.post('/api/getTicketsWithSupervisor', TicketController.getTicketsWithSupervisor);
 router.post('/api/getClosedTicketsWithSupervisor', TicketController.getClosedTicketsWithSupervisor);
+router.post('/api/feedbackTicket', TicketController.feedbackTicket)
 
 // Para teste
 router.get('/api/users', UserController.users);
