@@ -103,7 +103,7 @@ class Ticket {
   async getJoinWithSupervisorOpen(sub){
     try{
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var result = await knex.select('*').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').where({"t.id_usuario_aluno": id.id, "t.feedback": null})
+      var result = await knex.select('*').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_orientador').where({"t.id_usuario_orientador": id.id, "t.feedback": null})
       return result;
     } catch(error){
       console.log(error);
@@ -114,7 +114,7 @@ class Ticket {
   async getJoinWithSupervisorClosed(sub){
     try{
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var result = await knex.select('*').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').where({"t.id_usuario_aluno": id.id}).whereNotNull("t.feedback")
+      var result = await knex.select('*').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_orientador').where({"t.id_usuario_orientador": id.id}).whereNotNull("t.feedback")
       return result;
     } catch(error){
       console.log(error);
