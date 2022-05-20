@@ -22,12 +22,15 @@ router.post('/api/newTicketInicio', TicketController.newTicketInicio);
 router.post('/api/getTicketsUser', TicketController.getTicketsUser);
 router.post('/api/checkIfAcompanhemento', TicketController.checkIfAcompanhamento);
 
+router.get('/api/getTicketsWithoutSupervisor ', TicketController.getTicketsWithoutSupervisor);
+//router.post('/api/getTicketsWithSupervisor  ', TicketController.getTicketsWithSupervisor);
+//router.post('/api/getClosedTicketsWithSupervisor  ', TicketController.getClosedTicketsWithSupervisor);
+
 // Para teste
 router.get('/api/users', UserController.users);
 router.get('/api/courses', CourseController.courses);
 router.get('/api/tickets', TicketController.tickets);
 router.get('/api/estagios', EstagioController.estagios);
-router.get('/api/test', TicketController.test);
 
 
 router.post('/api/documents', DocumentController.documents);

@@ -12,9 +12,9 @@ class TicketController {
     }
   }
 
-  async test(req, res) {
+  async getTicketsWithoutSupervisor(req, res) {
     try {
-      var ticket = await Ticket.getJoinTest();
+      var ticket = await Ticket.getJoinWithoutSupervisor();
       res.status(200).json(ticket);
     } catch (error) {
       res.status(500).json(ticket);
