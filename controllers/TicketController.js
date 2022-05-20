@@ -15,42 +15,42 @@ class TicketController {
   async newTicketInicio(req, res){
 
     try{
-       //const { corpo_texto, data_limite, sub , doc1, doc2, eProfessor} = req.body;
+      const { corpo_texto, data_limite, sub , doc1, doc2, eProfessor} = req.body;
       
-      //if (corpo_texto === '' || corpo_texto === ' ' || corpo_texto === undefined) {
-      //  res.status(400).json('Corpo de texto inválido');
-      //  return
-      //}
+      if (corpo_texto === '' || corpo_texto === ' ' || corpo_texto === undefined) {
+        res.status(400).json('Corpo de texto inválido');
+        return
+      }
 
-      //if (data_limite === '' || data_limite === ' ' || data_limite === undefined) {
-      //  res.status(400).json('Data limite inválida');
-      //  return
-      //}
+      if (data_limite === '' || data_limite === ' ' || data_limite === undefined) {
+        res.status(400).json('Data limite inválida');
+        return
+      }
 
-      //if (sub === '' || sub === ' ' || sub === undefined) {
-      //  res.status(400).json('Sub inválido');
-      //  return
-      //}
+      if (sub === '' || sub === ' ' || sub === undefined) {
+        res.status(400).json('Sub inválido');
+        return
+      }
 
-      //if (doc1 === '' || doc1 === ' ' || doc1 === undefined) {
-      //  res.status(400).json('doc1 inválido');
-      //  return
-      //}
+      if (doc1 === '' || doc1 === ' ' || doc1 === undefined) {
+        res.status(400).json('doc1 inválido');
+        return
+      }
 
-      //if (doc2 === '' || doc2 === ' ' || doc2 === undefined) {
-      //  res.status(400).json('doc2 inválido');
-      //  return
-      //}
+      if (doc2 === '' || doc2 === ' ' || doc2 === undefined) {
+        res.status(400).json('doc2 inválido');
+        return
+      }
 
-      //if (eProfessor === '' || eProfessor === ' ' || eProfessor === undefined) {
-      //  res.status(400).json('doc2 inválido');
-      //  return
-      //}
+      if (eProfessor === '' || eProfessor === ' ' || eProfessor === undefined) {
+        res.status(400).json('doc2 inválido');
+        return
+      }
 
-      const checkIfTicket = await Ticket.checkIfHasTicket("115276291467027900862"); // sub
+      const checkIfTicket = await Ticket.checkIfHasTicket(sub); // sub
 
       if (checkIfTicket){
-        if(await Ticket.createTicketInicio("oi", "2012-12-12", "115276291467027900862", "XXXX", "YYYY", false)){
+        if(await Ticket.createTicketInicio(corpo_texto, data_limite, sub, doc1, doc2, eProfessor)){
           res.status(200).json('Ticket criado com sucesso.');
         } else{
           res.status(500).json('Erro ao criar Ticket.');
