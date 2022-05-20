@@ -23,8 +23,8 @@ router.post('/api/getTicketsUser', TicketController.getTicketsUser);
 router.post('/api/checkIfAcompanhemento', TicketController.checkIfAcompanhamento);
 
 router.get('/api/getTicketsWithoutSupervisor', TicketController.getTicketsWithoutSupervisor);
-router.post('/api/getTicketsWithSupervisor  ', TicketController.getTicketsWithSupervisor);
-router.get('/api/getClosedTicketsWithSupervisor', TicketController.getClosedTicketsWithSupervisor);
+router.post('/api/getTicketsWithSupervisor', TicketController.getTicketsWithSupervisor);
+router.post('/api/getClosedTicketsWithSupervisor', TicketController.getClosedTicketsWithSupervisor);
 
 // Para teste
 router.get('/api/users', UserController.users);

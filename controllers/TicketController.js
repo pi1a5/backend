@@ -43,14 +43,14 @@ class TicketController {
 
   async getClosedTicketsWithSupervisor(req, res) {
     try {
-      //const { sub } = req.body
+      const { sub } = req.body
 
-      //if (sub === '' || sub === ' ' || sub === undefined) {
-      //  res.status(400).json('Sub inválido');
-      //  return
-      //}
+      if (sub === '' || sub === ' ' || sub === undefined) {
+        res.status(400).json('Sub inválido');
+        return
+      }
 
-      var ticket = await Ticket.getJoinWithSupervisorClosed("115840656247776377946");
+      var ticket = await Ticket.getJoinWithSupervisorClosed(sub);
       if (ticket){
         res.status(200).json(ticket);
       } else{
