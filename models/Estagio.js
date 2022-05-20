@@ -11,9 +11,6 @@ class Estagio {
     }
   }
 
-  async newEstagio(){
-    
-  }
 }
 
 module.exports = new Estagio();
