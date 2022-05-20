@@ -74,7 +74,6 @@ class Ticket {
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
 
       var id_processo_estagio = await knex.returning('id').insert({id_tipo_estagios: 0, situação: null, data_criado: data_criado, data_fechado: null}).table('processo_estagio')
-      var id_processo = id_processo_estagio.first();
       console.log(id_processo_estagio);
       if (id_processo_estagio){
         if (await knex.insert({id_usuario_aluno: id.id, corpo_texto: corpo_texto, data_criado: data_criado, data_fechado: null, data_limite: data_limite, feedback: null, id_processo_estagio: id_processo.id, id_usuario_orientador: null}).table("ticket")){
