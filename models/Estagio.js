@@ -10,6 +10,10 @@ class Estagio {
       return [];
     }
   }
+
+  async newEstagio(){
+    
+  }
 }
 
 module.exports = new Estagio();

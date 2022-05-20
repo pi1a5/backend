@@ -1,4 +1,5 @@
 const Ticket = require('../models/Ticket');
+const Documento = require('../models/Document');
 
 class TicketController {
 
@@ -11,10 +12,10 @@ class TicketController {
     }
   }
 
-  async newTicket(req, res){
+  async newTicketInicio(req, res){
 
     try{
-       const { corpo_texto, data_limite, sub } = req.body;
+       const { corpo_texto, data_limite, sub , doc1, doc2, eProfessor} = req.body;
       
       if (corpo_texto === '' || corpo_texto === ' ' || corpo_texto === undefined) {
         res.status(400).json('Corpo de texto inválido');
@@ -31,16 +32,43 @@ class TicketController {
         return
       }
 
+      if (doc1 === '' || doc1 === ' ' || doc1 === undefined) {
+        res.status(400).json('doc1 inválido');
+        return
+      }
+
+      if (doc2 === '' || doc2 === ' ' || doc2 === undefined) {
+        res.status(400).json('doc2 inválido');
+        return
+      }
+
+      if (eProfessor === '' || eProfessor === ' ' || eProfessor === undefined) {
+        res.status(400).json('doc2 inválido');
+        return
+      }
+
       const checkIfTicket = await Ticket.checkIfHasTicket(sub); // sub
 
       if (checkIfTicket){
-        if(await Ticket.createTicket( corpo_texto, data_limite, sub)){ // corpo e data
+        var ticket = await Ticket.createTicket( corpo_texto, data_limite, sub)
+        if(ticket){ // corpo e data
+          var id_ticket = ticket.id;
+          if (await Documento.newDocument(doc1, "TCE", eProfessor, id_ticket)){
+            res.status(200).json('Documento criado com sucesso.');
+          } else{
+            res.status(500).json('Erro criando documento.');
+          }
+          if (await Documento.newDocument(doc1, "PA", eProfessor, id_ticket)){
+            res.status(200).json('Documento criado com sucesso.');
+          } else{
+            res.status(500).json('Erro criando documento.');
+          }
           res.status(200).json('Ticket criado com sucesso.');
         } else{
           res.status(500).json('Erro ao criar Ticket.');
         }
       } else{
-        res.status(500).json('Usuário já tem ticket.');
+        res.status(500).json('Usuário já iniciou estágio.');
       }
     } catch(error){
       res.status(500).json(error);

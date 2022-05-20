@@ -21,6 +21,15 @@ class Document {
     }
 
   }
+
+  async newDocument(arquivo, tipo, eProfessor, id_ticket){
+    try {
+      await knex.insert({ id_ticket: id_ticket, arquivo: arquivo, tipo: tipo, eProfessor: eProfessor}).table("documento");
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  }
 }
 
 module.exports = new Document();
