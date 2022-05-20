@@ -125,12 +125,11 @@ class Ticket {
   async updateFeedback(sub, id_ticket, feedback, eAceito){
     try{
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var result = await knex.update({feedback: feedback, eAceito: eAceito, id_usuario_orientador: id.id}).table('ticket').where({id: id_ticket});
-      console.log(result);
-      return result;
+      await knex.update({feedback: feedback, eAceito: eAceito, id_usuario_orientador: id.id}).table('ticket').where({id: id_ticket});
+      return true;
     } catch(error){
       console.log(error);
-      return false;
+      return [];
     }
   }
 }
