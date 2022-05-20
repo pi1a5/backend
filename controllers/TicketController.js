@@ -50,9 +50,10 @@ class TicketController {
       const checkIfTicket = await Ticket.checkIfHasTicket(sub); // sub
 
       if (checkIfTicket){
-        var ticket = await Ticket.createTicket( corpo_texto, data_limite, sub)
+        var ticket = await Ticket.createTicket(corpo_texto, data_limite, sub)
         if(ticket){ // corpo e data
           var id_ticket = ticket.id;
+          console.log(id_ticket);
           if (await Documento.newDocument(doc1, "TCE", eProfessor, id_ticket)){
             res.status(200).json('Documento criado com sucesso.');
           } else{
