@@ -92,7 +92,7 @@ class Ticket {
 
   async getJoinWithoutSupervisor(){
     try{
-      var result = await knex.select('*').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').where({'t.feedback': null})
+      var result = await knex.select('*', 't.id').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').where({'t.feedback': null})
       return result;
     } catch(error){
       console.log(error);
