@@ -15,51 +15,51 @@ class TicketController {
   async newTicketInicio(req, res){
 
     try{
-       const { corpo_texto, data_limite, sub , doc1, doc2, eProfessor} = req.body;
+       //const { corpo_texto, data_limite, sub , doc1, doc2, eProfessor} = req.body;
       
-      if (corpo_texto === '' || corpo_texto === ' ' || corpo_texto === undefined) {
-        res.status(400).json('Corpo de texto inválido');
-        return
-      }
+      //if (corpo_texto === '' || corpo_texto === ' ' || corpo_texto === undefined) {
+      //  res.status(400).json('Corpo de texto inválido');
+      //  return
+      //}
 
-      if (data_limite === '' || data_limite === ' ' || data_limite === undefined) {
-        res.status(400).json('Data limite inválida');
-        return
-      }
+      //if (data_limite === '' || data_limite === ' ' || data_limite === undefined) {
+      //  res.status(400).json('Data limite inválida');
+      //  return
+      //}
 
-      if (sub === '' || sub === ' ' || sub === undefined) {
-        res.status(400).json('Sub inválido');
-        return
-      }
+      //if (sub === '' || sub === ' ' || sub === undefined) {
+      //  res.status(400).json('Sub inválido');
+      //  return
+      //}
 
-      if (doc1 === '' || doc1 === ' ' || doc1 === undefined) {
-        res.status(400).json('doc1 inválido');
-        return
-      }
+      //if (doc1 === '' || doc1 === ' ' || doc1 === undefined) {
+      //  res.status(400).json('doc1 inválido');
+      //  return
+      //}
 
-      if (doc2 === '' || doc2 === ' ' || doc2 === undefined) {
-        res.status(400).json('doc2 inválido');
-        return
-      }
+      //if (doc2 === '' || doc2 === ' ' || doc2 === undefined) {
+      //  res.status(400).json('doc2 inválido');
+      //  return
+      //}
 
-      if (eProfessor === '' || eProfessor === ' ' || eProfessor === undefined) {
-        res.status(400).json('doc2 inválido');
-        return
-      }
+      //if (eProfessor === '' || eProfessor === ' ' || eProfessor === undefined) {
+      //  res.status(400).json('doc2 inválido');
+      //  return
+      //}
 
-      const checkIfTicket = await Ticket.checkIfHasTicket(sub); // sub
+      const checkIfTicket = await Ticket.checkIfHasTicket("115276291467027900862"); // sub
 
       if (checkIfTicket){
-        var ticket = await Ticket.createTicket(corpo_texto, data_limite, sub)
+        var ticket = await Ticket.createTicket("oi", "2012-12-12", "115276291467027900862")
         if(ticket){ // corpo e data
           var id_ticket = ticket.id;
           console.log(id_ticket);
-          if (await Documento.newDocument(doc1, "TCE", eProfessor, id_ticket)){
+          if (await Documento.newDocument("doc1", "TCE", false, id_ticket)){
             res.status(200).json('Documento criado com sucesso.');
           } else{
             res.status(500).json('Erro criando documento.');
           }
-          if (await Documento.newDocument(doc1, "PA", eProfessor, id_ticket)){
+          if (await Documento.newDocument("doc1", "PA", false, id_ticket)){
             res.status(200).json('Documento criado com sucesso.');
           } else{
             res.status(500).json('Erro criando documento.');
