@@ -27,6 +27,7 @@ router.get('/api/users', UserController.users);
 router.get('/api/courses', CourseController.courses);
 router.get('/api/tickets', TicketController.tickets);
 router.get('/api/estagios', EstagioController.estagios);
+router.get('/api/test', TicketController.test);
 
 
 router.post('/api/documents', DocumentController.documents);

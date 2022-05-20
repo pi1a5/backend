@@ -84,6 +84,16 @@ class Ticket {
       return false;
     }
   }
+
+  async getJoinTest(){
+    try{
+      var result = await knex.select('*').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno')
+      return result;
+    } catch(error){
+      console.log(error);
+      return false;
+    }
+  }
 }
 
 module.exports = new Ticket();
