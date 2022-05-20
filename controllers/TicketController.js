@@ -50,20 +50,7 @@ class TicketController {
       const checkIfTicket = await Ticket.checkIfHasTicket("115276291467027900862"); // sub
 
       if (checkIfTicket){
-        var ticket = await Ticket.createTicket("oi", "2012-12-12", "115276291467027900862")
-        if(ticket){ // corpo e data
-          var id_ticket = ticket.id;
-          console.log(id_ticket);
-          if (await Documento.newDocument("doc1", "TCE", false, id_ticket)){
-            res.status(200).json('Documento criado com sucesso.');
-          } else{
-            res.status(500).json('Erro criando documento.');
-          }
-          if (await Documento.newDocument("doc1", "PA", false, id_ticket)){
-            res.status(200).json('Documento criado com sucesso.');
-          } else{
-            res.status(500).json('Erro criando documento.');
-          }
+        if(await Ticket.createTicketInicio("oi", "2012-12-12", "115276291467027900862", "XXXX", "YYYY", false)){
           res.status(200).json('Ticket criado com sucesso.');
         } else{
           res.status(500).json('Erro ao criar Ticket.');
