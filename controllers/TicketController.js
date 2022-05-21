@@ -154,15 +154,10 @@ class TicketController {
   async newTicketAcompanhamento(req, res){
 
     try{
-      const { corpo_texto, data_limite, sub , doc1, doc2, eProfessor} = req.body;
+      const { corpo_texto, sub , doc, eProfessor} = req.body;
       
       if (corpo_texto === '' || corpo_texto === ' ' || corpo_texto === undefined) {
         res.status(400).json('Corpo de texto inválido');
-        return
-      }
-
-      if (data_limite === '' || data_limite === ' ' || data_limite === undefined) {
-        res.status(400).json('Data limite inválida');
         return
       }
 
@@ -171,13 +166,8 @@ class TicketController {
         return
       }
 
-      if (doc1 === '' || doc1 === ' ' || doc1 === undefined) {
-        res.status(400).json('doc1 inválido');
-        return
-      }
-
-      if (doc2 === '' || doc2 === ' ' || doc2 === undefined) {
-        res.status(400).json('doc2 inválido');
+      if (doc === '' || doc === ' ' || doc === undefined) {
+        res.status(400).json('doc inválido');
         return
       }
 
@@ -189,7 +179,7 @@ class TicketController {
       const checkIfTicket = await Ticket.checkIfinAcompanhamento(sub); // sub
 
       if (checkIfTicket){
-        if(await Ticket.createTicketAcompanhamento(corpo_texto, data_limite, sub, doc1, doc2, eProfessor)){
+        if(await Ticket.createTicketAcompanhamento(corpo_texto, sub, doc, eProfessor)){
           res.status(200).json('Ticket criado com sucesso.');
         } else{
           res.status(500).json('Erro ao criar Ticket.');

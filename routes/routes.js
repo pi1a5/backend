@@ -20,6 +20,7 @@ router.post('/api/setCourse', UserController.setCourse);
 
 // Para Ticket
 router.post('/api/newTicketInicio', TicketController.newTicketInicio);
+router.post('/api/newTicketAcompanhamento', TicketController.newTicketAcompanhamento);
 router.post('/api/getTicketsUser', TicketController.getTicketsUser);
 router.post('/api/checkIfAcompanhemento', TicketController.checkIfAcompanhamento);
 

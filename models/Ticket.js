@@ -14,7 +14,7 @@ class Ticket {
   async findAllbyUserId(sub) {
     try {
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var result = await knex.select('*').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').where({"t.id_usuario_aluno": id.id})
+      var result = await knex.select('*', 't.id').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').where({"t.id_usuario_aluno": id.id}).orderBy('t.id', 'asc');
       
       if (result.length > 0) {
         return result;
@@ -31,37 +31,19 @@ class Ticket {
   async checkIfHasStarted(sub){
     try{
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var result = await knex.select(['feedback', 'eAceito']).table('ticket').where({ id_usuario_aluno: id.id });
-      if (result.length > 0) {
-        if (result.length = 1){
-          if (result[0].feedback == null){
-            return false;
+      var result = await knex.select(['t.id','t.feedback', 't.eAceito', 'pe.tipo_de_estagios']).from('ticket AS t').leftJoin('processo_estagio as pe', 'pe.id', 't.id_processo_estagio').where({ 't.id_usuario_aluno': id.id }).orderBy('id', 'asc');
+      tamanho = result.lenght;
+      if (tamanho > 0) {
+        if (tamanho = 1){
+          if (result[0].eAceito == false){
+            return true;
           } else{
-            if (result[0].eAceito == false){
-              return true;
-            } else{
-              return false;
-            }
+            return false
           }
         } else{
-          var tamanho = result.length;
-          console.log(tamanho);
-          var countRecusado = 0;
-          var countFeedback = 0;
-          for(var k in result){
-            if (result[k].eAceito == false){
-              countRecusado += 1;
-            }
-            if (result[k].feedback == null){
-              countFeedback += 1
-            }
-          }
-          if (countRecusado == tamanho){
+          if(result[tamanho - 1].id_tipo_estagios = 0 && result[tamanho - 1].eAceito == false){
             return true;
-          } 
-          if (countRecusado + countFeedback == tamanho){
-            return true;
-          } else{
+          } else {
             return false;
           }
         }
@@ -77,21 +59,32 @@ class Ticket {
   async checkIfinAcompanhamento(sub){
       try{
         var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-        var result = await knex.select(['eAceito']).table('ticket').where({ id_usuario_aluno: id.id });
-        if (result.length > 0) {
-            for(var k in result){
-                if (result[k].eAceito){
-                  return true;
-                }
+        var result = await knex.select(['t.id', 't.eAceito','pe.id_tipo_estagios']).from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({'t.id_usuario_aluno': id.id}).orderBy('t.id', 'asc');
+        var tamanho = result.lenght
+        if (tamanho > 0){
+          if (tamanho = 1){
+            if (result[0].eAceito == true){
+              return true;
+            } else{
+              return false;
             }
-        } else {
-            return false;
+          }
+        } else{
+          if (result[tamanho - 1].id_tipo_estagios = 0){
+            return false
+          } else{
+            if (result[tamanho - 1].eAceito == true){
+              return true
+            } else{
+              return false
+            }
+          }
         }
       } catch(error){
         console.log(error);
         return false;
       }
-  }
+    }
 
   async createTicketInicio(corpo_texto, data_limite, sub, doc1, doc2, eProfessor){
     try{
@@ -114,7 +107,7 @@ class Ticket {
     }
   }
 
-  async createTicketAcompanhamento(corpo_texto, data_limite, sub, doc1, doc2, eProfessor){
+  async createTicketAcompanhamento(corpo_texto, sub, doc, eProfessor){
     try{
       var data_criado = new Date().toISOString().split('T')[0];
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
