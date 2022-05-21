@@ -36,10 +36,14 @@ class Ticket {
       if (tamanho > 0) {
         if (tamanho = 1){
           console.log()
-          if (result[0].feedback != null && result[0].eAceito == false){
-            return true;
-          } else{
+          if (result[0].feedback == null){
             return false;
+          } else{
+            if (result[0].eAceito == false){
+              return true;
+            } else{
+              return false;
+            }
           }
         } else{
           if(result[tamanho - 1].id_tipo_estagios = 0 && result[tamanho - 1].eAceito == false){
