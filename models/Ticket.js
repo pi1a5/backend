@@ -32,21 +32,21 @@ class Ticket {
     try{
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
       var result = await knex.select(['t.id','t.feedback', 't.eAceito', 'pe.id_tipo_estagios']).from('ticket AS t').leftJoin('processo_estagio as pe', 'pe.id', 't.id_processo_estagio').where({ 't.id_usuario_aluno': id.id }).orderBy('id', 'asc');
-      var tamanho = result.lenght;
+      var tamanho = result.length;
+      console.log(result)
+      console.log(tamanho)
+      console.log("a")
       if (tamanho > 0) {
-        if (tamanho = 1){
-          console.log(result[0].feedback, result[0].eAceito)
-          if (result[0].feedback == null){
-            return false;
+        if (tamanho == 1){
+          console.log("ab")
+          if (result[0].feedback != null && result[0].eAceito == false){
+            return true;
           } else{
-            if (result[0].eAceito == false){
-              return true;
-            } else{
-              return false;
-            }
+            return false;
           }
         } else{
-          if(result[tamanho - 1].id_tipo_estagios = 0 && result[tamanho - 1].eAceito == false){
+          console.log("ac")
+          if(result[tamanho - 1].id_tipo_estagios = 0 && result[tamanho - 1].feedback != null && result[tamanho - 1].eAceito == false){
             return true;
           } else {
             return false;
@@ -67,7 +67,7 @@ class Ticket {
         var result = await knex.select(['t.id', 't.eAceito','pe.id_tipo_estagios']).from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({'t.id_usuario_aluno': id.id}).orderBy('t.id', 'asc');
         var tamanho = result.lenght
         if (tamanho > 0){
-          if (tamanho = 1){
+          if (tamanho == 1){
             if (result[0].eAceito == true){
               return true;
             } else{
@@ -75,7 +75,7 @@ class Ticket {
             }
           }
         } else{
-          if (result[tamanho - 1].id_tipo_estagios = 0){
+          if (result[tamanho - 1].id_tipo_estagios == 0){
             return false
           } else{
             if (result[tamanho - 1].eAceito == true){
@@ -96,7 +96,13 @@ class Ticket {
       var data_criado = new Date().toISOString().split('T')[0];
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
 
-      var id_processo_estagio = await knex.returning('id').insert({id_tipo_estagios: 0, situação: null, data_criado: data_criado, data_fechado: null}).table('processo_estagio')
+      var id_existe = await knex.select(['id_processo_estagio']).table('ticket').where({id: id.id}).first();
+      if(id_existe){
+        var id_processo_estagio = id_existe.id;
+      } else{
+        var id_processo_estagio = await knex.returning('id').insert({id_tipo_estagios: 0, situação: null, data_criado: data_criado, data_fechado: null}).table('processo_estagio')
+      }
+
       if (id_processo_estagio){
         if (await knex.insert({id_usuario_aluno: id.id, corpo_texto: corpo_texto, data_criado: data_criado, data_fechado: null, data_limite: data_limite, feedback: null, id_processo_estagio: id_processo_estagio[0].id, id_usuario_orientador: null}).table("ticket")){
           var id_ticket = await knex.select(['id']).table('ticket').where({feedback: null, id_usuario_aluno: id.id}).first()
@@ -119,11 +125,10 @@ class Ticket {
 
       var id_processo_estagio = await knex.select('t.id_processo_estagio', 't.id_usuario_orientado').from('ticket AS t').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').whereNotNull('t.feedback')
       if (id_processo_estagio){
-        if (await knex.insert({id_usuario_aluno: id.id, corpo_texto: corpo_texto, data_criado: data_criado, data_fechado: null, data_limite: data_limite, feedback: null, id_processo_estagio: id_processo_estagio[0].id_processo_estagio, id_usuario_orientador: id_usuario_orientador[0].id_usuario_orientador}).table("ticket")){
+        if (await knex.insert({id_usuario_aluno: id.id, corpo_texto: corpo_texto, data_criado: data_criado, data_fechado: null, data_limite: null, feedback: null, id_processo_estagio: id_processo_estagio[0].id_processo_estagio, id_usuario_orientador: id_usuario_orientador[0].id_usuario_orientador}).table("ticket")){
           var id_ticket = await knex.select(['id']).table('ticket').where({feedback: null, id_usuario_aluno: id.id}).first()
           console.log(id_ticket)
-          await knex.insert({ id_ticket: id_ticket.id, arquivo: doc1, tipo: "TCE", eProfessor: eProfessor}).table("documento");
-          await knex.insert({ id_ticket: id_ticket.id, arquivo: doc2, tipo: "PA", eProfessor: eProfessor}).table("documento");
+          await knex.insert({ id_ticket: id_ticket.id, arquivo: doc, tipo: "PAE", eProfessor: eProfessor}).table("documento");
           return true;  
         }
       }
