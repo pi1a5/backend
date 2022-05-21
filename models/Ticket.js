@@ -64,7 +64,9 @@ class Ticket {
   async checkIfinAcompanhamento(sub){
       try{
         var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
+        console.log(id)
         var result = await knex.select(['t.id', 't.eAceito','pe.id_tipo_estagios']).from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({'t.id_usuario_aluno': id.id}).orderBy('t.id', 'asc');
+        console.log(result)
         var tamanho = result.lenght
         if (tamanho > 0){
           if (tamanho == 1){
@@ -140,7 +142,7 @@ class Ticket {
 
   async getJoinWithoutSupervisor(){
     try{
-      var result = await knex.select('*', 't.id').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').where({'t.feedback': null})
+      var result = await knex.select('*', 't.id').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').where({'t.feedback': null}).orderBy('t.data_limite', 'asc');
       return result;
     } catch(error){
       console.log(error);
@@ -151,7 +153,7 @@ class Ticket {
   async getJoinWithSupervisorOpen(sub){
     try{
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var result = await knex.select('*').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').where({"t.id_usuario_orientador": id.id, "t.feedback": null})
+      var result = await knex.select('*', 't.id').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').where({"t.id_usuario_orientador": id.id, "t.feedback": null}).orderBy('t.id', 'asc');
       return result;
     } catch(error){
       console.log(error);
@@ -162,7 +164,7 @@ class Ticket {
   async getJoinWithSupervisorClosed(sub){
     try{
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var result = await knex.select('*').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').where({"t.id_usuario_orientador": id.id}).whereNotNull("t.feedback")
+      var result = await knex.select('*', 't.id').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').where({"t.id_usuario_orientador": id.id}).whereNotNull("t.feedback").orderBy('t.data_fechado', 'asc');
       return result;
     } catch(error){
       console.log(error);
