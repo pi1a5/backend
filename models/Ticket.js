@@ -32,7 +32,7 @@ class Ticket {
     try{
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
       var result = await knex.select(['t.id','t.feedback', 't.eAceito', 'pe.id_tipo_estagios']).from('ticket AS t').leftJoin('processo_estagio as pe', 'pe.id', 't.id_processo_estagio').where({ 't.id_usuario_aluno': id.id }).orderBy('id', 'asc');
-      tamanho = result.lenght;
+      var tamanho = result.lenght;
       if (tamanho > 0) {
         if (tamanho = 1){
           if (result[0].eAceito == false){
