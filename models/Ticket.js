@@ -35,10 +35,11 @@ class Ticket {
       var tamanho = result.lenght;
       if (tamanho > 0) {
         if (tamanho = 1){
-          if (result[0].eAceito == false && result[0].eAceito != null){
+          console.log()
+          if (result[0].feedback != null && result[0].eAceito == false){
             return true;
           } else{
-            return false
+            return false;
           }
         } else{
           if(result[tamanho - 1].id_tipo_estagios = 0 && result[tamanho - 1].eAceito == false){
