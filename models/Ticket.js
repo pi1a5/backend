@@ -35,7 +35,7 @@ class Ticket {
       var tamanho = result.lenght;
       if (tamanho > 0) {
         if (tamanho = 1){
-          if (result[0].eAceito == false){
+          if (result[0].eAceito == false && result[0].eAceito != null){
             return true;
           } else{
             return false
