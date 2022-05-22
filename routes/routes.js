@@ -18,13 +18,14 @@ router.post('/api/user', UserController.user);
 // Para Curso
 router.post('/api/setCourse', UserController.setCourse);
 
-// Para Ticket
+// Para Ticket Aluno
 router.post('/api/newTicketInicio', TicketController.newTicketInicio);
 router.post('/api/newTicketAcompanhamento', TicketController.newTicketAcompanhamento);
 router.post('/api/getTicketsUser', TicketController.getTicketsUser);
 router.post('/api/checkIfAcompanhemento', TicketController.checkIfAcompanhamento);
 
-router.get('/api/getTicketsWithoutSupervisor', TicketController.getTicketsWithoutSupervisor);
+// Para Ticket Professor
+router.post('/api/getTicketsWithoutSupervisor', TicketController.getTicketsWithoutSupervisor);
 router.post('/api/getTicketsWithSupervisor', TicketController.getTicketsWithSupervisor);
 router.post('/api/getClosedTicketsWithSupervisor', TicketController.getClosedTicketsWithSupervisor);
 router.post('/api/feedbackTicket', TicketController.feedbackTicket)

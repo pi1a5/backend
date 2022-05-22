@@ -143,9 +143,11 @@ class Ticket {
     }
   }
 
-  async getJoinWithoutSupervisor(){
+  async getJoinWithoutSupervisor(sub){
     try{
-      var result = await knex.select('*', 't.id', 't.data_criado', 't.data_fechado').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({'t.feedback': null, 't.id_usuario_orientador': null}).orderBy('t.data_limite', 'asc');
+      var curso = await knex.select(['id_curso']).table('usuario').where({sub: sub}).first();
+      console.log(curso);
+      var result = await knex.select('*', 't.id', 't.data_criado', 't.data_fechado').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({'t.feedback': null, 't.id_usuario_orientador': null, 'u.id_curso': curso.id_curso}).orderBy('t.data_limite', 'asc');
       return result;
     } catch(error){
       console.log(error);

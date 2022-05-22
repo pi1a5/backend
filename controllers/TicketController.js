@@ -14,7 +14,14 @@ class TicketController {
 
   async getTicketsWithoutSupervisor(req, res) {
     try {
-      var ticket = await Ticket.getJoinWithoutSupervisor();
+      const {sub} = req.body;
+
+      if (sub === '' || sub === ' ' || sub === undefined) {
+        res.status(400).json('Sub inválido');
+        return
+      }
+
+      var ticket = await Ticket.getJoinWithoutSupervisor(sub);
       res.status(200).json(ticket);
     } catch (error) {
       res.status(500).json(ticket);

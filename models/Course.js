@@ -3,7 +3,7 @@ const knex = require("../database/connection");
 class Course {
   async findById(id){
     try{
-      var result = await knex.select(['nome']).table("curso").where({ id: id });
+      var result = await knex.select(['sigla']).table("curso").where({ id: id });
       if (result.length > 0) {
         return result[0];
       } else {
