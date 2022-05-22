@@ -76,14 +76,17 @@ class Ticket {
             }
           }
         } else{
+          console.log(result[tamanho - 1])
           if (result[tamanho - 1].id_tipo_estagios == 0){
             return false
-          } else{
+          } else if(result[tamanho - 1].id_tipo_estagios == 1){
             if (result[tamanho - 1].eAceito == true){
               return true
             } else{
               return false
             }
+          } else{
+            return false
           }
         }
       } catch(error){
@@ -180,11 +183,8 @@ class Ticket {
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
       if(eAceito == true){
         var id_tipo_estagios = await knex.select(['pe.id_tipo_estagios', 'pe.id']).from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({ 't.id': id_ticket}).first();
-        console.log(id_tipo_estagios)
         if (id_tipo_estagios.id_tipo_estagios == 0){
-          console.log("asaa")
           await knex.update({id_tipo_estagios: 1}).table('processo_estagio').where({id: id_tipo_estagios.id})
-          console.log("bbsb")
         }
       }
       await knex.update({feedback: feedback, eAceito: eAceito, id_usuario_orientador: id.id, data_fechado: data_fechado}).table('ticket').where({id: id_ticket});
