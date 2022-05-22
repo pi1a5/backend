@@ -273,6 +273,25 @@ class TicketController {
     }
   }
 
+  async checkIfFinalizou(req, res){
+    try{
+        const { sub } = req.body
+
+        if (sub === '' || sub === ' ' || sub === undefined) {
+          res.status(400).json('Sub inválido');
+          return
+        }
+
+        if (await Ticket.checkFinalizou(sub)){
+          res.status(200).json(true);
+        } else{
+          res.status(403).json(false);
+        }
+    } catch(error){
+    res.status(500).json(error);
+  }
+}
+
   async getTicketsUser(req, res){
     try{
       const { sub } = req.body

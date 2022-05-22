@@ -223,13 +223,28 @@ class Ticket {
       var data_fechado = new Date().toISOString().split('T')[0];
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
       if(eAceito == true){
-        var id_tipo_estagios = await knex.select(['pe.id_tipo_estagios', 'pe.id']).from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({ 't.id': id_ticket}).first();
+        var id_tipo_estagios = await knex.select(['pe.id_tipo_estagios', 'pe.id','t.tipo_estagios']).from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({ 't.id': id_ticket}).first();
         if (id_tipo_estagios.id_tipo_estagios == 0){
           await knex.update({id_tipo_estagios: 1}).table('processo_estagio').where({id: id_tipo_estagios.id})
+        } else if(id_tipo_estagios.id_tipo_estagios == 1){
+          if(id_tipo_estagios.tipo_estagios == 'Finalização de Estágio'){
+            await knex.update({id_tipo_estagios: 2}, {situação: false}).table('processo_estagio').where({id: id_tipo_estagios.id})
+          }
         }
       }
       await knex.update({feedback: feedback, eAceito: eAceito, id_usuario_orientador: id.id, data_fechado: data_fechado}).table('ticket').where({id: id_ticket});
       return true;
+    } catch(error){
+      console.log(error);
+      return [];
+    }
+  }
+
+  async checkIfFinalizou(){
+    try {
+      var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
+      var situacao = await knex.select('situação').from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({'situação': false});
+      return situacao[0].situação;
     } catch(error){
       console.log(error);
       return [];

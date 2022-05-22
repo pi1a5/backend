@@ -24,6 +24,7 @@ router.post('/api/newTicketAcompanhamento', TicketController.newTicketAcompanham
 router.post('/api/newTicketFim', TicketController.newTicketFim);
 router.post('/api/getTicketsUser', TicketController.getTicketsUser);
 router.post('/api/checkIfAcompanhemento', TicketController.checkIfAcompanhamento);
+router.post('/api/checkIfFinalizou', TicketController.checkIfFinalizou);
 
 // Para Ticket Professor
 router.post('/api/getTicketsWithoutSupervisor', TicketController.getTicketsWithoutSupervisor);
