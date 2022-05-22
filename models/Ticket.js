@@ -93,6 +93,27 @@ class Ticket {
       }
     }
 
+    async checkIfFim(sub){
+      try{
+        var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
+        console.log(id)
+        var result = await knex.select(['t.id', 't.eAceito','pe.id_tipo_estagios', 't.feedback']).from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({'t.id_usuario_aluno': id.id, 't.tipo_estagios': 'Acompanhamento'}).orderBy('t.id', 'asc');
+        if (result){
+          var tamanho = result.length;
+          if(result[tamanho - 1].feedback != null && result[tamanho - 1].eAceito == true){
+            return true
+          } else{
+            return false
+          }
+        } else{
+          return false
+        }
+      } catch(error){
+        console.log(error);
+        return false;
+      }
+    }
+
   async createTicketInicio(corpo_texto, data_limite, sub, doc1, doc2, eProfessor){
     try{
       var data_criado = new Date().toISOString().split('T')[0];

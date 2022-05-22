@@ -205,6 +205,53 @@ class TicketController {
 
   }
 
+  async newTicketFim(req, res){
+
+    try{
+      const { corpo_texto, sub , doc, eProfessor, data_limite} = req.body;
+      
+      if (corpo_texto === '' || corpo_texto === ' ' || corpo_texto === undefined) {
+        res.status(400).json('Corpo de texto inválido');
+        return
+      }
+
+      if (sub === '' || sub === ' ' || sub === undefined) {
+        res.status(400).json('Sub inválido');
+        return
+      }
+
+      if (doc === '' || doc === ' ' || doc === undefined) {
+        res.status(400).json('doc inválido');
+        return
+      }
+
+      if (eProfessor === '' || eProfessor === ' ' || eProfessor === undefined) {
+        res.status(400).json('eProfessor inválido');
+        return
+      }
+      
+      if (data_limite === '' || data_limite === ' ' || data_limite === undefined) {
+        res.status(400).json('data_limite inválido');
+        return
+      }
+
+      const checkIfTicket = await Ticket.checkIfFim(sub); // sub
+
+      if (checkIfTicket){
+        if(await Ticket.createTicketFim(corpo_texto, sub, doc, eProfessor, data_limite)){
+          res.status(200).json('Ticket criado com sucesso.');
+        } else{
+          res.status(500).json('Erro ao criar Ticket.');
+        }
+      } else{
+        res.status(500).json('Usuário já iniciou estágio.');
+      }
+    } catch(error){
+      res.status(500).json(error);
+    }
+
+  }
+
   async checkIfAcompanhamento(req, res){
       try{
           const { sub } = req.body

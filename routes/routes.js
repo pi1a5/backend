@@ -21,6 +21,7 @@ router.post('/api/setCourse', UserController.setCourse);
 // Para Ticket Aluno
 router.post('/api/newTicketInicio', TicketController.newTicketInicio);
 router.post('/api/newTicketAcompanhamento', TicketController.newTicketAcompanhamento);
+router.post('/api/newTicketFim', TicketController.newTicketFim);
 router.post('/api/getTicketsUser', TicketController.getTicketsUser);
 router.post('/api/checkIfAcompanhemento', TicketController.checkIfAcompanhamento);
 
