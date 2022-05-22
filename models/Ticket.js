@@ -14,7 +14,7 @@ class Ticket {
   async findAllbyUserId(sub) {
     try {
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var result = await knex.select('*', 't.id', 't.data_criado').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({"t.id_usuario_aluno": id.id}).orderBy('t.id', 'asc');
+      var result = await knex.select('*', 't.id', 't.data_criado', 't.data_fechado').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({"t.id_usuario_aluno": id.id}).orderBy('t.id', 'asc');
       
       if (result.length > 0) {
         return result;
@@ -145,7 +145,7 @@ class Ticket {
 
   async getJoinWithoutSupervisor(){
     try{
-      var result = await knex.select('*', 't.id', 't.data_criado').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({'t.feedback': null, 't.id_usuario_orientador': null}).orderBy('t.data_limite', 'asc');
+      var result = await knex.select('*', 't.id', 't.data_criado', 't.data_fechado').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({'t.feedback': null, 't.id_usuario_orientador': null}).orderBy('t.data_limite', 'asc');
       return result;
     } catch(error){
       console.log(error);
@@ -156,7 +156,7 @@ class Ticket {
   async getJoinWithSupervisorOpen(sub){
     try{
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var result = await knex.select('*', 't.id', 't.data_criado').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({"t.id_usuario_orientador": id.id, "t.feedback": null}).orderBy('t.id', 'asc');
+      var result = await knex.select('*', 't.id', 't.data_criado', 't.data_fechado').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({"t.id_usuario_orientador": id.id, "t.feedback": null}).orderBy('t.id', 'asc');
       return result;
     } catch(error){
       console.log(error);
@@ -167,7 +167,7 @@ class Ticket {
   async getJoinWithSupervisorClosed(sub){
     try{
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var result = await knex.select('*', 't.id', 't.data_criado').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({"t.id_usuario_orientador": id.id}).whereNotNull("t.feedback").orderBy('t.data_criado', 'asc');
+      var result = await knex.select('*', 't.id', 't.data_criado', 't.data_fechado').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({"t.id_usuario_orientador": id.id}).whereNotNull("t.feedback").orderBy('t.data_criado', 'asc');
       return result;
     } catch(error){
       console.log(error);
