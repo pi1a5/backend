@@ -103,9 +103,9 @@ class Ticket {
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
 
       var id_existe = await knex.select(['id_processo_estagio']).table('ticket').where({id_usuario_aluno: id.id}).first();
-      console.log(id_existe[0].id_processo_estagio + "oaoaooa")
+      console.log(id_existe[0])
       if(id_existe){
-        var id_processo_estagio = id_existe.id_processo_estagio;
+        var id_processo_estagio = id_existe[0].id_processo_estagio;
       } else{
         var id_processo_estagio = await knex.returning('id').insert({id_tipo_estagios: 0, situação: null, data_criado: data_criado, data_fechado: null}).table('processo_estagio')
       }
