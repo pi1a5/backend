@@ -41,6 +41,7 @@ class Ticket {
             return false;
           }
         } else{
+          console.log(result[tamanho - 1].id_tipo_estagios, result[tamanho - 1].feedback, result[tamanho - 1].eAceito)
           if(result[tamanho - 1].id_tipo_estagios = 0 && result[tamanho - 1].feedback != null && result[tamanho - 1].eAceito == false){ // false n funfa?
             return true;
           } else {
