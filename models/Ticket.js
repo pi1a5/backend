@@ -228,7 +228,7 @@ class Ticket {
           await knex.update({id_tipo_estagios: 1}).table('processo_estagio').where({id: id_tipo_estagios.id})
         } else if(id_tipo_estagios.id_tipo_estagios == 1){
           if(id_tipo_estagios.tipo_estagios == 'Finalização de Estágio'){
-            await knex.update({id_tipo_estagios: 2}, {situação: false}).table('processo_estagio').where({id: id_tipo_estagios.id})
+            await knex.update({id_tipo_estagios: 2, situação: false}).table('processo_estagio').where({id: id_tipo_estagios.id})
           }
         }
       }
@@ -240,14 +240,21 @@ class Ticket {
     }
   }
 
-  async checkIfFinalizou(sub){
+  async checkFinalizou(sub){
     try {
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var situacao = await knex.select('situação').from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({'t.id_usuario_aluno': id.id});
+      var situacao = await knex.select('situação').from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({'t.id_usuario_aluno': id.id}).first();
       console.log(situacao)
-      return situacao[0].situação;
+      if(situacao){
+        if(situacao.situação == true){
+          return true;
+        } else{
+          return false;
+        } 
+      }{
+        return true;
+      }
     } catch(error){
-      console.log('haha')
       console.log(error);
       return [];
     }
