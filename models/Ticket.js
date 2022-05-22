@@ -243,7 +243,7 @@ class Ticket {
   async checkIfFinalizou(){
     try {
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var situacao = await knex.select('situação').from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({'situação': false});
+      var situacao = await knex.select('situação').from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({'t.id_usuario_aluno': id.id});
       console.log(situacao)
       return situacao[0].situação;
     } catch(error){
