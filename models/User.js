@@ -89,6 +89,34 @@ class User {
     }
   }
 
+  async checkAmount(sub) {
+    try {
+      var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
+      var colegas = await knex.distinct().select('id', 'nome').table('usuario').whereNot('email', 'like', '%@aluno.ifsp.edu.br%').whereNot({'id': id.id})
+      for (var k in colegas){
+        var data = await knex.distinct().select('id_usuario_aluno').table('ticket').where({'id_usuario_orientador': colegas[k].id})
+        if(data.length > 0){
+          var count = 0;
+          for (var y in data){
+            var processo = await knex.select('pe.situação').from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({'t.id_usuario_aluno': data[y].id_usuario_aluno})
+            if(processo[0].situação != false){
+              count += 1
+            }
+          }
+          colegas[k].quantidade = count;
+        } else{
+          count = 0;
+          colegas[k].quantidade = count;
+        }
+
+      }
+      return colegas;
+    } catch (error) {
+      console.log(error);
+      return [];
+    }
+  }
+
 
   // async findById(id) {
   //   try {

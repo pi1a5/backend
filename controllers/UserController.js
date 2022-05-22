@@ -147,6 +147,16 @@ class UserController {
     }
   }
 
+  async checkOrientadoresAmount(req, res) {
+    try {
+      const { sub } = req.body
+      var users = await User.checkAmount(sub);
+      res.status(200).json(users);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
 
 }
 

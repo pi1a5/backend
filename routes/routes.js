@@ -14,6 +14,7 @@ router.get('/', HomeController.index);
 router.post('/api/login', UserController.login);
 router.post('/api/newUser', UserController.newUser);
 router.post('/api/user', UserController.user);
+router.post('/api/checkOrientadoresAmount', UserController.checkOrientadoresAmount);
 
 // Para Curso
 router.post('/api/setCourse', UserController.setCourse);
