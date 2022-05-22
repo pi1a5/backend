@@ -107,13 +107,13 @@ class Ticket {
       var id_existe = await knex.select(['id_processo_estagio']).table('ticket').where({id_usuario_aluno: id.id})
       console.log(id_existe)
       if(id_existe.length == 0){
-        var id_processo_estagio = await knex.returning('id').insert({id_tipo_estagios: 0, situação: null, data_criado: data_criado, data_fechado: null}).table('processo_estagio')
+        var id_processo_estagio = await knex.returning('id AS id_processo_estagio').insert({id_tipo_estagios: 0, situação: null, data_criado: data_criado, data_fechado: null}).table('processo_estagio')
       } else{
         var id_processo_estagio = id_existe[0].id_processo_estagio;
       }
 
       if (id_processo_estagio){
-        if (await knex.insert({id_usuario_aluno: id.id, corpo_texto: corpo_texto, data_criado: data_criado, data_fechado: null, data_limite: data_limite, feedback: null, id_processo_estagio: id_processo_estagio[0].id, id_usuario_orientador: null}).table("ticket")){
+        if (await knex.insert({id_usuario_aluno: id.id, corpo_texto: corpo_texto, data_criado: data_criado, data_fechado: null, data_limite: data_limite, feedback: null, id_processo_estagio: id_processo_estagio[0].id_processo_estagio, id_usuario_orientador: null}).table("ticket")){
           var id_ticket = await knex.select(['id']).table('ticket').where({feedback: null, id_usuario_aluno: id.id}).first()
           console.log(id_ticket)
           await knex.insert({ id_ticket: id_ticket.id, arquivo: doc1, tipo: "TCE", eProfessor: eProfessor}).table("documento");
