@@ -145,7 +145,7 @@ class Ticket {
 
   async getJoinWithoutSupervisor(){
     try{
-      var result = await knex.select('*', 't.id', 't.data_criado').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({'t.feedback': null}).orderBy('t.data_limite', 'asc');
+      var result = await knex.select('*', 't.id', 't.data_criado').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({'t.feedback': null, 't.id_usuario_orientador': null}).orderBy('t.data_limite', 'asc');
       return result;
     } catch(error){
       console.log(error);
