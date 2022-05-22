@@ -247,6 +247,7 @@ class Ticket {
       console.log(situacao)
       return situacao[0].situação;
     } catch(error){
+      console.log('haha')
       console.log(error);
       return [];
     }
