@@ -244,6 +244,7 @@ class Ticket {
     try {
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
       var situacao = await knex.select('situação').from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({'situação': false});
+      console.log(situacao)
       return situacao[0].situação;
     } catch(error){
       console.log(error);
