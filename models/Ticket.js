@@ -79,11 +79,12 @@ class Ticket {
             if (result[tamanho - 1].id_tipo_estagios == 0){
               return false
             } else if(result[tamanho - 1].id_tipo_estagios == 1){
-              if (result[tamanho - 1].eAceito == true){
+              return true
+              /* if (result[tamanho - 1].eAceito == true){
                 return true
               } else{
                 return false
-              }
+              } */
             } else{
               return false
             }
