@@ -14,7 +14,7 @@ class Ticket {
   async findAllbyUserId(sub) {
     try {
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var result = await knex.select('*', 't.id').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').where({"t.id_usuario_aluno": id.id}).orderBy('t.id', 'asc');
+      var result = await knex.select('*', 't.id', 't.data_criado').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({"t.id_usuario_aluno": id.id}).orderBy('t.id', 'asc');
       
       if (result.length > 0) {
         return result;
@@ -80,11 +80,6 @@ class Ticket {
               return false
             } else if(result[tamanho - 1].id_tipo_estagios == 1 && result[tamanho - 1].feedback != null){
               return true
-              /* if (result[tamanho - 1].eAceito == true){
-                return true
-              } else{
-                return false
-              } */
             } else{
               return false
             }
@@ -108,7 +103,7 @@ class Ticket {
       var id_existe = await knex.select(['id_processo_estagio']).table('ticket').where({id_usuario_aluno: id.id})
       console.log(id_existe)
       if(id_existe.length == 0){
-        var id_processo_estagio = await knex.returning('id AS id_processo_estagio').insert({id_tipo_estagios: 0, situação: null, data_criado: data_criado, data_fechado: null}).table('processo_estagio')
+        var id_processo_estagio = await knex.returning('id AS id_processo_estagio').insert({id_tipo_estagios: 0, situação: true, data_criado: data_criado, data_fechado: null}).table('processo_estagio')
       } else{
         var id_processo_estagio = id_existe;
       }
@@ -150,7 +145,7 @@ class Ticket {
 
   async getJoinWithoutSupervisor(){
     try{
-      var result = await knex.select('*', 't.id').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').where({'t.feedback': null}).orderBy('t.data_limite', 'asc');
+      var result = await knex.select('*', 't.id', 't.data_criado').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({'t.feedback': null}).orderBy('t.data_limite', 'asc');
       return result;
     } catch(error){
       console.log(error);
@@ -161,7 +156,7 @@ class Ticket {
   async getJoinWithSupervisorOpen(sub){
     try{
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var result = await knex.select('*', 't.id').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').where({"t.id_usuario_orientador": id.id, "t.feedback": null}).orderBy('t.id', 'asc');
+      var result = await knex.select('*', 't.id', 't.data_criado').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({"t.id_usuario_orientador": id.id, "t.feedback": null}).orderBy('t.id', 'asc');
       return result;
     } catch(error){
       console.log(error);
@@ -172,7 +167,7 @@ class Ticket {
   async getJoinWithSupervisorClosed(sub){
     try{
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var result = await knex.select('*', 't.id').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').where({"t.id_usuario_orientador": id.id}).whereNotNull("t.feedback").orderBy('t.data_fechado', 'asc');
+      var result = await knex.select('*', 't.id', 't.data_criado').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({"t.id_usuario_orientador": id.id}).whereNotNull("t.feedback").orderBy('t.data_fechado', 'asc');
       return result;
     } catch(error){
       console.log(error);
