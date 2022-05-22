@@ -74,20 +74,22 @@ class Ticket {
             } else{
               return false;
             }
-          }
-        } else{
-          console.log(result[tamanho - 1])
-          if (result[tamanho - 1].id_tipo_estagios == 0){
-            return false
-          } else if(result[tamanho - 1].id_tipo_estagios == 1){
-            if (result[tamanho - 1].eAceito == true){
-              return true
+          } else{
+            console.log(result[tamanho - 1])
+            if (result[tamanho - 1].id_tipo_estagios == 0){
+              return false
+            } else if(result[tamanho - 1].id_tipo_estagios == 1){
+              if (result[tamanho - 1].eAceito == true){
+                return true
+              } else{
+                return false
+              }
             } else{
               return false
             }
-          } else{
-            return false
           }
+        } else{
+          return false
         }
       } catch(error){
         console.log(error);
