@@ -34,9 +34,7 @@ class Ticket {
       var result = await knex.select(['t.id','t.feedback', 't.eAceito', 'pe.id_tipo_estagios']).from('ticket AS t').leftJoin('processo_estagio as pe', 'pe.id', 't.id_processo_estagio').where({ 't.id_usuario_aluno': id.id }).orderBy('id', 'asc');
       var tamanho = result.length;
       if (tamanho > 0) {
-        console.log("a")
         if (tamanho == 1){
-          console.log("b")
           if (result[0].feedback != null && result[0].eAceito == false){
             return true;
           } else{
@@ -44,7 +42,7 @@ class Ticket {
           }
         } else{
           console.log(result[tamanho - 1].id_tipo_estagios, result[tamanho - 1].feedback, result[tamanho - 1].eAceito)
-          if(result[tamanho - 1].id_tipo_estagios = 0 && result[tamanho - 1].feedback != null && result[tamanho - 1].eAceito == false){ // false n funfa?
+          if(result[tamanho - 1].id_tipo_estagios == 0 && result[tamanho - 1].feedback != null && result[tamanho - 1].eAceito == false){ // false n funfa?
             return true;
           } else {
             return false;
