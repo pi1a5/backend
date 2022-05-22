@@ -285,7 +285,7 @@ class TicketController {
         if (await Ticket.checkFinalizou(sub)){
           res.status(200).json(true);
         } else{
-          res.status(403).json(false);
+          res.status(200).json(false);
         }
     } catch(error){
     res.status(500).json(error);

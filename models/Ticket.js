@@ -246,7 +246,7 @@ class Ticket {
       var situacao = await knex.select('situação').from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({'t.id_usuario_aluno': id.id}).first();
       console.log(situacao)
       if(situacao){
-        if(situacao.situação == true){
+        if(situacao.situação){
           return true;
         } else{
           return false;
