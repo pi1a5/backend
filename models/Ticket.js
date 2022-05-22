@@ -180,7 +180,8 @@ class Ticket {
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
       if(eAceito == true){
         var id_tipo_estagios = await knex.select(['id_tipo_estagios']).from('processo_estagio AS pe').leftJoin('ticket as t', 't.id_processo_estagio', 'pe.id').where({ 't.id_usuario_aluno': id.id}).first();
-        if (id_tipo_estagios.id_tipo_estagios == 0){
+        console.log(id_tipo_estagios)
+        if (id_tipo_estagios[0].id_tipo_estagios == 0){
           knex.update({id_tipo_estagios: 1}.from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({'t.id_usuario_aluno': id.id}))
         }
       }
