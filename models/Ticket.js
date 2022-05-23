@@ -14,7 +14,7 @@ class Ticket {
   async findAllbyUserId(sub) {
     try {
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var result = await knex.select('*', 't.id', 't.data_criado', 't.data_fechado').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({"t.id_usuario_aluno": id.id}).orderBy('t.id', 'asc');
+      var result = await knex.select('*', 't.id', 't.data_criado', 't.data_fechado').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({"t.id_usuario_aluno": id.id}).orderBy('t.id', 'desc');
       
       if (result.length > 0) {
         return result;
