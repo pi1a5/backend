@@ -1,4 +1,4 @@
-const Course = require('../models/Estagio');
+const Estagio = require('../models/Estagio');
 
 class EstagioController {
 
@@ -11,16 +11,18 @@ class EstagioController {
     }
   }
 
-  async createEstagio(req, res){
-    try{
-      const {} = req.body
-
-      
+  async limparBanco(req, res){
+    try {
+      var limpar = await Estagio.limpar();
+      if(limpar){
+        res.status(200).json(limpar);
+      } else{
+        res.status(404).json(limpar);
+      }
     } catch (error) {
       res.status(500).json(error);
     }
   }
-
 }
 
 module.exports = new EstagioController();

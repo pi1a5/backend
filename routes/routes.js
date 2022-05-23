@@ -39,6 +39,8 @@ router.get('/api/courses', CourseController.courses);
 router.get('/api/tickets', TicketController.tickets);
 router.get('/api/estagios', EstagioController.estagios);
 
+// Limpar BD
+router.get('/api/limparBanco', EstagioController.limparBanco);
 
 router.post('/api/documents', DocumentController.documents);
 

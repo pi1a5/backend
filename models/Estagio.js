@@ -11,6 +11,18 @@ class Estagio {
     }
   }
 
+  async limpar(){
+    try{
+      await knex('documento').del()
+      await knex('ticket').del()
+      await knex('processo_estagio').del()
+      return true;
+    }catch (error) {
+      console.log(error);
+      return false;
+    }
+  }
+
 }
 
 module.exports = new Estagio();
