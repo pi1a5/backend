@@ -92,7 +92,8 @@ class User {
   async checkAmount(sub) {
     try {
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var colegas = await knex.distinct().select('id', 'nome').table('usuario').whereNot('email', 'like', '%@aluno.ifsp.edu.br%').whereNot({'id': id.id})
+      var id_curso = await knex.select(['id_curso']).table('usuario').where({ sub: sub }).first();
+      var colegas = await knex.distinct().select('id', 'nome').table('usuario').whereNot('email', 'like', '%@aluno.ifsp.edu.br%').whereNot({'id': id.id}).where({'id_curso': id_curso.id_curso})
       for (var k in colegas){
         var data = await knex.distinct().select('id_usuario_aluno').table('ticket').where({'id_usuario_orientador': colegas[k].id})
         if(data.length > 0){

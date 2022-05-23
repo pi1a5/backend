@@ -190,6 +190,8 @@ class TicketController {
 
       const checkIfTicket = await Ticket.checkIfinAcompanhamento(sub); // sub
 
+      console.log(checkIfTicket)
+
       if (checkIfTicket){
         if(await Ticket.createTicketAcompanhamento(corpo_texto, sub, doc, eProfessor, data_limite)){
           res.status(200).json('Ticket criado com sucesso.');
