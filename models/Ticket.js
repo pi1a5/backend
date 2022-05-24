@@ -16,7 +16,7 @@ class Ticket {
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
       var result = await knex.select('*', 't.id', 't.data_criado', 't.data_fechado').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({"t.id_usuario_aluno": id.id}).orderBy('t.id', 'desc');
       
-      if (result.length > 0) {
+      if (result.length > 0) { // se retornar 1 ticket ou mais
         return result;
       } else {
         return undefined;
@@ -33,16 +33,15 @@ class Ticket {
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
       var result = await knex.select(['t.id','t.feedback', 't.eAceito', 'pe.id_tipo_estagios']).from('ticket AS t').leftJoin('processo_estagio as pe', 'pe.id', 't.id_processo_estagio').where({ 't.id_usuario_aluno': id.id }).orderBy('id', 'asc');
       var tamanho = result.length;
-      if (tamanho > 0) {
-        if (tamanho == 1){
-          if (result[0].feedback != null && result[0].eAceito == false){
+      if (tamanho > 0) { // se retornar 1 ticket ou mais
+        if (tamanho == 1){ // se fora apenas um ticket
+          if (result[0].feedback != null && result[0].eAceito == false){ // se o ticket foi recusado
             return true;
           } else{
             return false;
           }
-        } else{
-          console.log(result[tamanho - 1].id_tipo_estagios, result[tamanho - 1].feedback, result[tamanho - 1].eAceito)
-          if(result[tamanho - 1].id_tipo_estagios == 0 && result[tamanho - 1].feedback != null && result[tamanho - 1].eAceito == false){ // false n funfa?
+        } else{ // se retornar mais do que um
+          if(result[tamanho - 1].id_tipo_estagios == 0 && result[tamanho - 1].feedback != null && result[tamanho - 1].eAceito == false){ // se o ultimo ticket desse usuário for sobre início de estágio e for recusado
             return true;
           } else {
             return false;
@@ -65,20 +64,17 @@ class Ticket {
         console.log(result)
         var tamanho = result.length
         console.log(tamanho)
-        if (tamanho > 0){
-          console.log("a")
-          if (tamanho == 1){
-            console.log("a")
-            if (result[0].eAceito == true){
+        if (tamanho > 0){ // se retornar 1 ticket ou mais
+          if (tamanho == 1){ // se for apenas 1 ticket
+            if (result[0].eAceito == true){ // se o ticket (inicio) for aceito
               return true;
             } else{
               return false;
             }
-          } else{
-            console.log(result[tamanho - 1])
-            if (result[tamanho - 1].id_tipo_estagios == 0){
+          } else{ // se retornar mais de 1 ticket
+            if (result[tamanho - 1].id_tipo_estagios == 0){ // se o utlimo ticket for do tipo inicio
               return false
-            } else if(result[tamanho - 1].id_tipo_estagios == 1 && result[tamanho - 1].feedback != null){
+            } else if(result[tamanho - 1].id_tipo_estagios == 1 && result[tamanho - 1].feedback != null){ // se o utlimo ticket for do tipo acompanhamento e tiver feedback
               return true
             } else{
               return false
@@ -98,9 +94,9 @@ class Ticket {
         var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
         console.log(id)
         var result = await knex.select(['t.id', 't.eAceito','pe.id_tipo_estagios', 't.feedback']).from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({'t.id_usuario_aluno': id.id, 't.tipo_estagios': 'Acompanhamento'}).orderBy('t.id', 'asc');
-        if (result){
+        if (result){ // se retornar ticket de acompanhamento
           var tamanho = result.length;
-          if(result[tamanho - 1].feedback != null && result[tamanho - 1].eAceito == true){
+          if(result[tamanho - 1].feedback != null && result[tamanho - 1].eAceito == true){ // se o ultimo ticket foi aceito
             return true
           } else{
             return false
@@ -122,8 +118,7 @@ class Ticket {
       console.log(id)
 
       var id_existe = await knex.select(['id_processo_estagio']).table('ticket').where({id_usuario_aluno: id.id})
-      console.log(id_existe)
-      if(id_existe.length == 0){
+      if(id_existe.length == 0){ // se usuario não tem processo
         var id_processo_estagio = await knex.returning('id AS id_processo_estagio').insert({id_tipo_estagios: 0, situação: true, data_criado: data_criado, data_fechado: null}).table('processo_estagio')
       } else{
         var id_processo_estagio = id_existe;
