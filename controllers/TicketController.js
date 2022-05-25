@@ -111,6 +111,8 @@ class TicketController {
     try{
       const { corpo_texto, data_limite, sub , doc1, doc2, eProfessor} = req.body;
       
+      console.log(doc1)
+
       if (corpo_texto === '' || corpo_texto === ' ' || corpo_texto === undefined) {
         res.status(400).json('Corpo de texto inválido');
         return

@@ -118,9 +118,9 @@ class Ticket {
       var data_criado = new Date().toISOString().split('T')[0];
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
 
-      this.base64 = doc1
-
       console.log(doc1)
+
+      this.base64 = doc1
 
       console.log(id)
 
