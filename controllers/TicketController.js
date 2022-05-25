@@ -317,7 +317,7 @@ class TicketController {
 
   }
 
-  async getBase64(){
+  async getBase64(req, res){
     try {
       const getBase64 = Ticket.getBase64()
 
