@@ -120,6 +120,8 @@ class Ticket {
 
       this.base64 = doc1
 
+      console.log(doc1)
+
       console.log(id)
 
       var id_existe = await knex.select(['id_processo_estagio']).table('ticket').where({id_usuario_aluno: id.id})
