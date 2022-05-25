@@ -2,8 +2,6 @@ const knex = require("../database/connection");
 
 class Ticket {
 
-  base64 = null;
-
   async findAll() {
     try {
       var result = await knex.select('*').table("ticket");
@@ -118,11 +116,6 @@ class Ticket {
       var data_criado = new Date().toISOString().split('T')[0];
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
 
-      console.log(doc1)
-
-      this.base64 = doc1
-
-      console.log(id)
 
       var id_existe = await knex.select(['id_processo_estagio']).table('ticket').where({id_usuario_aluno: id.id})
       if(id_existe.length == 0){ // se usuario não tem processo
@@ -135,7 +128,7 @@ class Ticket {
         if (await knex.insert({id_usuario_aluno: id.id, corpo_texto: corpo_texto, data_criado: data_criado, data_fechado: null, data_limite: data_limite, feedback: null, id_processo_estagio: id_processo_estagio[0].id_processo_estagio, id_usuario_orientador: null, tipo_estagios: 'Início de Estágio'}).table("ticket")){
           var id_ticket = await knex.select(['id']).table('ticket').where({feedback: null, id_usuario_aluno: id.id}).first()
           console.log(id_ticket)
-          // await knex.insert({ id_ticket: id_ticket.id, arquivo: doc1, tipo: "TCE", eProfessor: eProfessor}).table("documento");
+          await knex.insert({ id_ticket: id_ticket.id, arquivo: doc1, tipo: "TCE", eProfessor: eProfessor}).table("documento");
           await knex.insert({ id_ticket: id_ticket.id, arquivo: doc2, tipo: "PA", eProfessor: eProfessor}).table("documento");
           return true;  
         }
@@ -146,9 +139,15 @@ class Ticket {
     }
   }
 
-  async getBase64(){
+  async getPdfUrl(id){
     try {
-      return this.base64
+      var url = await knex.select('arquivo').table('documento').where({'id_ticket': id})
+
+      if (url){
+        return url;
+      } else{
+        return false;
+      }
     } catch (error) {
       console.log(error);
       return false;

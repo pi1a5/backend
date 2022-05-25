@@ -110,8 +110,7 @@ class TicketController {
 
     try{
       const { corpo_texto, data_limite, sub , doc1, doc2, eProfessor} = req.body;
-      
-      console.log(doc1)
+  
 
       if (corpo_texto === '' || corpo_texto === ' ' || corpo_texto === undefined) {
         res.status(400).json('Corpo de texto inválido');
@@ -128,7 +127,7 @@ class TicketController {
         return
       }
 
-      if (doc1 === '' || doc1 === ' ' || doc1 === undefined) {
+      if (doc1 === '' || doc1 === ' ' || doc1 === undefined) {  
         res.status(400).json('doc1 inválido');
         return
       }
@@ -319,14 +318,21 @@ class TicketController {
 
   }
 
-  async getBase64(req, res){
+  async getPdfUrl(req, res){
     try {
-      const getBase64 = Ticket.getBase64()
+      const { id }  = req.body
 
-      if (getBase64){
-        res.status(200).json(getBase64);
+      if (id === '' || id === ' ' || id === undefined) {
+        res.status(400).json('id inválido');
+        return
+      }
+
+      const getUrl = Ticket.getPdfUrl(id)
+
+      if (getUrl){
+        res.status(200).json(getUrl);
       } else{
-        res.status(404).json('Base64 não encontrados');
+        res.status(404).json('Arquivos não encontrados');
       }
 
     } catch(error){

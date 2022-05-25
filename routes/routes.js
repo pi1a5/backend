@@ -32,13 +32,13 @@ router.post('/api/getTicketsWithoutSupervisor', TicketController.getTicketsWitho
 router.post('/api/getTicketsWithSupervisor', TicketController.getTicketsWithSupervisor);
 router.post('/api/getClosedTicketsWithSupervisor', TicketController.getClosedTicketsWithSupervisor);
 router.post('/api/feedbackTicket', TicketController.feedbackTicket)
+router.post('/api/getPdfUrl', TicketController.getPdfUrl);
 
 // Para teste
 router.get('/api/users', UserController.users);
 router.get('/api/courses', CourseController.courses);
 router.get('/api/tickets', TicketController.tickets);
 router.get('/api/estagios', EstagioController.estagios);
-router.get('/api/getBase64', TicketController.getBase64);
 
 // Limpar BD
 router.get('/api/limparBanco', EstagioController.limparBanco);
