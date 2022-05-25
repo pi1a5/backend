@@ -1,5 +1,7 @@
 const knex = require("../database/connection");
 
+const base64 = null
+
 class Document {
   async findAll() {
     try {

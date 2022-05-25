@@ -317,6 +317,22 @@ class TicketController {
 
   }
 
+  async getBase64(){
+    try {
+      const getBase64 = Ticket.getBase64()
+
+      if (getBase64){
+        res.status(200).json(getBase64);
+      } else{
+        res.status(404).json('Base64 não encontrados');
+      }
+
+    } catch(error){
+      res.status(500).json(error);
+    }
+  }
 }
+
+
 
 module.exports = new TicketController();
