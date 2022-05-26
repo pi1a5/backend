@@ -141,9 +141,11 @@ class Ticket {
 
   async getPdfUrl(id){
     try {
+      console.log(id)
       var url = await knex.select('arquivo').table('documento').where({'id_ticket': id})
 
-      if (url){
+      console.log(url)
+      if(url){
         return url;
       } else{
         return false;

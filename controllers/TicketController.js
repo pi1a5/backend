@@ -327,9 +327,10 @@ class TicketController {
         return
       }
 
-      const getUrl = Ticket.getPdfUrl(id)
+      const getUrl = await Ticket.getPdfUrl(id)
 
       if (getUrl){
+        console.log(getUrl)
         res.status(200).json(getUrl);
       } else{
         res.status(404).json('Arquivos não encontrados');
