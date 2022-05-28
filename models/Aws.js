@@ -17,7 +17,7 @@ class Aws {
 
             if (bucket){
                 var result = bucket.upload(params)
-                console.log("result form bucket " + result)
+                console.log("result form bucket " + JSON.stringify(result))
                 return "https://pi1a5.s3.sa-east-1.amazonaws.com/" + FILE_KEY;
             } else{
                return false
