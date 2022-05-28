@@ -16,7 +16,8 @@ class Aws {
             const bucket = await this.getS3Bucket()
 
             if (bucket){
-                bucket.upload(params)
+                var result = bucket.upload(params)
+                console.log("result form bucket " + result)
                 return "https://pi1a5.s3.sa-east-1.amazonaws.com/" + FILE_KEY;
             } else{
                return false
