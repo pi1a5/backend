@@ -113,6 +113,8 @@ class TicketController {
        
       console.log(req.body)
 
+      console.log(corpo_texto)
+
       let file = req['files'];
 
       console.log(file)
