@@ -37,7 +37,6 @@ class Aws {
                   region: process.env.REGION
                 }
               );
-          
               return bucket;
         } catch (error) {
             console.log(error);
