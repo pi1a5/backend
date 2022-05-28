@@ -1,3 +1,6 @@
+
+var AWS = require('aws-sdk');
+
 class Aws {
     async uploadFile(file, sub) {
         try {
@@ -28,7 +31,7 @@ class Aws {
 
     async getS3Bucket() {
         try {
-            const bucket = new S3(
+            const bucket = new AWS.S3(
                 {
                   accessKeyId: process.env.ACCESS_KEY_ID,
                   secretAccessKey: process.env.SECRET_ACCESS_KEY,
