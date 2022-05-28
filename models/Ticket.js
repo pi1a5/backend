@@ -1,4 +1,5 @@
 const knex = require("../database/connection");
+const aws = require("./Aws");
 
 class Ticket {
 
@@ -128,8 +129,12 @@ class Ticket {
         if (await knex.insert({id_usuario_aluno: id.id, corpo_texto: corpo_texto, data_criado: data_criado, data_fechado: null, data_limite: data_limite, feedback: null, id_processo_estagio: id_processo_estagio[0].id_processo_estagio, id_usuario_orientador: null, tipo_estagios: 'Início de Estágio'}).table("ticket")){
           var id_ticket = await knex.select(['id']).table('ticket').where({feedback: null, id_usuario_aluno: id.id}).first()
           console.log(id_ticket)
-          await knex.insert({ id_ticket: id_ticket.id, arquivo: doc1, tipo: "TCE", eProfessor: eProfessor}).table("documento");
-          await knex.insert({ id_ticket: id_ticket.id, arquivo: doc2, tipo: "PA", eProfessor: eProfessor}).table("documento");
+
+          var key1 = Aws.uploadFile(doc1, sub)
+          var key2 = Aws.uploadFile(doc2, sub)
+
+          await knex.insert({ id_ticket: id_ticket.id, arquivo: key1, tipo: "TCE", eProfessor: eProfessor}).table("documento");
+          await knex.insert({ id_ticket: id_ticket.id, arquivo: key2, tipo: "PA", eProfessor: eProfessor}).table("documento");
           return true;  
         }
       }
