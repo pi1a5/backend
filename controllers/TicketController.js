@@ -112,7 +112,7 @@ class TicketController {
       // const { corpo_texto, data_limite, sub, eProfessor} = req.body;
        
       console.log(req.body)
-      
+
       console.log("tce" + tce)
   
 

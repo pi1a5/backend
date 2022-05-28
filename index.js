@@ -1,5 +1,5 @@
 const express = require("express")
-// const bodyParser = require('body-parser')
+const bodyParser = require('body-parser')
 const cors = require("cors")
 // const multer = require('multer')
 const router = require("./routes/routes")
@@ -18,8 +18,8 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(fileupload())
 // app.use(multer({dest:'./uploads/'}).any())
-// app.use(bodyParser.json())
-// app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }))
 app.use("/", router)
 
 http.listen(process.env.PORT || "3000", () => {
