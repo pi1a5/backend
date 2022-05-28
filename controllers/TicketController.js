@@ -109,11 +109,13 @@ class TicketController {
   async newTicketInicio(req, res){
 
     try{
-      // const { corpo_texto, data_limite, sub, eProfessor} = req.body;
+      const { corpo_texto, data_limite, sub, eProfessor} = req.body;
        
       console.log(req.body)
 
-      console.log("tce" + tce)
+      let file = req['files'];
+
+      console.log(file)
   
 
       if (corpo_texto === '' || corpo_texto === ' ' || corpo_texto === undefined) {

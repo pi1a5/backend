@@ -40,11 +40,7 @@ class DocumentController {
 
       console.log(textArea, date)
 
-      
-      let file = req['files'];
 
-
-      console.log(file)
     } catch (error) {
       res.status(500).json(document);
     }
