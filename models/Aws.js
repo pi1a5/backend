@@ -17,7 +17,7 @@ class Aws {
 
             if (bucket){
                 bucket.upload(params)
-                return "https://pi1a5.s3.sa-east-1.amazonaws.com/" + KEY;
+                return "https://pi1a5.s3.sa-east-1.amazonaws.com/" + FILE_KEY;
             } else{
                return false
             }
