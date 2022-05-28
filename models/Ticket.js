@@ -1,5 +1,5 @@
 const knex = require("../database/connection");
-const aws = require("./Aws");
+const Aws = require("./Aws");
 
 class Ticket {
 
