@@ -111,10 +111,10 @@ class TicketController {
     try{
       const { corpo_texto, data_limite, sub, eProfessor} = req.body;
 
-      console.log("penis:" + req.files.file)
+      console.log("penis:" + req.files) //checar
 
-      const { doc1 } = req.files[0]
-      const { doc2 } = req.files[1]
+      const { tce } = req.files[0]
+      const { pa } = req.files[1]
   
 
       if (corpo_texto === '' || corpo_texto === ' ' || corpo_texto === undefined) {
@@ -132,13 +132,13 @@ class TicketController {
         return
       }
 
-      if (doc1 === '' || doc1 === ' ' || doc1 === undefined) {  
-        res.status(400).json('doc1 inválido');
+      if (tce === '' || tce === ' ' || tce === undefined) {  
+        res.status(400).json('tce inválido');
         return
       }
 
-      if (doc2 === '' || doc2 === ' ' || doc2 === undefined) {
-        res.status(400).json('doc2 inválido');
+      if (pa === '' || pa === ' ' || pa === undefined) {
+        res.status(400).json('pa inválido');
         return
       }
 
@@ -150,7 +150,7 @@ class TicketController {
       const checkIfTicket = await Ticket.checkIfHasStarted(sub); // sub
 
       if (checkIfTicket){
-        if(await Ticket.createTicketInicio(corpo_texto, data_limite, sub, doc1, doc2, eProfessor)){
+        if(await Ticket.createTicketInicio(corpo_texto, data_limite, sub, tce, pa, eProfessor)){
           res.status(200).json('Ticket criado com sucesso.');
         } else{
           res.status(500).json('Erro ao criar Ticket.');
