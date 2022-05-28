@@ -130,8 +130,8 @@ class Ticket {
           var id_ticket = await knex.select(['id']).table('ticket').where({feedback: null, id_usuario_aluno: id.id}).first()
           console.log(id_ticket)
 
-          var key1 = Aws.uploadFile(doc1, sub)
-          var key2 = Aws.uploadFile(doc2, sub)
+          var key1 = await Aws.uploadFile(doc1, sub)
+          var key2 = await Aws.uploadFile(doc2, sub)
 
           await knex.insert({ id_ticket: id_ticket.id, arquivo: key1, tipo: "TCE", eProfessor: eProfessor}).table("documento");
           await knex.insert({ id_ticket: id_ticket.id, arquivo: key2, tipo: "PA", eProfessor: eProfessor}).table("documento");

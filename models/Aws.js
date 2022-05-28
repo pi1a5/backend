@@ -26,7 +26,7 @@ class Aws {
         }
     }
 
-    getS3Bucket() {
+    async getS3Bucket() {
         try {
             const bucket = new S3(
                 {
