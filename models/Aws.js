@@ -12,7 +12,7 @@ class Aws {
             const params = {
                 Bucket: process.env.AWS_BUCKET,
                 Key: FILE_KEY,
-                Body: file,
+                Body: file.data,
                 ACL: 'public-read'
             };
 
