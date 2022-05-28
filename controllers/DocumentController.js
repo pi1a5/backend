@@ -1,5 +1,7 @@
 const Document = require('../models/Document');
 
+
+
 class DocumentController {
 
   async documents(req, res) {
@@ -27,6 +29,15 @@ class DocumentController {
       } else {
         res.status(500).json('Erro ao encontrar documento.');
       }
+    } catch (error) {
+      res.status(500).json(document);
+    }
+  }
+
+  async receiveFiles(req, res){{}
+    try {
+      let file = req['files'];
+      console.log(file)
     } catch (error) {
       res.status(500).json(document);
     }

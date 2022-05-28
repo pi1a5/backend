@@ -19,6 +19,9 @@ router.post('/api/checkOrientadoresAmount', UserController.checkOrientadoresAmou
 // Para Curso
 router.post('/api/setCourse', UserController.setCourse);
 
+// Para Arquivos
+router.post('/api/receiveFiles', DocumentController.receiveFiles);
+
 // Para Ticket Aluno
 router.post('/api/newTicketInicio', TicketController.newTicketInicio);
 router.post('/api/newTicketAcompanhamento', TicketController.newTicketAcompanhamento);
