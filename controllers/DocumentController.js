@@ -36,7 +36,14 @@ class DocumentController {
 
   async receiveFiles(req, res){{}
     try {
+      const { textArea, date } = req.body
+
+      console.log(textArea, date)
+
+      
       let file = req['files'];
+
+
       console.log(file)
     } catch (error) {
       res.status(500).json(document);
