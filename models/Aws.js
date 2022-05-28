@@ -16,11 +16,10 @@ class Aws {
             const bucket = await this.getS3Bucket()
 
             if (bucket){
-                const upload = bucket.upload(params)
-                res.status(200).json(upload)
+                bucket.upload(params)
                 return "https://pi1a5.s3.sa-east-1.amazonaws.com/" + KEY;
             } else{
-                res.status(404).json("Erro ao encontrar Bucket");
+               return false
             }
             // console.log(stored);
         } catch (error) {
