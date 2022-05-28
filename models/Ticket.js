@@ -117,6 +117,8 @@ class Ticket {
       var data_criado = new Date().toISOString().split('T')[0];
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
 
+      console.log(doc1)
+      console.log(doc2)
 
       var id_existe = await knex.select(['id_processo_estagio']).table('ticket').where({id_usuario_aluno: id.id})
       if(id_existe.length == 0){ // se usuario não tem processo
@@ -132,6 +134,8 @@ class Ticket {
 
           var key1 = await Aws.uploadFile(doc1, sub)
           var key2 = await Aws.uploadFile(doc2, sub)
+
+          console.log(key1)
 
           await knex.insert({ id_ticket: id_ticket.id, arquivo: key1, tipo: "TCE", eProfessor: eProfessor}).table("documento");
           await knex.insert({ id_ticket: id_ticket.id, arquivo: key2, tipo: "PA", eProfessor: eProfessor}).table("documento");
