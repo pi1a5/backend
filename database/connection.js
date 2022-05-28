@@ -1,3 +1,5 @@
+console.log(process.env.CLIENT)
+
 const knex = require('knex')({
   client: process.env.CLIENT,
   connection: {
