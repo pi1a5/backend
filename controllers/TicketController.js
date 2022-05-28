@@ -111,7 +111,7 @@ class TicketController {
     try{
       const { corpo_texto, data_limite, sub, eProfessor} = req.body;
 
-      console.log(req.files)
+      console.log("penis:" + req.files)
 
       const { doc1 } = req.files[0]
       const { doc2 } = req.files[1]
