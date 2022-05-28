@@ -33,18 +33,6 @@ class DocumentController {
       res.status(500).json(document);
     }
   }
-
-  async receiveFiles(req, res){{}
-    try {
-      const { textArea, date } = req.body
-
-      console.log(textArea, date)
-
-
-    } catch (error) {
-      res.status(500).json(document);
-    }
-  }
 }
 
 module.exports = new DocumentController();

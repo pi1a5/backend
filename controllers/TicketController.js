@@ -112,8 +112,7 @@ class TicketController {
       const { corpo_texto, data_limite, sub, eProfessor} = req.body;
       const tce = req['files'].tce
       const pa = req['files'].pa
-  
-      console.log("tce crazy: " + tce)
+
 
       if (corpo_texto === '' || corpo_texto === ' ' || corpo_texto === undefined) {
         res.status(400).json('Corpo de texto inválido');
@@ -165,7 +164,8 @@ class TicketController {
   async newTicketAcompanhamento(req, res){
 
     try{
-      const { corpo_texto, sub , doc, eProfessor, data_limite} = req.body;
+      const { corpo_texto, sub, eProfessor, data_limite} = req.body;
+      const rae = req['files'].rae
       
       if (corpo_texto === '' || corpo_texto === ' ' || corpo_texto === undefined) {
         res.status(400).json('Corpo de texto inválido');
@@ -177,8 +177,8 @@ class TicketController {
         return
       }
 
-      if (doc === '' || doc === ' ' || doc === undefined) {
-        res.status(400).json('doc inválido');
+      if (rae === '' || rae === ' ' || rae === undefined) {
+        res.status(400).json('rae inválido');
         return
       }
 
@@ -194,10 +194,8 @@ class TicketController {
 
       const checkIfTicket = await Ticket.checkIfinAcompanhamento(sub); // sub
 
-      console.log(checkIfTicket)
-
       if (checkIfTicket){
-        if(await Ticket.createTicketAcompanhamento(corpo_texto, sub, doc, eProfessor, data_limite)){
+        if(await Ticket.createTicketAcompanhamento(corpo_texto, sub, rae, eProfessor, data_limite)){
           res.status(200).json('Ticket criado com sucesso.');
         } else{
           res.status(500).json('Erro ao criar Ticket.');
@@ -214,7 +212,8 @@ class TicketController {
   async newTicketFim(req, res){
 
     try{
-      const { corpo_texto, sub , doc, eProfessor, data_limite} = req.body;
+      const { corpo_texto, sub, eProfessor, data_limite} = req.body;
+      const tre = req['files'].tre
       
       if (corpo_texto === '' || corpo_texto === ' ' || corpo_texto === undefined) {
         res.status(400).json('Corpo de texto inválido');
@@ -226,8 +225,8 @@ class TicketController {
         return
       }
 
-      if (doc === '' || doc === ' ' || doc === undefined) {
-        res.status(400).json('doc inválido');
+      if (tre === '' || tre === ' ' || tre === undefined) {
+        res.status(400).json('tre inválido');
         return
       }
 
@@ -243,10 +242,9 @@ class TicketController {
 
       const checkIfTicket = await Ticket.checkIfFim(sub); // sub
 
-      console.log(checkIfTicket)
 
       if (checkIfTicket){
-        if(await Ticket.createTicketFim(corpo_texto, sub, doc, eProfessor, data_limite)){
+        if(await Ticket.createTicketFim(corpo_texto, sub, tre, eProfessor, data_limite)){
           res.status(200).json('Ticket criado com sucesso.');
         } else{
           res.status(500).json('Erro ao criar Ticket.');
@@ -333,7 +331,6 @@ class TicketController {
       const getUrl = await Ticket.getPdfUrl(id)
 
       if (getUrl){
-        console.log(getUrl)
         res.status(200).json(getUrl);
       } else{
         res.status(404).json('Arquivos não encontrados');

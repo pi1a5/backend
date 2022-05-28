@@ -61,11 +61,8 @@ class Ticket {
   async checkIfinAcompanhamento(sub){
       try{
         var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-        console.log(id)
         var result = await knex.select(['t.id', 't.eAceito','pe.id_tipo_estagios', 't.feedback']).from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({'t.id_usuario_aluno': id.id}).orderBy('t.id', 'asc');
-        console.log(result)
         var tamanho = result.length
-        console.log(tamanho)
         if (tamanho > 0){ // se retornar 1 ticket ou mais
           if (tamanho == 1){ // se for apenas 1 ticket
             if (result[0].eAceito == true){ // se o ticket (inicio) for aceito
@@ -117,8 +114,6 @@ class Ticket {
       var data_criado = new Date().toISOString().split('T')[0];
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
 
-      console.log("Documento: " + doc1)
-
       var id_existe = await knex.select(['id_processo_estagio']).table('ticket').where({id_usuario_aluno: id.id})
       if(id_existe.length == 0){ // se usuario não tem processo
         var id_processo_estagio = await knex.returning('id AS id_processo_estagio').insert({id_tipo_estagios: 0, situação: true, data_criado: data_criado, data_fechado: null}).table('processo_estagio')
@@ -129,13 +124,9 @@ class Ticket {
       if (id_processo_estagio){
         if (await knex.insert({id_usuario_aluno: id.id, corpo_texto: corpo_texto, data_criado: data_criado, data_fechado: null, data_limite: data_limite, feedback: null, id_processo_estagio: id_processo_estagio[0].id_processo_estagio, id_usuario_orientador: null, tipo_estagios: 'Início de Estágio'}).table("ticket")){
           var id_ticket = await knex.select(['id']).table('ticket').where({feedback: null, id_usuario_aluno: id.id}).first()
-          console.log(id_ticket)
 
           var key1 = await Aws.uploadFile(doc1, sub)
           var key2 = await Aws.uploadFile(doc2, sub)
-
-          console.log("key1: " + key1)
-          console.log("key2: " + key2)
 
           await knex.insert({ id_ticket: id_ticket.id, arquivo: key1, tipo: "TCE", eProfessor: eProfessor}).table("documento");
           await knex.insert({ id_ticket: id_ticket.id, arquivo: key2, tipo: "PA", eProfessor: eProfessor}).table("documento");
@@ -174,8 +165,10 @@ class Ticket {
       if (id_processo_estagio){
         if (await knex.insert({id_usuario_aluno: id.id, corpo_texto: corpo_texto, data_criado: data_criado, data_fechado: null, data_limite: data_limite, feedback: null, id_processo_estagio: id_processo_estagio[0].id_processo_estagio, id_usuario_orientador: id_processo_estagio[0].id_usuario_orientador, tipo_estagios: 'Acompanhamento'}).table("ticket")){
           var id_ticket = await knex.select(['id']).table('ticket').where({feedback: null, id_usuario_aluno: id.id}).first()
-          console.log(id_ticket)
-          await knex.insert({ id_ticket: id_ticket.id, arquivo: doc, tipo: "PAE", eProfessor: eProfessor}).table("documento");
+
+          var key = await Aws.uploadFile(doc, sub)
+
+          await knex.insert({ id_ticket: id_ticket.id, arquivo: key, tipo: "RAE", eProfessor: eProfessor}).table("documento");
           return true;  
         }
       }
@@ -194,8 +187,10 @@ class Ticket {
       if (id_processo_estagio){
         if (await knex.insert({id_usuario_aluno: id.id, corpo_texto: corpo_texto, data_criado: data_criado, data_fechado: null, data_limite: data_limite, feedback: null, id_processo_estagio: id_processo_estagio[0].id_processo_estagio, id_usuario_orientador: id_processo_estagio[0].id_usuario_orientador, tipo_estagios: 'Finalização de Estágio'}).table("ticket")){
           var id_ticket = await knex.select(['id']).table('ticket').where({feedback: null, id_usuario_aluno: id.id}).first()
-          console.log(id_ticket)
-          await knex.insert({ id_ticket: id_ticket.id, arquivo: doc, tipo: "TRE", eProfessor: eProfessor}).table("documento");
+          
+          var key = await Aws.uploadFile(doc, sub)
+
+          await knex.insert({ id_ticket: id_ticket.id, arquivo: key, tipo: "TRE", eProfessor: eProfessor}).table("documento");
           return true;  
         }
       }

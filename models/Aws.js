@@ -6,8 +6,6 @@ class Aws {
     async uploadFile(file, sub) {
         try {
             var FILE_KEY = `${sub}/${new Date().getTime()}${file.name}`
-        
-            console.log(file)
 
             const params = {
                 Bucket: process.env.AWS_BUCKET,
@@ -19,13 +17,11 @@ class Aws {
             const bucket = await this.getS3Bucket()
 
             if (bucket){
-                var result = await bucket.upload(params).promise()
-                console.log("result form bucket " + JSON.stringify(result))
+                await bucket.upload(params).promise()
                 return "https://pi1a5.s3.sa-east-1.amazonaws.com/" + FILE_KEY;
             } else{
                return false
             }
-            // console.log(stored);
         } catch (error) {
             console.log(error);
             return false;
