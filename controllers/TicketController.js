@@ -110,18 +110,8 @@ class TicketController {
 
     try{
       const { corpo_texto, data_limite, sub, eProfessor} = req.body;
-       
-      console.log(req.body)
-
-      console.log(corpo_texto)
-
-      let file = req['files'];
-
-      console.log(file.tce)
-
-      console.log(file.pa)
-
-      console.log(file)
+      const tce = req['files'].tce
+      const pa = req['files'].pa
   
 
       if (corpo_texto === '' || corpo_texto === ' ' || corpo_texto === undefined) {
