@@ -5,14 +5,14 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "nodemon index.js": "node index.js"
+    "nodemon index.js": "node index.js",
+    "deploy_heroku": "git add . && git commit -m heroku && git push heroku master"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
-    "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "knex": "^2.0.0",
     "pg": "^8.7.3"
