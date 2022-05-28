@@ -8,13 +8,13 @@ console.log(process.env.PASSWORD)
 console.log(process.env.DATABASE)
 
 const knex = require('knex')({
-  client: "postgresql",
+  client: process.env.CLIENT,
   connection: {
-    host: "ec2-52-4-104-184.compute-1.amazonaws.com",
-    port: 5432,
-    user: "rojffajrdflnho",
-    password: "26d7426815121263da04cbd5b140ba5064dcff582cbed8da9aedaca8b6d11ab7",
-    database: "df0h2i2l2pfcdr",
+    host: process.env.HOST,
+    port: process.env.PORT,
+    user: process.env.USER,
+    password: process.env.PASSWORD,
+    database: process.env.DATABASE,
     ssl: {
       require: true,  
       rejectUnauthorized: false 
