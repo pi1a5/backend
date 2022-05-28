@@ -6,6 +6,8 @@ class Aws {
         try {
             var FILE_KEY = `${sub}/${new Date().getTime()}${file.name}`
         
+            var file = Buffer.from(file, "binary")
+
             const params = {
                 Bucket: process.env.AWS_BUCKET,
                 Key: FILE_KEY,
