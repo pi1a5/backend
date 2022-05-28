@@ -166,6 +166,8 @@ class Ticket {
         if (await knex.insert({id_usuario_aluno: id.id, corpo_texto: corpo_texto, data_criado: data_criado, data_fechado: null, data_limite: data_limite, feedback: null, id_processo_estagio: id_processo_estagio[0].id_processo_estagio, id_usuario_orientador: id_processo_estagio[0].id_usuario_orientador, tipo_estagios: 'Acompanhamento'}).table("ticket")){
           var id_ticket = await knex.select(['id']).table('ticket').where({feedback: null, id_usuario_aluno: id.id}).first()
 
+          console.log(doc)
+
           var key = await Aws.uploadFile(doc, sub)
 
           await knex.insert({ id_ticket: id_ticket.id, arquivo: key, tipo: "RAE", eProfessor: eProfessor}).table("documento");

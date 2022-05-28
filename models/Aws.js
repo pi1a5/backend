@@ -6,7 +6,7 @@ class Aws {
     async uploadFile(file, sub) {
         try {
             var FILE_KEY = `${sub}/${new Date().getTime()}${file.name}`
-
+            
             const params = {
                 Bucket: process.env.AWS_BUCKET,
                 Key: FILE_KEY,
