@@ -117,6 +117,10 @@ class TicketController {
 
       let file = req['files'];
 
+      console.log(file.tce)
+
+      console.log(file.pa)
+
       console.log(file)
   
 
