@@ -7,12 +7,12 @@ class Aws {
         try {
             var FILE_KEY = `${sub}/${new Date().getTime()}${file.name}`
         
-            const filecontent = fs.readFileSync(file)
+            console.log(file)
 
             const params = {
                 Bucket: process.env.AWS_BUCKET,
                 Key: FILE_KEY,
-                Body: filecontent,
+                Body: file,
                 ACL: 'public-read'
             };
 
