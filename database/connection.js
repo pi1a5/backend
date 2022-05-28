@@ -1,7 +1,5 @@
-console.log(process.env.CLIENT)
-
 const knex = require('knex')({
-  client: process.env.CLIENT,
+  client: 'postgresql',
   connection: {
     host: process.env.HOST,
     port: process.env.PORT,
