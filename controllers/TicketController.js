@@ -113,6 +113,7 @@ class TicketController {
       const tce = req['files'].tce
       const pa = req['files'].pa
   
+      console.log("tce crazy: " + tce)
 
       if (corpo_texto === '' || corpo_texto === ' ' || corpo_texto === undefined) {
         res.status(400).json('Corpo de texto inválido');
