@@ -1,17 +1,18 @@
 
 var AWS = require('aws-sdk');
+const fs = require('fs')
 
 class Aws {
     async uploadFile(file, sub) {
         try {
             var FILE_KEY = `${sub}/${new Date().getTime()}${file.name}`
         
-            var file2 = Buffer.from(file, "binary")
+            const filecontent = fs.readFileSync(file)
 
             const params = {
                 Bucket: process.env.AWS_BUCKET,
                 Key: FILE_KEY,
-                Body: file2,
+                Body: filecontent,
                 ACL: 'public-read'
             };
 
