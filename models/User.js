@@ -18,9 +18,11 @@ class User {
       var all_prontuario = await knex.select("prontuario").table("usuario").whereNot({id: id.id})
       var prontuario = await knex.update({ id_curso: id_curso, prontuario: prontuario }).table("usuario").where({ sub: sub});
       
-      var result = all_prontuario.filter(p => p.prontuario != prontuario.prontuario)
+      var result = all_prontuario.filter(p => p.prontuario == prontuario.prontuario)
+      var result2 = all_prontuario.filter(p => p.prontuario != prontuario.prontuario)
 
-      console.log(result)
+      console.log("resultado: " + result)
+      console.log("resultado2: " + result2)
       // for (var i in all_prontuario){
       //   if (all_prontuario[i].prontuario == prontuario.prontuario){
       //     console.log
