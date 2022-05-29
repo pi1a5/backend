@@ -16,8 +16,11 @@ class Ticket {
   async getAllbyUserId(sub) {
     try {
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var result = await knex.select(['t.id', 't.id_usuario_aluno', 't.corpo_texto', 't.data_criado', 't.data_fechado', knex.raw('ARRAY_AGG(d.arquivo) AS arquivo'), knex.raw('ARRAY_AGG(d."eProfessor") AS professor'), 't.feedback', 't.id_processo_estagio', 't.id_usuario_orientador', 't.eAceito', 't.tipo_estagios', 'u.nome', 'u.email', 'u.foto', 'u.sub', 'u.idToken', 'pe.id_tipo_estagios', 'pe.situação']).from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').leftJoin('documento AS d', 'd.id_ticket', 't.id').where({"t.id_usuario_aluno": id.id}).orderBy('t.id', 'desc').groupBy('t.id', 'u.id', 'pe.id', 'te.id');      
+      var result = await knex.select(['t.id', 't.id_usuario_aluno', 't.corpo_texto', 't.data_criado', 't.data_fechado', 't.feedback', 't.id_processo_estagio', 't.id_usuario_orientador', 't.eAceito', 't.tipo_estagios', 'u.nome', 'u.email', 'u.foto', 'u.sub', 'u.idToken', 'pe.id_tipo_estagios', 'pe.situação']).from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({"t.id_usuario_aluno": id.id}).orderBy('t.id', 'desc');      
       if (result.length > 0) { // se retornar 1 ticket ou mais
+        for (var i in result){
+          result[i]['arquivos'] = await this.getPdfUrl(result[i].id)
+        }
         return result;
       } else {
         return undefined;
@@ -55,13 +58,31 @@ class Ticket {
   async getJoinWithSupervisorClosed(sub){
     try{
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var result = await knex.select('t.id', 't.id_usuario_aluno', 't.corpo_texto', 't.data_criado', 't.data_fechado', knex.raw('ARRAY_AGG(d.arquivo) AS arquivo'), knex.raw('ARRAY_AGG(d."eProfessor") AS professor'), 't.data_limite', 't.feedback', 't.id_processo_estagio', 't.id_usuario_orientador', 'u.id_curso', 'u.nome', 'u.email', 'u.foto', 'u.sub', 'u.idToken', 'pe.id_tipo_estagios', 'pe.situação', 'te.tipo', 'te.icon').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').leftJoin('documento AS d', 'd.id_ticket', 't.id').where({"t.id_usuario_orientador": id.id}).whereNotNull("t.feedback").orderBy('t.data_fechado', 'desc').groupBy('t.id', 'u.id', 'pe.id', 'te.id');
+      var result = await knex.select('t.id', 't.id_usuario_aluno', 't.corpo_texto', 't.data_criado', 't.data_fechado', knex.raw('ARRAY_AGG(d) AS arquivo'), knex.raw('ARRAY_AGG(d."eProfessor") AS professor'), 't.data_limite', 't.feedback', 't.id_processo_estagio', 't.id_usuario_orientador', 'u.id_curso', 'u.nome', 'u.email', 'u.foto', 'u.sub', 'u.idToken', 'pe.id_tipo_estagios', 'pe.situação', 'te.tipo', 'te.icon').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').leftJoin('documento AS d', 'd.id_ticket', 't.id').where({"t.id_usuario_orientador": id.id}).whereNotNull("t.feedback").orderBy('t.data_fechado', 'desc').groupBy('t.id', 'u.id', 'pe.id', 'te.id');
       return result;
     } catch(error){
       console.log(error);
       return false;
     }
   }
+
+  async getPdfUrl(id){
+    try {
+      console.log(id)
+      var url = await knex.select('*').table('documento').where({'id_ticket': id})
+
+      console.log(url)
+      if(url){
+        return url;
+      } else{
+        return false;
+      }
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  }
+
 
   async checkIfHasStarted(sub){
     try{
@@ -142,6 +163,26 @@ class Ticket {
       }
     }
 
+    async checkFinalizou(sub){
+      try {
+        var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
+        var situacao = await knex.select('situação').from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({'t.id_usuario_aluno': id.id}).first();
+        console.log(situacao)
+        if(situacao){
+          if(situacao.situação){
+            return true;
+          } else{
+            return false;
+          } 
+        }{
+          return true;
+        }
+      } catch(error){
+        console.log(error);
+        return [];
+      }
+    }
+
   async createTicketInicio(corpo_texto, data_limite, sub, doc1, doc2, eProfessor){
     try{
       var data_criado = new Date().toISOString().split('T')[0];
@@ -171,23 +212,6 @@ class Ticket {
       return false;
     }
   }
-
-  // async getPdfUrl(id){
-  //   try {
-  //     console.log(id)
-  //     var url = await knex.select('arquivo').table('documento').where({'id_ticket': id})
-
-  //     console.log(url)
-  //     if(url){
-  //       return url;
-  //     } else{
-  //       return false;
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     return false;
-  //   }
-  // }
 
   async createTicketAcompanhamento(corpo_texto, sub, doc, eProfessor, data_limite){
     try{
@@ -251,26 +275,6 @@ class Ticket {
       }
       await knex.update({feedback: feedback, eAceito: eAceito, id_usuario_orientador: id.id, data_fechado: data_fechado}).table('ticket').where({id: id_ticket});
       return true;
-    } catch(error){
-      console.log(error);
-      return [];
-    }
-  }
-
-  async checkFinalizou(sub){
-    try {
-      var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var situacao = await knex.select('situação').from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({'t.id_usuario_aluno': id.id}).first();
-      console.log(situacao)
-      if(situacao){
-        if(situacao.situação){
-          return true;
-        } else{
-          return false;
-        } 
-      }{
-        return true;
-      }
     } catch(error){
       console.log(error);
       return [];
