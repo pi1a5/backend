@@ -12,6 +12,29 @@ class TicketController {
     }
   }
 
+  async getTicketsUser(req, res){
+    try{
+      const { sub } = req.body
+
+      if (sub === '' || sub === ' ' || sub === undefined) {
+        res.status(400).json('Sub inválido');
+        return
+      }
+
+      const getAllTickets = await Ticket.getAllbyUserId(sub);
+
+      if (getAllTickets){
+        res.status(200).json(getAllTickets);
+      } else{
+        res.status(404).json('Tickets não encontrados');
+      }
+
+    } catch(error){
+      res.status(500).json(error);
+    }
+
+  }
+
   async getTicketsWithoutSupervisor(req, res) {
     try {
       const {sub} = req.body;
@@ -23,42 +46,6 @@ class TicketController {
 
       var ticket = await Ticket.getJoinWithoutSupervisor(sub);
       res.status(200).json(ticket);
-    } catch (error) {
-      res.status(500).json(ticket);
-    }
-  }
-
-  async feedbackTicket(req, res) {
-    try {
-      const {sub, id_ticket, feedback, eAceito} = req.body;
-
-      if (sub === '' || sub === ' ' || sub === undefined) {
-        res.status(400).json('Sub inválido');
-        return
-      }
-
-      if (id_ticket === '' || id_ticket === ' ' || id_ticket === undefined) {
-        res.status(400).json('id_ticket inválido');
-        return
-      }
-
-      if (feedback === '' || feedback === ' ' || feedback === undefined) {
-        res.status(400).json('feedback inválido');
-        return
-      }
-
-      if (eAceito === '' || eAceito === ' ' || eAceito === undefined) {
-        res.status(400).json('Sub inválido');
-        return
-      }
-
-      var ticket = await Ticket.updateFeedback(sub, id_ticket, feedback, eAceito);
-
-      if (ticket){
-        res.status(200).json(ticket);
-      } else{
-        res.status(500).json('Erro ao encontrar tickets.');
-      }
     } catch (error) {
       res.status(500).json(ticket);
     }
@@ -105,6 +92,41 @@ class TicketController {
   }
 
 
+  async feedbackTicket(req, res) {
+    try {
+      const {sub, id_ticket, feedback, eAceito} = req.body;
+
+      if (sub === '' || sub === ' ' || sub === undefined) {
+        res.status(400).json('Sub inválido');
+        return
+      }
+
+      if (id_ticket === '' || id_ticket === ' ' || id_ticket === undefined) {
+        res.status(400).json('id_ticket inválido');
+        return
+      }
+
+      if (feedback === '' || feedback === ' ' || feedback === undefined) {
+        res.status(400).json('feedback inválido');
+        return
+      }
+
+      if (eAceito === '' || eAceito === ' ' || eAceito === undefined) {
+        res.status(400).json('Sub inválido');
+        return
+      }
+
+      var ticket = await Ticket.updateFeedback(sub, id_ticket, feedback, eAceito);
+
+      if (ticket){
+        res.status(200).json(ticket);
+      } else{
+        res.status(500).json('Erro ao encontrar tickets.');
+      }
+    } catch (error) {
+      res.status(500).json(ticket);
+    }
+  }
 
   async newTicketInicio(req, res){
 
@@ -294,52 +316,29 @@ class TicketController {
     } catch(error){
     res.status(500).json(error);
   }
-}
+ }
 
-  async getTicketsUser(req, res){
-    try{
-      const { sub } = req.body
+  // async getPdfUrl(req, res){
+  //   try {
+  //     const { id }  = req.body
 
-      if (sub === '' || sub === ' ' || sub === undefined) {
-        res.status(400).json('Sub inválido');
-        return
-      }
+  //     if (id === '' || id === ' ' || id === undefined) {
+  //       res.status(400).json('id inválido');
+  //       return
+  //     }
 
-      const getAllTickets = await Ticket.findAllbyUserId(sub);
+  //     const getUrl = await Ticket.getPdfUrl(id)
 
-      if (getAllTickets){
-        res.status(200).json(getAllTickets);
-      } else{
-        res.status(404).json('Tickets não encontrados');
-      }
+  //     if (getUrl){
+  //       res.status(200).json(getUrl);
+  //     } else{
+  //       res.status(404).json('Arquivos não encontrados');
+  //     }
 
-    } catch(error){
-      res.status(500).json(error);
-    }
-
-  }
-
-  async getPdfUrl(req, res){
-    try {
-      const { id }  = req.body
-
-      if (id === '' || id === ' ' || id === undefined) {
-        res.status(400).json('id inválido');
-        return
-      }
-
-      const getUrl = await Ticket.getPdfUrl(id)
-
-      if (getUrl){
-        res.status(200).json(getUrl);
-      } else{
-        res.status(404).json('Arquivos não encontrados');
-      }
-
-    } catch(error){
-      res.status(500).json(error);
-    }
-  }
+  //   } catch(error){
+  //     res.status(500).json(error);
+  //   }
+  // }
 }
 
 

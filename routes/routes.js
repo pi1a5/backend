@@ -33,7 +33,7 @@ router.post('/api/getTicketsWithoutSupervisor', TicketController.getTicketsWitho
 router.post('/api/getTicketsWithSupervisor', TicketController.getTicketsWithSupervisor);
 router.post('/api/getClosedTicketsWithSupervisor', TicketController.getClosedTicketsWithSupervisor);
 router.post('/api/feedbackTicket', TicketController.feedbackTicket)
-router.post('/api/getPdfUrl', TicketController.getPdfUrl);
+// router.post('/api/getPdfUrl', TicketController.getPdfUrl);
 
 // Para teste
 router.get('/api/users', UserController.users);
