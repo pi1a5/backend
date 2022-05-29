@@ -17,7 +17,7 @@ router.post('/api/user', UserController.user);
 router.post('/api/checkOrientadoresAmount', UserController.checkOrientadoresAmount);
 
 // Para Curso
-router.post('/api/setCourse', UserController.setCourse);
+router.post('/api/setCourseProntuario', UserController.setCourseProntuario);
 
 
 // Para Ticket Aluno
