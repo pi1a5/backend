@@ -21,7 +21,7 @@ class UserController {
       }
 
       if (idToken === '' || idToken === ' ' || idToken === undefined) {
-        res.status(400).json('Token inválido');
+        res.status(400).json('Token inválido ');
         return
       }
 
