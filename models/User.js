@@ -14,7 +14,13 @@ class User {
 
   async saveIdCursoProntuario(id_curso, prontuario, sub) {
     try {
-      await knex.update({ id_curso: id_curso, prontuario: prontuario }).table("usuario").where({ sub: sub});
+      var all_prontuario = await knex.select("prontuario").table("usuario")
+      var prontuario = await knex.update({ id_curso: id_curso, prontuario: prontuario }).table("usuario").where({ sub: sub});
+      for (var i in all_prontuario){
+        if (all_prontuario[i].prontuario == prontuario.prontuario){
+          return false
+        }
+      }
       return true;
     } catch (error) {
       console.log(error);
