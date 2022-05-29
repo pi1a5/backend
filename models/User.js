@@ -111,7 +111,9 @@ class User {
         }
 
       }
-      return colegas;
+      return colegas.sort(function(a, b) {
+        return parseFloat(b.quantidade) - parseFloat(a.quantidade);
+      });
     } catch (error) {
       console.log(error);
       return [];
