@@ -85,9 +85,9 @@ class UserController {
     }
   }
 
-  async setCourse(req, res){
+  async setCourseProntuario(req, res){
     try{
-      const { id_curso, sub } = req.body;
+      const { id_curso, prontuario, sub } = req.body;
 
       if (id_curso === '' || id_curso === ' ' || id_curso === undefined) {
         res.status(400).json('Id inválido')
@@ -99,10 +99,15 @@ class UserController {
         return
       }
 
+      if (prontuario === '' || prontuario === ' ' || prontuario === undefined) {
+        res.status(400).json('prontuario inválido')
+        return
+      }
+
       var user = await User.findBySub(sub);
 
       if (user) {
-        if (await User.saveIdCurso(id_curso, sub)) {
+        if (await User.saveIdCursoProntuario(id_curso, prontuario, sub)) {
           res.status(200).json(user);
         } else {
           res.status(500).json('Erro ao salvar id curso');
