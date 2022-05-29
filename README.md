@@ -27,7 +27,7 @@ Esse projeto foi desenvolvido com as seguintes tecnologias:
 
 ## 💻 Projeto
 
-API para consumir o Front-End da Aplicação Angular
+API do projeto de Gestão de Estágio.
 
 
 ## 📝 Licença
