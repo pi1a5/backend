@@ -50,7 +50,7 @@ class Ticket {
   async getJoinWithSupervisorOpen(sub){
     try{
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var result = await knex.select('t.id', 't.id_usuario_aluno', 't.corpo_texto', 't.data_criado', 't.data_fechado', 't.data_limite', 't.feedback', 't.id_processo_estagio', 't.id_usuario_orientador', 't.eAceito', 't.tipo_estagios', 'u.id_curso', 'u.nome', 'u.email', 'u.foto', 'u.sub', 'u.idToken', 'pe.id_tipo_estagios', 'pe.situação', 'te.icon').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({"t.id_usuario_orientador": id.id, "t.feedback": null}).orderBy('t.data_limite', 'asc');
+      var result = await knex.select('t.id', 't.id_usuario_aluno', 't.corpo_texto', 't.data_criado', 't.data_fechado', 't.data_limite', 't.feedback', 't.id_processo_estagio', 't.id_usuario_orientador', 't.eAceito', 't.tipo_estagios', 'u.id_curso', 'u.nome', 'u.email', 'u.foto', 'u.sub', 'u.idToken', 'pe.id_tipo_estagios', 'pe.situação', 'te.icon').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({"t.id_usuario_orientador": id.id, "t.feedback": null}).orderBy('t.data_limite', 'desc');
       for (var i in result){
         result[i]['arquivos'] = await this.getPdfUrl(result[i].id)
       }
@@ -64,7 +64,7 @@ class Ticket {
   async getJoinWithSupervisorClosed(sub){
     try{
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var result = await knex.select('t.id', 't.id_usuario_aluno', 't.corpo_texto', 't.data_criado', 't.data_fechado', 't.data_limite', 't.feedback', 't.id_processo_estagio', 't.id_usuario_orientador', 't.eAceito', 't.tipo_estagios', 'u.id_curso', 'u.nome', 'u.email', 'u.foto', 'u.sub', 'u.idToken', 'pe.id_tipo_estagios', 'pe.situação', 'te.icon').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({"t.id_usuario_orientador": id.id}).whereNotNull("t.feedback").orderBy('t.data_fechado', 'asc');
+      var result = await knex.select('t.id', 't.id_usuario_aluno', 't.corpo_texto', 't.data_criado', 't.data_fechado', 't.data_limite', 't.feedback', 't.id_processo_estagio', 't.id_usuario_orientador', 't.eAceito', 't.tipo_estagios', 'u.id_curso', 'u.nome', 'u.email', 'u.foto', 'u.sub', 'u.idToken', 'pe.id_tipo_estagios', 'pe.situação', 'te.icon').from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios').where({"t.id_usuario_orientador": id.id}).whereNotNull("t.feedback").orderBy('t.data_fechado', 'desc');
       for (var i in result){
         result[i]['arquivos'] = await this.getPdfUrl(result[i].id)
       }
