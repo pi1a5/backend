@@ -17,11 +17,16 @@ class User {
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
       var all_prontuario = await knex.select("prontuario").table("usuario").whereNot({id: id.id})
       var prontuario = await knex.update({ id_curso: id_curso, prontuario: prontuario }).table("usuario").where({ sub: sub});
-      for (var i in all_prontuario){
-        if (all_prontuario[i].prontuario == prontuario.prontuario){
-          return false
-        }
-      }
+      
+      var result = all_prontuario.filter(p => p.prontuario != prontuario.prontuario)
+
+      console.log(result)
+      // for (var i in all_prontuario){
+      //   if (all_prontuario[i].prontuario == prontuario.prontuario){
+      //     console.log
+      //     return false
+      //   }
+      // }
       return true;
     } catch (error) {
       console.log(error);
