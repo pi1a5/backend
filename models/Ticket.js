@@ -211,8 +211,8 @@ class Ticket {
           var key1 = await Aws.uploadFile(doc1, sub)
           var key2 = await Aws.uploadFile(doc2, sub)
 
-          await knex.insert({ id_ticket: id_ticket.id, arquivo: key1, tipo: "TCE", eProfessor: eProfessor}).table("documento");
-          await knex.insert({ id_ticket: id_ticket.id, arquivo: key2, tipo: "PA", eProfessor: eProfessor}).table("documento");
+          await knex.insert({ id_ticket: id_ticket.id, arquivo: key1, tipo: "Termo de Compomisso de Estágio", eProfessor: eProfessor}).table("documento");
+          await knex.insert({ id_ticket: id_ticket.id, arquivo: key2, tipo: "Plano de Atividades", eProfessor: eProfessor}).table("documento");
           return true;  
         }
       }
@@ -236,7 +236,7 @@ class Ticket {
 
           var key = await Aws.uploadFile(doc, sub)
 
-          await knex.insert({ id_ticket: id_ticket.id, arquivo: key, tipo: "RAE", eProfessor: eProfessor}).table("documento");
+          await knex.insert({ id_ticket: id_ticket.id, arquivo: key, tipo: "Relatório de Atividades de Estágio", eProfessor: eProfessor}).table("documento");
           return true;  
         }
       }
@@ -258,7 +258,7 @@ class Ticket {
           
           var key = await Aws.uploadFile(doc, sub)
 
-          await knex.insert({ id_ticket: id_ticket.id, arquivo: key, tipo: "TRE", eProfessor: eProfessor}).table("documento");
+          await knex.insert({ id_ticket: id_ticket.id, arquivo: key, tipo: "Termo de Realização de Estágio", eProfessor: eProfessor}).table("documento");
           return true;  
         }
       }
