@@ -16,6 +16,7 @@ class User {
     try {
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
       var all_prontuario = await knex.select("prontuario").table("usuario").whereNot({id: id.id})   
+      console.log(typeof(all_prontuario))
       var result = all_prontuario.filter(p => p.prontuario != prontuario)
 
       if (result.length > 0){
