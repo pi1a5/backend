@@ -194,8 +194,8 @@ class Ticket {
 
   async createTicketInicio(corpo_texto, data_limite, sub, doc1, doc2, eProfessor){
     try{
-      var data_criado = new Date().toISOString().split('T')[0];
-      var data = new Date()
+      // var data_criado = new Date().toISOString().split('T')[0];
+      var data_criado = new Date();
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
       console.log(data_criado);
       console.log(data);
