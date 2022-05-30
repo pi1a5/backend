@@ -196,6 +196,9 @@ class Ticket {
     try{
       // var data_criado = new Date().toISOString().split('T')[0];
       var data_criado = new Date();
+      data_criado.toLocaleString('pt-BR', {
+        timeZone: 'America/Sao_Paulo'
+      })
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
       console.log(data_criado);
       var id_existe = await knex.select(['id_processo_estagio']).table('ticket').where({id_usuario_aluno: id.id})
