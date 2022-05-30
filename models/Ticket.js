@@ -200,7 +200,7 @@ class Ticket {
         timeZone: 'America/Sao_Paulo'
       })
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      console.log(data_criado);
+      console.log(data_criado)
       var id_existe = await knex.select(['id_processo_estagio']).table('ticket').where({id_usuario_aluno: id.id})
       if(id_existe.length == 0){ // se usuario não tem processo
         var id_processo_estagio = await knex.returning('id AS id_processo_estagio').insert({id_tipo_estagios: 0, situação: true, data_criado: data_criado, data_fechado: null}).table('processo_estagio')
