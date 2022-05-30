@@ -20,7 +20,7 @@ class User {
       console.log("all: " + all_prontuario)
 
       for (var i in all_prontuario){
-        console.log("obj: " + all_prontuario[i])
+        console.log("obj: " + JSON.stringify(all_prontuario[i]))
         console.log("obj2: " + all_prontuario[i].prontuario)
         if(all_prontuario[i].prontuario == prontuario){
           return false;
