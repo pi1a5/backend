@@ -195,10 +195,6 @@ class Ticket {
   async createTicketInicio(corpo_texto, data_limite, sub, doc1, doc2, eProfessor){
     try{
       var data_criado = new Date()
-      data_criado = changeTimeZone(data_criado, 'America/Sao_Paulo');
-      console.log(data_criado)
-
-
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
       var id_existe = await knex.select(['id_processo_estagio']).table('ticket').where({id_usuario_aluno: id.id})
       if(id_existe.length == 0){ // se usuario não tem processo
@@ -227,7 +223,7 @@ class Ticket {
 
   async createTicketAcompanhamento(corpo_texto, sub, doc, eProfessor, data_limite){
     try{
-      var data_criado = new Date().toISOString().split('T')[0];
+      var data_criado = new Date()
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
 
       var id_processo_estagio = await knex.select('t.id_processo_estagio', 't.id_usuario_orientador').from('ticket AS t').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').whereNotNull('t.feedback')
@@ -251,7 +247,7 @@ class Ticket {
 
   async createTicketFim(corpo_texto, sub, doc, eProfessor, data_limite){
     try{
-      var data_criado = new Date().toISOString().split('T')[0];
+      var data_criado = new Date()
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
 
       var id_processo_estagio = await knex.select('t.id_processo_estagio', 't.id_usuario_orientador').from('ticket AS t').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').whereNotNull('t.feedback')
@@ -273,7 +269,7 @@ class Ticket {
 
   async updateFeedback(sub, id_ticket, feedback, eAceito){
     try{
-      var data_fechado = new Date().toISOString().split('T')[0];
+      var data_fechado = new Date()
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
       if(eAceito == true){
         var id_tipo_estagios = await knex.select(['pe.id_tipo_estagios', 'pe.id','t.tipo_estagios']).from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({ 't.id': id_ticket}).first();
@@ -292,22 +288,6 @@ class Ticket {
       return [];
     }
   }
-}
-
-function changeTimeZone(date, timeZone) {
-  if (typeof date === 'string') {
-    return new Date(
-      new Date(date).toLocaleString('pt-BR', {
-        timeZone,
-      }),
-    );
-  }
-
-  return new Date(
-    date.toLocaleString('pt-BR', {
-      timeZone,
-    }),
-  );
 }
 
 module.exports = new Ticket();
