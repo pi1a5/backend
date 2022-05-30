@@ -18,13 +18,14 @@ class User {
       var all_prontuario = await knex.select("prontuario").table("usuario").whereNot({id: id.id})   
       console.log("tipo: " + typeof(all_prontuario))
       console.log("all: " + all_prontuario)
-      var result = all_prontuario.filter(p => p.prontuario != prontuario)
 
-      if (result.length > 0){
-        return false
-      } else{
-        await knex.update({ id_curso: id_curso, prontuario: prontuario }).table("usuario").where({ sub: sub});
-        return true;
+      for (var i in all_prontuario){
+        if(all_prontuario[i] == prontuario){
+          return false;
+        } else{
+          await knex.update({ id_curso: id_curso, prontuario: prontuario }).table("usuario").where({ sub: sub});
+          return true;
+        }
       }
     } catch (error) {
       console.log(error);
