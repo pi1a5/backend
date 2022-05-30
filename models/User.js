@@ -24,11 +24,10 @@ class User {
         console.log("obj2: " + all_prontuario[i].prontuario)
         if(all_prontuario[i].prontuario == prontuario){
           return false;
-        } else{
-          await knex.update({ id_curso: id_curso, prontuario: prontuario }).table("usuario").where({ sub: sub});
-          return true;
         }
       }
+      await knex.update({ id_curso: id_curso, prontuario: prontuario }).table("usuario").where({ sub: sub});
+      return true;
     } catch (error) {
       console.log(error);
       return false;
