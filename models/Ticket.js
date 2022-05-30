@@ -210,7 +210,7 @@ class Ticket {
           var key1 = await Aws.uploadFile(doc1, sub)
           var key2 = await Aws.uploadFile(doc2, sub)
 
-          await knex.insert({ id_ticket: id_ticket.id, arquivo: key1, tipo: "Termo de Compomisso de Estágio", eProfessor: eProfessor}).table("documento");
+          await knex.insert({ id_ticket: id_ticket.id, arquivo: key1, tipo: "Termo de Compromisso de Estágio", eProfessor: eProfessor}).table("documento");
           await knex.insert({ id_ticket: id_ticket.id, arquivo: key2, tipo: "Plano de Atividades", eProfessor: eProfessor}).table("documento");
           return true;  
         }
