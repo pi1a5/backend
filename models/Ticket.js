@@ -194,15 +194,12 @@ class Ticket {
 
   async createTicketInicio(corpo_texto, data_limite, sub, doc1, doc2, eProfessor){
     try{
-      // var data_criado = new Date().toISOString().split('T')[0];
-      var data_criado = new Date();
-      data_criado = data_criado.toLocaleString('pt-BR', {
-        timeZone: 'America/Sao_Paulo'
-      })
-      data_criado = new Date(data_criado);
+      var data_criado = new Date()
+      data_criado = changeTimeZone(data_criado, 'America/Sao_Paulo');
       console.log(data_criado)
+
+
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      console.log(data_criado)
       var id_existe = await knex.select(['id_processo_estagio']).table('ticket').where({id_usuario_aluno: id.id})
       if(id_existe.length == 0){ // se usuario não tem processo
         var id_processo_estagio = await knex.returning('id AS id_processo_estagio').insert({id_tipo_estagios: 0, situação: true, data_criado: data_criado, data_fechado: null}).table('processo_estagio')
@@ -295,6 +292,22 @@ class Ticket {
       return [];
     }
   }
+}
+
+function changeTimeZone(date, timeZone) {
+  if (typeof date === 'string') {
+    return new Date(
+      new Date(date).toLocaleString('pt-BR', {
+        timeZone,
+      }),
+    );
+  }
+
+  return new Date(
+    date.toLocaleString('pt-BR', {
+      timeZone,
+    }),
+  );
 }
 
 module.exports = new Ticket();
