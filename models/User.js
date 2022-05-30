@@ -14,24 +14,25 @@ class User {
 
   async saveIdCursoProntuario(id_curso, prontuario, sub) {
     try {
-      var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var all_prontuario = await knex.select("prontuario").table("usuario").whereNot({id: id.id})   
-      console.log("tipo: " + typeof(all_prontuario))
-      console.log("all: " + all_prontuario)
-
-      for (var i in all_prontuario){
-        console.log("obj: " + JSON.stringify(all_prontuario[i]))
-        console.log("obj2: " + all_prontuario[i].prontuario)
-        if(all_prontuario[i].prontuario == prontuario){
-          return false;
-        }
-      }
       await knex.update({ id_curso: id_curso, prontuario: prontuario }).table("usuario").where({ sub: sub});
       return true;
     } catch (error) {
       console.log(error);
       return false;
     }
+  }
+
+  async checarProntuario(prontuario, sub){
+    var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
+    var all_prontuario = await knex.select("prontuario").table("usuario").whereNot({id: id.id})
+    for (var i in all_prontuario){
+      console.log("obj: " + JSON.stringify(all_prontuario[i]))
+      console.log("obj2: " + all_prontuario[i].prontuario)
+      if(all_prontuario[i].prontuario == prontuario){
+        return false;
+      }
+    }   
+    return true;
   }
 
   async register(name, email, picture, idToken, sub) {

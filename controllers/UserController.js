@@ -107,10 +107,14 @@ class UserController {
       var user = await User.findBySub(sub);
 
       if (user) {
-        if (await User.saveIdCursoProntuario(id_curso, prontuario, sub)) {
-          res.status(200).json(user);
-        } else {
-          res.status(500).json('Erro ao salvar id curso');
+        if (await User.checarProntuario(prontuario, sub)){
+          if (await User.saveIdCursoProntuario(id_curso, prontuario, sub)) {
+            res.status(200).json(user);
+          } else {
+            res.status(500).json('Erro ao salvar id curso');
+          }
+        } else{
+          res.status(500).json('Prontuário já existente.');
         }
       } else {
         res.status(404).json('Usuário não encontrado');
