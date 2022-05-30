@@ -199,7 +199,7 @@ class Ticket {
       data_criado = data_criado.toLocaleString('pt-BR', {
         timeZone: 'America/Sao_Paulo'
       })
-      console.log(typeof(data_criado))
+      data_criado = new Date(data_criado);
       console.log(data_criado)
       var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
       console.log(data_criado)
