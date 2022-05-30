@@ -20,7 +20,7 @@ class User {
       console.log("all: " + all_prontuario)
 
       for (var i in all_prontuario){
-        if(all_prontuario[i] == prontuario){
+        if(all_prontuario[i].prontuario == prontuario){
           return false;
         } else{
           await knex.update({ id_curso: id_curso, prontuario: prontuario }).table("usuario").where({ sub: sub});
