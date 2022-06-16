@@ -21,8 +21,7 @@ app.use(fileupload())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use("/", router)
-app.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
 
-http.listen(process.env.PORT || "3000", () => {
+http.listen(process.env.PORT || "3000", () => {   
   console.log("Server is running...")
 })
