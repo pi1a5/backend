@@ -4,7 +4,7 @@ const cors = require("cors")
 // const multer = require('multer')
 const router = require("./routes/routes")
 const app = express()
-const http = require("http").createServer(app)
+const http = require("http").createServer(app).setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
 const fileupload = require('express-fileupload')
 
 //const io = require('socket.io')(http)
