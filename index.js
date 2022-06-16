@@ -21,6 +21,12 @@ app.use(fileupload())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use("/", router)
+app.use(function(req, res, next) {
+  if (req.secure) {
+    res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains') // 2 years
+  }
+  next()
+})
 
 http.listen(process.env.PORT || "3000", () => {   
   console.log("Server is running...")
