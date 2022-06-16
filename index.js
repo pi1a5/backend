@@ -20,12 +20,6 @@ app.use(fileupload())
 // app.use(multer({dest:'./uploads/'}).any())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(function(req, res, next) {
-  if (req.secure) {
-    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
-  }
-  next()
-})
 app.use("/", router)
 
 http.listen(process.env.PORT || "3000", () => {   
