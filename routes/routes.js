@@ -6,12 +6,13 @@ var router = express.Router();
 const HomeController = require("../controllers/HomeController");
 const TicketController = require("../controllers/TicketController");
 const UserController = require("../controllers/UserController");
+const HeaderMiddleware = require("../middleware/httpHeaders")
 const Ticket = require("../models/Ticket");
 
-router.get('/', HomeController.index);
+router.get('/', HeaderMiddleware, HomeController.index);
 
 // Para Usuario
-router.post('/api/login', UserController.login);
+router.post('/api/login', HeaderMiddleware, UserController.login);
 router.post('/api/newUser', UserController.newUser);
 router.post('/api/user', UserController.user);
 router.post('/api/checkOrientadoresAmount', UserController.checkOrientadoresAmount);
