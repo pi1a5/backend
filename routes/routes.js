@@ -13,39 +13,39 @@ router.get('/', HeaderMiddleware, HomeController.index);
 
 // Para Usuario
 router.post('/api/login', HeaderMiddleware, UserController.login);
-router.post('/api/newUser', UserController.newUser);
-router.post('/api/user', UserController.user);
-router.post('/api/checkOrientadoresAmount', UserController.checkOrientadoresAmount);
+router.post('/api/newUser', HeaderMiddleware, UserController.newUser);
+router.post('/api/user', HeaderMiddleware, UserController.user);
+router.post('/api/checkOrientadoresAmount', HeaderMiddleware, UserController.checkOrientadoresAmount);
 
 // Para Curso
-router.post('/api/setCourseProntuario', UserController.setCourseProntuario);
+router.post('/api/setCourseProntuario', HeaderMiddleware, UserController.setCourseProntuario);
 
 
 // Para Ticket Aluno
-router.post('/api/newTicketInicio', TicketController.newTicketInicio);
-router.post('/api/newTicketAcompanhamento', TicketController.newTicketAcompanhamento);
-router.post('/api/newTicketFim', TicketController.newTicketFim);
-router.post('/api/getTicketsUser', TicketController.getTicketsUser);
-router.post('/api/checkIfAcompanhemento', TicketController.checkIfAcompanhamento);
-router.post('/api/checkIfFinalizou', TicketController.checkIfFinalizou);
+router.post('/api/newTicketInicio', HeaderMiddleware, TicketController.newTicketInicio);
+router.post('/api/newTicketAcompanhamento', HeaderMiddleware, TicketController.newTicketAcompanhamento);
+router.post('/api/newTicketFim', HeaderMiddleware, TicketController.newTicketFim);
+router.post('/api/getTicketsUser', HeaderMiddleware, TicketController.getTicketsUser);
+router.post('/api/checkIfAcompanhemento', HeaderMiddleware, TicketController.checkIfAcompanhamento);
+router.post('/api/checkIfFinalizou', HeaderMiddleware, TicketController.checkIfFinalizou);
 
 // Para Ticket Professor
-router.post('/api/getTicketsWithoutSupervisor', TicketController.getTicketsWithoutSupervisor);
-router.post('/api/getTicketsWithSupervisor', TicketController.getTicketsWithSupervisor);
-router.post('/api/getClosedTicketsWithSupervisor', TicketController.getClosedTicketsWithSupervisor);
-router.post('/api/feedbackTicket', TicketController.feedbackTicket)
+router.post('/api/getTicketsWithoutSupervisor', HeaderMiddleware, TicketController.getTicketsWithoutSupervisor);
+router.post('/api/getTicketsWithSupervisor', HeaderMiddleware, TicketController.getTicketsWithSupervisor);
+router.post('/api/getClosedTicketsWithSupervisor', HeaderMiddleware, TicketController.getClosedTicketsWithSupervisor);
+router.post('/api/feedbackTicket', HeaderMiddleware, TicketController.feedbackTicket)
 // router.post('/api/getPdfUrl', TicketController.getPdfUrl);
 
 // Para teste
-router.get('/api/users', UserController.users);
-router.get('/api/courses', CourseController.courses);
-router.get('/api/tickets', TicketController.tickets);
-router.get('/api/estagios', EstagioController.estagios);
+router.get('/api/users', HeaderMiddleware, UserController.users);
+router.get('/api/courses', HeaderMiddleware, CourseController.courses);
+router.get('/api/tickets', HeaderMiddleware, TicketController.tickets);
+router.get('/api/estagios', HeaderMiddleware, EstagioController.estagios);
 
 // Limpar BD
-router.get('/api/limparBanco', EstagioController.limparBanco);
+router.get('/api/limparBanco', HeaderMiddleware, EstagioController.limparBanco);
 
-router.post('/api/documents', DocumentController.documents);
+router.post('/api/documents', HeaderMiddleware, DocumentController.documents);
 
 
 module.exports = router;

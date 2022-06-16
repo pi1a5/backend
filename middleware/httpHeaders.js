@@ -4,6 +4,6 @@ module.exports = function (req, res, next){
     res.setHeader('X-Frame-Options', 'SAMEORIGIN');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Referrer-Policy', 'no-referrer');
-    res.setHeader('Permissions-Policy', 'geolocation=(self "https://localhost:3000")');
+    res.setHeader('Permissions-Policy', 'geolocation=(self "https://pi1a5back.herokuapp.com")');
     next();
 }
