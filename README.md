@@ -1,7 +1,7 @@
 <p align="center">
   <a href="#-tecnologias">Tecnologias</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#-projeto">Projeto</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
-  <a href="#memo-licença">Licença</a>
+  <a href="#-Licença">Licença</a>
 </p>
 
 <p align="center">
@@ -24,6 +24,13 @@ Esse projeto foi desenvolvido com as seguintes tecnologias:
 - Cors
 - Express
 
+## 🚀 Cloud & Hospedagens
+
+Esse projeto foi hospeado com as seguintes tecnologias:
+
+- Amazon Web Services
+- Google Cloud Plataform
+- Heroku
 
 ## 💻 Projeto
 
@@ -32,4 +39,4 @@ API do projeto de Gestão de Estágio.
 
 ## 📝 Licença
 
-Esse projeto está sob a licença MIT. Veja o arquivo [LICENSE](.github/LICENSE.md) para mais detalhes.
+Esse projeto está sob a licença MIT. Veja o arquivo [LICENSE](https://opensource.org/licenses/MIT) para mais detalhes.
