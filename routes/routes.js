@@ -6,7 +6,7 @@ var router = express.Router();
 const HomeController = require("../controllers/HomeController");
 const TicketController = require("../controllers/TicketController");
 const UserController = require("../controllers/UserController");
-const HeaderMiddleware = require("../middleware/httpHeaders")
+const HeaderMiddleware = require("../middleware/httpHeaders");
 const Ticket = require("../models/Ticket");
 
 router.get('/', HeaderMiddleware, HomeController.index);
