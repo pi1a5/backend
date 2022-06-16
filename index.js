@@ -4,7 +4,7 @@ const cors = require("cors")
 // const multer = require('multer')
 const router = require("./routes/routes")
 const app = express()
-const http = require("http").createServer(app.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload'))
+const http = require("http").createServer(app)
 const fileupload = require('express-fileupload')
 
 //const io = require('socket.io')(http)
@@ -21,6 +21,7 @@ app.use(fileupload())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use("/", router)
+app.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
 
 http.listen(process.env.PORT || "3000", () => {
   console.log("Server is running...")
