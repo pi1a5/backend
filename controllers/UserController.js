@@ -128,7 +128,7 @@ class UserController {
   async user(req, res) {
     try {
       const { sub } = req.body;
-
+      console.log(sub)
       if (sub === '' || sub === ' ' || sub === undefined) {
         res.status(400).json('Sub inválido')
         return

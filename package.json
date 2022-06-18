@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "nodemon index.js": "node index.js",
-    "deploy_heroku": "git add . && git commit -m heroku && git push heroku master"
+    "deploy_heroku": "git add . && git commit -m heroku && git push heroku master",
+    "test": "node --inspect ./node_modules/jest/bin/jest.js --runInBand --detectOpenHandles"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +24,11 @@
     "pg": "^8.7.3"
   },
   "devDependencies": {
-    "nodemon": "^2.0.16"
+    "eslint": "^8.18.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "jest": "^28.1.1",
+    "nodemon": "^2.0.16",
+    "supertest": "^6.2.3"
   }
 }
