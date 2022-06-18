@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 const Course = require('../models/Course');
 
 class CouserController {

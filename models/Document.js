@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+/* eslint-disable class-methods-use-this */
 const knex = require('../database/connection');
 
 class Document {
@@ -11,9 +13,9 @@ class Document {
     }
   }
 
-  async findByTicketId(id_ticket) {
+  async findByTicketId(idTicket) {
     try {
-      const result = await knex.select(['id', 'arquivo', 'tipo']).table('documento').where({ id_ticket });
+      const result = await knex.select(['id', 'arquivo', 'tipo']).table('documento').where({ idTicket });
       return result;
     } catch (error) {
       console.log(error);
@@ -21,11 +23,12 @@ class Document {
     }
   }
 
-  async newDocument(arquivo, tipo, eProfessor, id_ticket) {
+  async newDocument(arquivo, tipo, eProfessor, idTicket) {
     try {
       await knex.insert({
-        id_ticket, arquivo, tipo, eProfessor,
+        idTicket, arquivo, tipo, eProfessor,
       }).table('documento');
+      return true;
     } catch (error) {
       console.log(error);
       return false;

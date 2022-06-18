@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 const User = require('../models/User');
 
 class UserController {
@@ -86,9 +87,9 @@ class UserController {
 
   async setCourseProntuario(req, res) {
     try {
-      const { id_curso, prontuario, sub } = req.body;
+      const { idCurso, prontuario, sub } = req.body;
 
-      if (id_curso === '' || id_curso === ' ' || id_curso === undefined) {
+      if (idCurso === '' || idCurso === ' ' || idCurso === undefined) {
         res.status(400).json('Id inválido');
         return;
       }
@@ -107,7 +108,7 @@ class UserController {
 
       if (user) {
         if (await User.checarProntuario(prontuario, sub)) {
-          if (await User.saveIdCursoProntuario(id_curso, prontuario, sub)) {
+          if (await User.saveIdCursoProntuario(idCurso, prontuario, sub)) {
             res.status(200).json(user);
           } else {
             res.status(500).json('Erro ao salvar id curso');
@@ -126,7 +127,6 @@ class UserController {
   async user(req, res) {
     try {
       const { sub } = req.body;
-      console.log(sub);
       if (sub === '' || sub === ' ' || sub === undefined) {
         res.status(400).json('Sub inválido');
         return;

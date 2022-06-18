@@ -1,7 +1,9 @@
+/* eslint-disable no-undef */
 const request = require('supertest');
 const express = require('express');
 const router = require('../routes/routes');
 
+// eslint-disable-next-line new-cap
 const app = new express();
 app.use('/', router);
 
@@ -37,6 +39,8 @@ describe('Test Routes', () => {
     const res = await request(app).get('/api/estagios');
     expect(res.statusCode).toBe(200);
   });
+
+  // Rotas POST
 
   test('responds to /api/user', async () => {
     const res = await request(app).post('/api/user').send(serialise({ sub: '115058635279984514484' }));

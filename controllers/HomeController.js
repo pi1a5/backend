@@ -1,5 +1,6 @@
+/* eslint-disable class-methods-use-this */
 class HomeController {
-  index(req, res) {
+  async index(req, res) {
     res.send('Conectou-se com a API');
   }
 }

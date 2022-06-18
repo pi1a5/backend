@@ -1,13 +1,17 @@
+/* eslint-disable linebreak-style */
+/* eslint-disable dot-notation */
+/* eslint-disable prefer-destructuring */
+/* eslint-disable linebreak-style */
+/* eslint-disable class-methods-use-this */
 const Ticket = require('../models/Ticket');
-const Documento = require('../models/Document');
 
 class TicketController {
   async tickets(req, res) {
     try {
-      var ticket = await Ticket.findAll();
+      const ticket = await Ticket.findAll();
       res.status(200).json(ticket);
     } catch (error) {
-      res.status(500).json(ticket);
+      res.status(500).json(error);
     }
   }
 
@@ -41,10 +45,10 @@ class TicketController {
         return;
       }
 
-      var ticket = await Ticket.getJoinWithoutSupervisor(sub);
+      const ticket = await Ticket.getJoinWithoutSupervisor(sub);
       res.status(200).json(ticket);
     } catch (error) {
-      res.status(500).json(ticket);
+      res.status(500).json(error);
     }
   }
 
@@ -57,14 +61,14 @@ class TicketController {
         return;
       }
 
-      var ticket = await Ticket.getJoinWithSupervisorOpen(sub);
+      const ticket = await Ticket.getJoinWithSupervisorOpen(sub);
       if (ticket) {
         res.status(200).json(ticket);
       } else {
         res.status(500).json('Erro ao encontrar tickets.');
       }
     } catch (error) {
-      res.status(500).json(ticket);
+      res.status(500).json(error);
     }
   }
 
@@ -77,21 +81,21 @@ class TicketController {
         return;
       }
 
-      var ticket = await Ticket.getJoinWithSupervisorClosed(sub);
+      const ticket = await Ticket.getJoinWithSupervisorClosed(sub);
       if (ticket) {
         res.status(200).json(ticket);
       } else {
         res.status(500).json('Erro ao encontrar tickets.');
       }
     } catch (error) {
-      res.status(500).json(ticket);
+      res.status(500).json(error);
     }
   }
 
   async feedbackTicket(req, res) {
     try {
       const {
-        sub, id_ticket, feedback, eAceito,
+        sub, idTicket, feedback, eAceito,
       } = req.body;
 
       if (sub === '' || sub === ' ' || sub === undefined) {
@@ -99,7 +103,7 @@ class TicketController {
         return;
       }
 
-      if (id_ticket === '' || id_ticket === ' ' || id_ticket === undefined) {
+      if (idTicket === '' || idTicket === ' ' || idTicket === undefined) {
         res.status(400).json('id_ticket inválido');
         return;
       }
@@ -114,7 +118,7 @@ class TicketController {
         return;
       }
 
-      var ticket = await Ticket.updateFeedback(sub, id_ticket, feedback, eAceito);
+      const ticket = await Ticket.updateFeedback(sub, idTicket, feedback, eAceito);
 
       if (ticket) {
         res.status(200).json(ticket);
@@ -122,24 +126,24 @@ class TicketController {
         res.status(500).json('Erro ao encontrar tickets.');
       }
     } catch (error) {
-      res.status(500).json(ticket);
+      res.status(500).json(error);
     }
   }
 
   async newTicketInicio(req, res) {
     try {
       const {
-        corpo_texto, data_limite, sub, eProfessor,
+        corpoTexto, dataLimite, sub, eProfessor,
       } = req.body;
-      const { tce } = req.files;
-      const { pa } = req.files;
+      const tce = req['files'].tce;
+      const pa = req['files'].pa;
 
-      if (corpo_texto === '' || corpo_texto === ' ' || corpo_texto === undefined) {
+      if (corpoTexto === '' || corpoTexto === ' ' || corpoTexto === undefined) {
         res.status(400).json('Corpo de texto inválido');
         return;
       }
 
-      if (data_limite === '' || data_limite === ' ' || data_limite === undefined) {
+      if (dataLimite === '' || dataLimite === ' ' || dataLimite === undefined) {
         res.status(400).json('Data limite inválida');
         return;
       }
@@ -167,7 +171,7 @@ class TicketController {
       const checkIfTicket = await Ticket.checkIfHasStarted(sub); // sub
 
       if (checkIfTicket) {
-        if (await Ticket.createTicketInicio(corpo_texto, data_limite, sub, tce, pa, eProfessor)) {
+        if (await Ticket.createTicketInicio(corpoTexto, dataLimite, sub, tce, pa, eProfessor)) {
           res.status(200).json('Ticket criado com sucesso.');
         } else {
           res.status(500).json('Erro ao criar Ticket.');
@@ -183,11 +187,11 @@ class TicketController {
   async newTicketAcompanhamento(req, res) {
     try {
       const {
-        corpo_texto, sub, eProfessor, data_limite,
+        corpoTexto, sub, eProfessor, dataLimite,
       } = req.body;
-      const { rae } = req.files;
+      const rae = req['files'].rae;
 
-      if (corpo_texto === '' || corpo_texto === ' ' || corpo_texto === undefined) {
+      if (corpoTexto === '' || corpoTexto === ' ' || corpoTexto === undefined) {
         res.status(400).json('Corpo de texto inválido');
         return;
       }
@@ -207,7 +211,7 @@ class TicketController {
         return;
       }
 
-      if (data_limite === '' || data_limite === ' ' || data_limite === undefined) {
+      if (dataLimite === '' || dataLimite === ' ' || dataLimite === undefined) {
         res.status(400).json('data_limite inválido');
         return;
       }
@@ -215,7 +219,7 @@ class TicketController {
       const checkIfTicket = await Ticket.checkIfinAcompanhamento(sub); // sub
 
       if (checkIfTicket) {
-        if (await Ticket.createTicketAcompanhamento(corpo_texto, sub, rae, eProfessor, data_limite)) {
+        if (await Ticket.createTicketAcompanhamento(corpoTexto, sub, rae, eProfessor, dataLimite)) {
           res.status(200).json('Ticket criado com sucesso.');
         } else {
           res.status(500).json('Erro ao criar Ticket.');
@@ -231,11 +235,12 @@ class TicketController {
   async newTicketFim(req, res) {
     try {
       const {
-        corpo_texto, sub, eProfessor, data_limite,
+        corpoTexto, sub, eProfessor, dataLimite,
       } = req.body;
-      const { tre } = req.files;
 
-      if (corpo_texto === '' || corpo_texto === ' ' || corpo_texto === undefined) {
+      const tre = req['files'].tre;
+
+      if (corpoTexto === '' || corpoTexto === ' ' || corpoTexto === undefined) {
         res.status(400).json('Corpo de texto inválido');
         return;
       }
@@ -255,7 +260,7 @@ class TicketController {
         return;
       }
 
-      if (data_limite === '' || data_limite === ' ' || data_limite === undefined) {
+      if (dataLimite === '' || dataLimite === ' ' || dataLimite === undefined) {
         res.status(400).json('data_limite inválido');
         return;
       }
@@ -263,7 +268,7 @@ class TicketController {
       const checkIfTicket = await Ticket.checkIfFim(sub); // sub
 
       if (checkIfTicket) {
-        if (await Ticket.createTicketFim(corpo_texto, sub, tre, eProfessor, data_limite)) {
+        if (await Ticket.createTicketFim(corpoTexto, sub, tre, eProfessor, dataLimite)) {
           res.status(200).json('Ticket criado com sucesso.');
         } else {
           res.status(500).json('Erro ao criar Ticket.');
