@@ -1,10 +1,9 @@
 const User = require('../models/User');
 
 class UserController {
-
   async index(req, res) {
     try {
-      var users = await User.findAll();
+      const users = await User.findAll();
       res.status(200).json(users);
     } catch (error) {
       res.status(500).json(error);
@@ -17,12 +16,12 @@ class UserController {
 
       if (sub === '' || sub === ' ' || sub === undefined) {
         res.status(400).json('Sub inválido');
-        return
+        return;
       }
 
       if (idToken === '' || idToken === ' ' || idToken === undefined) {
         res.status(400).json('Token inválido ');
-        return
+        return;
       }
 
       // Verifica se está cadastrado no banco de dados
@@ -38,7 +37,6 @@ class UserController {
       } else {
         res.status(404).json('Usuário não encontrado');
       }
-
     } catch (error) {
       res.status(500).json(error);
     }
@@ -46,31 +44,33 @@ class UserController {
 
   async newUser(req, res) {
     try {
-      const { name, email, picture, idToken, sub } = req.body;
+      const {
+        name, email, picture, idToken, sub,
+      } = req.body;
 
       if (name === '' || name === ' ' || name === undefined) {
-        res.status(400).json('Nome inválido')
-        return
+        res.status(400).json('Nome inválido');
+        return;
       }
 
       if (email === '' || email === ' ' || email === undefined) {
-        res.status(400).json('Email inválido')
-        return
+        res.status(400).json('Email inválido');
+        return;
       }
 
       if (picture === '' || picture === ' ' || picture === undefined) {
-        res.status(400).json('Imagem inválida')
-        return
+        res.status(400).json('Imagem inválida');
+        return;
       }
 
       if (idToken === '' || idToken === ' ' || idToken === undefined) {
-        res.status(400).json('Token inválido')
-        return
+        res.status(400).json('Token inválido');
+        return;
       }
 
       if (sub === '' || sub === ' ' || sub === undefined) {
-        res.status(400).json('Sub inválido')
-        return
+        res.status(400).json('Sub inválido');
+        return;
       }
 
       // Salvar no BD
@@ -79,69 +79,66 @@ class UserController {
       } else {
         res.status(500).json('Não foi possível cadastrar');
       }
-
     } catch (error) {
       res.status(500).json(error);
     }
   }
 
-  async setCourseProntuario(req, res){
-    try{
+  async setCourseProntuario(req, res) {
+    try {
       const { id_curso, prontuario, sub } = req.body;
 
       if (id_curso === '' || id_curso === ' ' || id_curso === undefined) {
-        res.status(400).json('Id inválido')
-        return
+        res.status(400).json('Id inválido');
+        return;
       }
 
       if (sub === '' || sub === ' ' || sub === undefined) {
-        res.status(400).json('Sub inválido')
-        return
+        res.status(400).json('Sub inválido');
+        return;
       }
 
       if (prontuario === '' || prontuario === ' ' || prontuario === undefined) {
-        res.status(400).json('prontuario inválido')
-        return
+        res.status(400).json('prontuario inválido');
+        return;
       }
 
-      var user = await User.findBySub(sub);
+      const user = await User.findBySub(sub);
 
       if (user) {
-        if (await User.checarProntuario(prontuario, sub)){
+        if (await User.checarProntuario(prontuario, sub)) {
           if (await User.saveIdCursoProntuario(id_curso, prontuario, sub)) {
             res.status(200).json(user);
           } else {
             res.status(500).json('Erro ao salvar id curso');
           }
-        } else{
+        } else {
           res.status(500).json('Prontuário já existente.');
         }
       } else {
         res.status(404).json('Usuário não encontrado');
       }
-    } catch(error){
+    } catch (error) {
       res.status(500).json(error);
     }
-
   }
 
   async user(req, res) {
     try {
       const { sub } = req.body;
-      console.log(sub)
+      console.log(sub);
       if (sub === '' || sub === ' ' || sub === undefined) {
-        res.status(400).json('Sub inválido')
-        return
+        res.status(400).json('Sub inválido');
+        return;
       }
 
-      var user = await User.findBySub(sub);
+      const user = await User.findBySub(sub);
 
       if (user) {
         res.status(200).json(user);
       } else {
         res.status(404).json('Usuário não encontrado');
       }
-
     } catch (error) {
       res.status(500).json(error);
     }
@@ -149,7 +146,7 @@ class UserController {
 
   async users(req, res) {
     try {
-      var users = await User.findAll();
+      const users = await User.findAll();
       res.status(200).json(users);
     } catch (error) {
       res.status(500).json(error);
@@ -158,15 +155,13 @@ class UserController {
 
   async checkOrientadoresAmount(req, res) {
     try {
-      const { sub } = req.body
-      var users = await User.checkAmount(sub);
+      const { sub } = req.body;
+      const users = await User.checkAmount(sub);
       res.status(200).json(users);
     } catch (error) {
       res.status(500).json(error);
     }
   }
-
-
 }
 
 module.exports = new UserController();

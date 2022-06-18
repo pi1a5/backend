@@ -1,10 +1,9 @@
-const knex = require("../database/connection");
+const knex = require('../database/connection');
 
 class User {
-
   async saveIdToken(idToken) {
     try {
-      await knex.update({ idToken: idToken }).table("usuario");
+      await knex.update({ idToken }).table('usuario');
       return true;
     } catch (error) {
       console.log(error);
@@ -14,7 +13,7 @@ class User {
 
   async saveIdCursoProntuario(id_curso, prontuario, sub) {
     try {
-      await knex.update({ id_curso: id_curso, prontuario: prontuario }).table("usuario").where({ sub: sub});
+      await knex.update({ id_curso, prontuario }).table('usuario').where({ sub });
       return true;
     } catch (error) {
       console.log(error);
@@ -22,22 +21,24 @@ class User {
     }
   }
 
-  async checarProntuario(prontuario, sub){
-    var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-    var all_prontuario = await knex.select("prontuario").table("usuario").whereNot({id: id.id})
-    for (var i in all_prontuario){
-      console.log("obj: " + JSON.stringify(all_prontuario[i]))
-      console.log("obj2: " + all_prontuario[i].prontuario)
-      if(all_prontuario[i].prontuario == prontuario){
+  async checarProntuario(prontuario, sub) {
+    const id = await knex.select(['id']).table('usuario').where({ sub }).first();
+    const all_prontuario = await knex.select('prontuario').table('usuario').whereNot({ id: id.id });
+    for (const i in all_prontuario) {
+      console.log(`obj: ${JSON.stringify(all_prontuario[i])}`);
+      console.log(`obj2: ${all_prontuario[i].prontuario}`);
+      if (all_prontuario[i].prontuario == prontuario) {
         return false;
       }
-    }   
+    }
     return true;
   }
 
   async register(name, email, picture, idToken, sub) {
     try {
-      await knex.insert({ id_curso: null, nome: name, email: email, foto: picture, idToken: idToken, sub: sub }).table("usuario");
+      await knex.insert({
+        id_curso: null, nome: name, email, foto: picture, idToken, sub,
+      }).table('usuario');
       return true;
     } catch (error) {
       console.log(error);
@@ -47,13 +48,12 @@ class User {
 
   async findByEmail(email) {
     try {
-      var result = await knex.select(['email', 'nome', 'foto']).table("usuario").where({ email: email });
+      const result = await knex.select(['email', 'nome', 'foto']).table('usuario').where({ email });
 
       if (result.length > 0) {
         return result[0];
-      } else {
-        return undefined;
       }
+      return undefined;
     } catch (error) {
       console.log(error);
       return undefined;
@@ -62,14 +62,12 @@ class User {
 
   async findBySub(sub) {
     try {
-      var result = await knex.select(['email', 'nome', 'foto']).table("usuario").where({ sub: sub });
+      const result = await knex.select(['email', 'nome', 'foto']).table('usuario').where({ sub });
 
       if (result.length > 0) {
         return result[0];
-      } else {
-        return undefined;
       }
-
+      return undefined;
     } catch (error) {
       console.log(error);
       return undefined;
@@ -78,14 +76,12 @@ class User {
 
   async findByToken(idToken) {
     try {
-      var result = await knex.select(['email', 'nome', 'foto']).table("usuario").where({ idToken: idToken });
+      const result = await knex.select(['email', 'nome', 'foto']).table('usuario').where({ idToken });
 
       if (result.length > 0) {
         return result[0];
-      } else {
-        return undefined;
       }
-
+      return undefined;
     } catch (error) {
       console.log(error);
       return undefined;
@@ -94,7 +90,7 @@ class User {
 
   async findAll() {
     try {
-      var result = await knex.select('*').table("usuario").orderBy('id', 'asc');
+      const result = await knex.select('*').table('usuario').orderBy('id', 'asc');
       return result;
     } catch (error) {
       console.log(error);
@@ -104,35 +100,32 @@ class User {
 
   async checkAmount(sub) {
     try {
-      var id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
-      var id_curso = await knex.select(['id_curso']).table('usuario').where({ sub: sub }).first();
-      var colegas = await knex.distinct().select('id', 'nome').table('usuario').whereNot('email', 'like', '%@aluno.ifsp.edu.br%').where({'id_curso': id_curso.id_curso})
-      for (var k in colegas){
-        var data = await knex.distinct().select('id_usuario_aluno').table('ticket').where({'id_usuario_orientador': colegas[k].id})
-        if(data.length > 0){
+      const id = await knex.select(['id']).table('usuario').where({ sub }).first();
+      const id_curso = await knex.select(['id_curso']).table('usuario').where({ sub }).first();
+      const colegas = await knex.distinct().select('id', 'nome').table('usuario').whereNot('email', 'like', '%@aluno.ifsp.edu.br%')
+        .where({ id_curso: id_curso.id_curso });
+      for (const k in colegas) {
+        const data = await knex.distinct().select('id_usuario_aluno').table('ticket').where({ id_usuario_orientador: colegas[k].id });
+        if (data.length > 0) {
           var count = 0;
-          for (var y in data){
-            var processo = await knex.select('pe.situação').from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({'t.id_usuario_aluno': data[y].id_usuario_aluno})
-            if(processo[0].situação != false){
-              count += 1
+          for (const y in data) {
+            const processo = await knex.select('pe.situação').from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({ 't.id_usuario_aluno': data[y].id_usuario_aluno });
+            if (processo[0].situação != false) {
+              count += 1;
             }
           }
           colegas[k].quantidade = count;
-        } else{
+        } else {
           count = 0;
           colegas[k].quantidade = count;
         }
-
       }
-      return colegas.sort(function(a, b) {
-        return parseFloat(b.quantidade) - parseFloat(a.quantidade);
-      });
+      return colegas.sort((a, b) => parseFloat(b.quantidade) - parseFloat(a.quantidade));
     } catch (error) {
       console.log(error);
       return [];
     }
   }
-
 
   // async findById(id) {
   //   try {
@@ -162,7 +155,6 @@ class User {
   //     return false;
   //   }
   // }
-
 }
 
 module.exports = new User();

@@ -10,20 +10,20 @@
 //             region: environment.REGION
 //           }
 //         );
-    
+
 //         return bucket;
 //       }
-    
+
 //       async uploadFile(file) {
 //         var KEY = `${this.FOLDER}/${new Date().getTime()}${file.name}`
-    
+
 //         const params = {
 //           Bucket: this.BUCKET,
 //           Key: KEY,
 //           Body: file,
 //           ACL: 'public-read'
 //         };
-    
+
 //         try {
 //           const stored = await this.getS3Bucket().upload(params).promise();
 //           // console.log(stored);
@@ -32,7 +32,7 @@
 //           console.log(error);
 //           return false;
 //         }
-    
+
 //       }
 
 //     // `https://s3-sa-east-1.amazonaws.com/pi1a5/${KEY}`  retorno do upload file é o key

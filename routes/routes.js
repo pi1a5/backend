@@ -1,13 +1,14 @@
-var express = require("express");
-const CourseController = require("../controllers/CourseController");
-const DocumentController = require("../controllers/DocumentController");
-const EstagioController = require("../controllers/EstagioController");
-var router = express.Router();
-const HomeController = require("../controllers/HomeController");
-const TicketController = require("../controllers/TicketController");
-const UserController = require("../controllers/UserController");
-const HeaderMiddleware = require("../middleware/httpHeaders");
-const Ticket = require("../models/Ticket");
+const express = require('express');
+const CourseController = require('../controllers/CourseController');
+const DocumentController = require('../controllers/DocumentController');
+const EstagioController = require('../controllers/EstagioController');
+
+const router = express.Router();
+const HomeController = require('../controllers/HomeController');
+const TicketController = require('../controllers/TicketController');
+const UserController = require('../controllers/UserController');
+const HeaderMiddleware = require('../middleware/httpHeaders');
+const Ticket = require('../models/Ticket');
 
 router.get('/', HeaderMiddleware, HomeController.index);
 
@@ -19,7 +20,6 @@ router.post('/api/checkOrientadoresAmount', HeaderMiddleware, UserController.che
 
 // Para Curso
 router.post('/api/setCourseProntuario', HeaderMiddleware, UserController.setCourseProntuario);
-
 
 // Para Ticket Aluno
 router.post('/api/newTicketInicio', HeaderMiddleware, TicketController.newTicketInicio);
@@ -33,7 +33,7 @@ router.post('/api/checkIfFinalizou', HeaderMiddleware, TicketController.checkIfF
 router.post('/api/getTicketsWithoutSupervisor', HeaderMiddleware, TicketController.getTicketsWithoutSupervisor);
 router.post('/api/getTicketsWithSupervisor', HeaderMiddleware, TicketController.getTicketsWithSupervisor);
 router.post('/api/getClosedTicketsWithSupervisor', HeaderMiddleware, TicketController.getClosedTicketsWithSupervisor);
-router.post('/api/feedbackTicket', HeaderMiddleware, TicketController.feedbackTicket)
+router.post('/api/feedbackTicket', HeaderMiddleware, TicketController.feedbackTicket);
 // router.post('/api/getPdfUrl', TicketController.getPdfUrl);
 
 // Para teste
@@ -46,6 +46,5 @@ router.get('/api/estagios', HeaderMiddleware, EstagioController.estagios);
 router.get('/api/limparBanco', HeaderMiddleware, EstagioController.limparBanco);
 
 router.post('/api/documents', HeaderMiddleware, DocumentController.documents);
-
 
 module.exports = router;

@@ -1,22 +1,21 @@
 const Estagio = require('../models/Estagio');
 
 class EstagioController {
-
   async estagios(req, res) {
     try {
-      var estagio = await Estagio.findAll();
+      const estagio = await Estagio.findAll();
       res.status(200).json(estagio);
     } catch (error) {
       res.status(500).json(error);
     }
   }
 
-  async limparBanco(req, res){
+  async limparBanco(req, res) {
     try {
-      var limpar = await Estagio.limpar();
-      if(limpar){
+      const limpar = await Estagio.limpar();
+      if (limpar) {
         res.status(200).json(limpar);
-      } else{
+      } else {
         res.status(404).json(limpar);
       }
     } catch (error) {

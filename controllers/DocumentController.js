@@ -1,9 +1,6 @@
 const Document = require('../models/Document');
 
-
-
 class DocumentController {
-
   async documents(req, res) {
     try {
       var document = await Document.findAll();
@@ -13,19 +10,19 @@ class DocumentController {
     }
   }
 
-  async getDocumentbyTicket(req, res){
-    try{
+  async getDocumentbyTicket(req, res) {
+    try {
       const { id_ticket } = req.body;
 
       if (id_ticket === '' || id_ticket === ' ' || id_ticket === undefined) {
         res.status(400).json('Id_ticket inválido');
-        return
+        return;
       }
 
       var document = await Document.findByTicketId(id_ticket);
 
-      if (document){
-        res.status(200).json(document);      
+      if (document) {
+        res.status(200).json(document);
       } else {
         res.status(500).json('Erro ao encontrar documento.');
       }

@@ -1,8 +1,7 @@
 class HomeController {
-
   index(req, res) {
-    res.send('Conectou-se com a API')
+    res.send('Conectou-se com a API');
   }
 }
 
-module.exports = new HomeController()
+module.exports = new HomeController();
