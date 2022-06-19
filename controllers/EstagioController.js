@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 const Estagio = require('../models/Estagio');
 
 class EstagioController {

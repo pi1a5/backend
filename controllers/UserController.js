@@ -30,7 +30,7 @@ class UserController {
 
       if (user) {
         // Salva id token gerado na autenticação
-        if (await User.saveIdToken(idToken)) {
+        if (await User.saveIdToken(idToken, sub)) {
           res.status(200).json(user);
         } else {
           res.status(500).json('Erro ao salvar id token');

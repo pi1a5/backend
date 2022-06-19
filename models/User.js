@@ -7,9 +7,9 @@
 const knex = require('../database/connection');
 
 class User {
-  async saveIdToken(idToken) {
+  async saveIdToken(idToken, sub) {
     try {
-      await knex.update({ idToken }).table('usuario');
+      await knex.update({ idToken }).table('usuario').where({ sub });
       return true;
     } catch (error) {
       console.log(error);

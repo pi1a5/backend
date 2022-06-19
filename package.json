@@ -7,7 +7,7 @@
     "start": "node index.js",
     "nodemon index.js": "node index.js",
     "deploy_heroku": "git add . && git commit -m heroku && git push heroku master",
-    "test": "node --inspect ./node_modules/jest/bin/jest.js --runInBand --detectOpenHandles"
+    "test": "node --inspect ./node_modules/jest/bin/jest.js --runInBand --detectOpenHandles --forceExit"
   },
   "keywords": [],
   "author": "",
