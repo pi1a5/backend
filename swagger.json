@@ -1,0 +1,30 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "API Gestão de Estágios",
+      "description": "",
+      "version": "1.0"
+    },
+    "produces": ["application/json"],
+    "paths": {
+      "/api/users": {
+        "get": {
+          "summary": "Retorna todos os usuários do sistema.",
+          "x-swagger-router-controller": "home",
+          "operationId": "index",
+          "tags": ["/user"],
+          "description": "Listar todos os usuários",
+          "parameters": [{
+            "name": "users",
+            "in": "formData",
+            "type": "array",
+            "collectionFormat": "multi",
+            "items": {
+              "type": "integer"
+             }
+          }],
+          "responses": {}
+        }
+      }
+    }
+ }

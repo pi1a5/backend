@@ -1,4 +1,6 @@
 const express = require('express');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('../swagger.json');
 const CourseController = require('../controllers/CourseController');
 const DocumentController = require('../controllers/DocumentController');
 const EstagioController = require('../controllers/EstagioController');
@@ -8,6 +10,13 @@ const UserController = require('../controllers/UserController');
 const HeaderMiddleware = require('../middleware/httpHeaders');
 
 const router = express.Router();
+
+const options = {
+  explorer: true,
+};
+
+router.use('/api-docs', swaggerUi.serve);
+router.get('/api-docs', swaggerUi.setup(swaggerDocument, options));
 
 router.get('/', HeaderMiddleware, HomeController.index);
 
