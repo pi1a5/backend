@@ -5,25 +5,149 @@
       "description": "",
       "version": "1.0"
     },
+    "consumes": ["application/json"],
     "produces": ["application/json"],
     "paths": {
       "/api/users": {
         "get": {
           "summary": "Retorna todos os usuários do sistema.",
-          "x-swagger-router-controller": "home",
-          "operationId": "index",
-          "tags": ["/user"],
+          "x-swagger-router-controller": "/controllers/UserController",
+          "operationId": "0",
+          "tags": ["Usuário"],
           "description": "Listar todos os usuários",
-          "parameters": [{
-            "name": "users",
-            "in": "formData",
-            "type": "array",
-            "collectionFormat": "multi",
-            "items": {
-              "type": "integer"
-             }
-          }],
-          "responses": {}
+          "responses": { "200": {
+                          "description": "Usuários encontrados"
+                        }}
+        }
+      },
+      "/api/user": {
+        "post": {
+          "summary": "Retorna um usuário específico do sistema.",
+          "x-swagger-router-controller": "home",
+          "operationId": "1",
+          "tags": ["Usuário"],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "Identificador da Google para retornar um usuário.",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/onlySub"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Usuário encontrado"
+            },
+            "404": {
+              "description": "Usuário não encontrado"
+            }
+          }
+        }
+      },
+      "/api/newUser": {
+        "post": {
+          "summary": "Retorna um usuário específico do sistema.",
+          "x-swagger-router-controller": "home",
+          "operationId": "2",
+          "tags": ["Usuário"],
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "description": "Atributos necessários para criar um usuário novo.",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/newUser"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Usuário cadastrado"
+            },
+            "404": {
+              "description": "Erro ao cadastrar usuário"
+            }
+          }
+        }
+      },
+      "/api/tickets": {
+        "get": {
+          "summary": "Retorna todos os tickets do sistema.",
+          "x-swagger-router-controller": "/controllers/UserController",
+          "operationId": "3",
+          "tags": ["Tickets"],
+          "description": "Listar todos os tickets",
+          "responses": { "200": {
+                          "description": "Tickets encontrados"
+                        }}
+        }
+      },
+      "/api/courses": {
+        "get": {
+          "summary": "Retorna todos os cursos do sistema.",
+          "x-swagger-router-controller": "/controllers/UserController",
+          "operationId": "4",
+          "tags": ["Cursos"],
+          "description": "Listar todos os cursos",
+          "responses": { "200": {
+                          "description": "Cursos encontrados"
+                        }}
+        }
+      },
+      "/api/estagios": {
+        "get": {
+          "summary": "Retorna todos os processos de estágio do sistema.",
+          "x-swagger-router-controller": "/controllers/UserController",
+          "operationId": "4",
+          "tags": ["Estágio"],
+          "description": "Listar todos os estágios",
+          "responses": { "200": {
+                          "description": "Estágios encontrados"
+                        }}
+        }
+      }
+    },
+    "definitions": {
+      "onlySub": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "sub": {
+            "type": "string"
+          }
+        }
+      },
+      "newUser": {
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "picture",
+          "idToken",
+          "sub"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "picture": {
+            "type": "string"
+          },
+          "idToken": {
+            "type": "string"
+          },
+          "sub": {
+            "type": "string"
+          }
         }
       }
     }

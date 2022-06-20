@@ -17,9 +17,9 @@ class User {
     }
   }
 
-  async saveIdCursoProntuario(idCurso, prontuario, sub) {
+  async saveIdCursoProntuario(idCurso, prontuario_, sub) {
     try {
-      await knex.update({ idCurso, prontuario }).table('usuario').where({ sub });
+      await knex.update({ id_curso: idCurso, prontuario: prontuario_ }).table('usuario').where({ sub });
       return true;
     } catch (error) {
       console.log(error);

@@ -76,7 +76,7 @@ class UserController {
 
       // Salvar no BD
       if (await User.register(name, email, picture, idToken, sub)) {
-        res.status(201).json('Usuário cadastrado');
+        res.status(200).json('Usuário cadastrado');
       } else {
         res.status(500).json('Não foi possível cadastrar');
       }
