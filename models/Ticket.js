@@ -120,12 +120,12 @@ class Ticket {
           if (result[0].feedback != null && result[0].eAceito === false) { // se o ticket foi recusado
             return true;
           }
-          return false;
+          return {result: false, message: "erro1"};
         } // se retornar mais do que um
         if (result[tamanho - 1].id_tipo_estagios === 0 && result[tamanho - 1].feedback != null && result[tamanho - 1].eAceito === false) { // se o ultimo ticket desse usuário for sobre início de estágio e for recusado
           return true;
         }
-        return false;
+        return {result: false, message: "erro2"};
       }
       return true;
     } catch (error) {

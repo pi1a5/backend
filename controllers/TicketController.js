@@ -169,12 +169,12 @@ class TicketController {
       }
 
       const checkIfTicket = await Ticket.checkIfHasStarted(sub); // sub
-
-      if (checkIfTicket) {
+      
+      if (checkIfTicket.result) {
         if (await Ticket.createTicketInicio(corpoTexto, dataLimite, sub, tce, pa, eProfessor)) {
           res.status(200).json('Ticket criado com sucesso.');
         } else {
-          res.status(500).json('Erro ao criar Ticket.');
+          res.status(500).json(checkIfTicket.message);
         }
       } else {
         res.status(500).json('Usuário já iniciou estágio.');
