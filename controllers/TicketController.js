@@ -177,7 +177,7 @@ class TicketController {
           res.status(500).json(checkIfTicket.message);
         }
       } else {
-        res.status(500).json('Usuário já iniciou estágio.');
+        res.status(500).json(checkIfTicket.message);
       }
     } catch (error) {
       res.status(500).json(error);
