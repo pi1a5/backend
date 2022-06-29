@@ -324,7 +324,7 @@ class Ticket {
         }
       }
       await knex.update({
-        feedback: feedback, eAceito: eAceito, id_usuario_orientador: id.id, dataFechado: dataFechado,
+        feedback: feedback, eAceito: eAceito, id_usuario_orientador: id.id, data_fechado: dataFechado,
       }).table('ticket').where({ id: idTicket });
       return true;
     } catch (error) {
