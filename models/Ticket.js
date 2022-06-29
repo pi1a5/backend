@@ -240,7 +240,7 @@ class Ticket {
           await knex.insert({
             id_ticket: idTicket.id, arquivo: key2, tipo: 'Plano de Atividades', eProfessor,
           }).table('documento');
-          return {result: true, message: "Ticket criado com sucesso."};
+          return {result: true, message: "Ticket criado com sucesso"};
         }
       } else {
         return {result: false, message: "Usuário já tem processo"};
@@ -324,7 +324,7 @@ class Ticket {
         }
       }
       await knex.update({
-        feedback, eAceito, id_usuario_orientador: id.id, dataFechado,
+        feedback: feedback, eAceito: eAceito, id_usuario_orientador: id.id, dataFechado: dataFechado,
       }).table('ticket').where({ id: idTicket });
       return true;
     } catch (error) {
