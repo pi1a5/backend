@@ -169,6 +169,8 @@ class TicketController {
       }
 
       const checkIfTicket = await Ticket.checkIfHasStarted(sub); // sub
+
+      console.log(checkIfTicket.result, checkIfTicket.message);
       
       if (checkIfTicket.result) {
         if (await Ticket.createTicketInicio(corpoTexto, dataLimite, sub, tce, pa, eProfessor)) {
