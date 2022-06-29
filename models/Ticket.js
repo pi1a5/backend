@@ -218,7 +218,7 @@ class Ticket {
       } else if (idExiste.length > 0) {
         const idProcessoEstagio = idExiste;
       } else {
-        return false;
+        return {result: false, message: "Usuário já tem processo"};
       }
 
       if (idProcessoEstagio) {
@@ -243,7 +243,7 @@ class Ticket {
       }
     } catch (error) {
       console.log(error);
-      return false;
+      return {result: false, message: "Usuário já tem processo"};
     }
     return false;
   }

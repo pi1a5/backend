@@ -174,10 +174,11 @@ class TicketController {
       console.log(checkIfTicket.result, checkIfTicket.message);
       
       if (checkIfTicket.result) {
-        if (await Ticket.createTicketInicio(corpoTexto, dataLimite, sub, tce, pa, eProfessor)) {
-          res.status(200).json('Ticket criado com sucesso.');
+        const criarTicket = await Ticket.createTicketInicio(corpoTexto, dataLimite, sub, tce, pa, eProfessor)
+        if (criarTicket.result) {
+          res.status(200).json(criarTicket.message);
         } else {
-          res.status(500).json(checkIfTicket.message);
+          res.status(500).json(criarTicket.message);
         }
       } else {
         res.status(500).json(checkIfTicket.message);
