@@ -311,7 +311,7 @@ class Ticket {
   async updateFeedback(sub, idTicket, feedback, eAceito) {
     try {
       const dataFechado = new Date();
-      const id = await knex.select(['id']).table('usuario').where({ sub }).first();
+      const id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
       if (eAceito === true) {
         const idTipoEstagios = await knex.select(['pe.id_tipo_estagios', 'pe.id', 't.tipo_estagios']).from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({ 't.id': idTicket })
           .first();
