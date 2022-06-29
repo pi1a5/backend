@@ -121,20 +121,20 @@ class Ticket {
       if (tamanho > 0) { // se retornar 1 ticket ou mais
         if (tamanho === 1) { // se fora apenas um ticket
           if (result[0].feedback != null && result[0].eAceito === false) { // se o ticket foi recusado
-            return true;
+            return {result: true, message: "ok"};
           }
           return {result: false, message: "erro1"};
         } // se retornar mais do que um
         if (result[tamanho - 1].id_tipo_estagios === 0 && result[tamanho - 1].feedback != null && result[tamanho - 1].eAceito === false) { // se o ultimo ticket desse usuário for sobre início de estágio e for recusado
-          return true;
+          return {result: true, message: "ok"};
         }
         return {result: false, message: "erro2"};
       } else{
-        return true;
+        return {result: true, message: "ok"};
       }
     } catch (error) {
       console.log(error);
-      return false;
+      return {result: false, message: "erro3"};
     }
   }
 
@@ -236,7 +236,7 @@ class Ticket {
           await knex.insert({
             id_ticket: idTicket.id, arquivo: key2, tipo: 'Plano de Atividades', eProfessor,
           }).table('documento');
-          return true;
+          return {result: true, message: "Ticket criado com sucesso."};
         }
       } else {
         return {result: false, message: "Usuário já tem processo"};
