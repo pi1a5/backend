@@ -13,10 +13,12 @@ const router = express.Router();
 
 const options = {
   explorer: true,
+  defaultModelsExpandDepth: -1,
+  customCss: 'body { background-color: yellow; }',
 };
 
 router.use('/api-docs', swaggerUi.serve);
-router.get('/api-docs', swaggerUi.setup(swaggerDocument, options));
+router.get('/api-docs', swaggerUi.setup(swaggerDocument, false, options));
 
 router.get('/', HeaderMiddleware, HomeController.index);
 

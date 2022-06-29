@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
@@ -23,10 +24,15 @@ class Ticket {
   async getAllbyUserId(sub) {
     try {
       const id = await knex.select(['id']).table('usuario').where({ sub }).first();
+
+      console.log(id);
+
       const result = await knex.select(['t.id', 't.id_usuario_aluno', 't.corpo_texto', 't.data_criado', 't.data_fechado', 't.data_limite', 't.feedback', 't.id_processo_estagio', 't.id_usuario_orientador', 't.eAceito', 't.tipo_estagios', 'u.nome', 'u.email', 'u.foto', 'u.sub', 'u.idToken', 'u.prontuario', 'pe.id_tipo_estagios', 'pe.situação']).from('ticket AS t').leftJoin('usuario AS u', 'u.id', 't.id_usuario_aluno').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio')
         .leftJoin('tipo_estagios AS te', 'te.id', 'pe.id_tipo_estagios')
         .where({ 't.id_usuario_aluno': id.id })
         .orderBy('t.id', 'desc');
+
+      console.log(result);
       if (result.length > 0) { // se retornar 1 ticket ou mais
         for (const i in result) {
           result[i].arquivos = await this.getPdfUrl(result[i].id);
@@ -121,20 +127,19 @@ class Ticket {
       if (tamanho > 0) { // se retornar 1 ticket ou mais
         if (tamanho === 1) { // se fora apenas um ticket
           if (result[0].feedback != null && result[0].eAceito === false) { // se o ticket foi recusado
-            return {result: true, message: "ok"};
+            return { result: true, message: 'ok' };
           }
-          return {result: false, message: "erro1"};
+          return { result: false, message: 'erro1' };
         } // se retornar mais do que um
         if (result[tamanho - 1].id_tipo_estagios === 0 && result[tamanho - 1].feedback != null && result[tamanho - 1].eAceito === false) { // se o ultimo ticket desse usuário for sobre início de estágio e for recusado
-          return {result: true, message: "ok"};
+          return { result: true, message: 'ok' };
         }
-        return {result: false, message: "erro2"};
-      } else{
-        return {result: true, message: "ok"};
+        return { result: false, message: 'erro2' };
       }
+      return { result: true, message: 'ok' };
     } catch (error) {
       console.log(error);
-      return {result: false, message: "erro3"};
+      return { result: false, message: 'erro3' };
     }
   }
 
@@ -216,13 +221,13 @@ class Ticket {
         var idProcessoEstagio = await knex.returning('id AS id_processo_estagio').insert({
           id_tipo_estagios: 0, situação: true, data_criado: dataCriado, data_fechado: null,
         }).table('processo_estagio');
-        console.log("b");
+        console.log('b');
       } else if (idExiste.length > 0) {
         var idProcessoEstagio = idExiste;
-        console.log("c");
+        console.log('c');
       } else {
         var idProcessoEstagio = false;
-        console.log("d");
+        console.log('d');
       }
 
       if (idProcessoEstagio) {
@@ -240,14 +245,14 @@ class Ticket {
           await knex.insert({
             id_ticket: idTicket.id, arquivo: key2, tipo: 'Plano de Atividades', eProfessor,
           }).table('documento');
-          return {result: true, message: "Ticket criado com sucesso"};
+          return { result: true, message: 'Ticket criado com sucesso' };
         }
       } else {
-        return {result: false, message: "Usuário já tem processo"};
+        return { result: false, message: 'Usuário já tem processo' };
       }
     } catch (error) {
       console.log(error);
-      return {result: false, message: "Erro na criação do ticket"};
+      return { result: false, message: 'Erro na criação do ticket' };
     }
     return false;
   }
@@ -269,7 +274,7 @@ class Ticket {
           const key = await Aws.uploadFile(doc, sub);
 
           await knex.insert({
-            id_ticket: idTicket.id, arquivo: key, tipo: 'Relatório de Atividades de Estágio', eProfessor: eProfessor,
+            id_ticket: idTicket.id, arquivo: key, tipo: 'Relatório de Atividades de Estágio', eProfessor,
           }).table('documento');
           return true;
         }
@@ -296,7 +301,7 @@ class Ticket {
           const key = await Aws.uploadFile(doc, sub);
 
           await knex.insert({
-            id_ticket: idTicket.id, arquivo: key, tipo: 'Termo de Realização de Estágio', eProfessor: eProfessor,
+            id_ticket: idTicket.id, arquivo: key, tipo: 'Termo de Realização de Estágio', eProfessor,
           }).table('documento');
           return true;
         }
@@ -311,7 +316,7 @@ class Ticket {
   async updateFeedback(sub, idTicket, feedback, eAceito) {
     try {
       const dataFechado = new Date();
-      const id = await knex.select(['id']).table('usuario').where({ sub: sub }).first();
+      const id = await knex.select(['id']).table('usuario').where({ sub }).first();
       if (eAceito === true) {
         const idTipoEstagios = await knex.select(['pe.id_tipo_estagios', 'pe.id', 't.tipo_estagios']).from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({ 't.id': idTicket })
           .first();
@@ -324,7 +329,7 @@ class Ticket {
         }
       }
       await knex.update({
-        feedback: feedback, eAceito: eAceito, id_usuario_orientador: id.id, data_fechado: dataFechado,
+        feedback, eAceito, id_usuario_orientador: id.id, data_fechado: dataFechado,
       }).table('ticket').where({ id: idTicket });
       return true;
     } catch (error) {
