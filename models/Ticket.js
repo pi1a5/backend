@@ -260,7 +260,7 @@ class Ticket {
       const idProcessoEstagio = await knex.select('t.id_processo_estagio', 't.id_usuario_orientador').from('ticket AS t').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').whereNotNull('t.feedback');
       if (idProcessoEstagio) {
         if (await knex.insert({
-          id_usuario_aluno: id.id, corpoTexto, dataCriado, data_fechado: null, dataLimite, feedback: null, id_processo_estagio: idProcessoEstagio[0].id_processo_estagio, id_usuario_orientador: idProcessoEstagio[0].id_usuario_orientador, tipo_estagios: 'Acompanhamento',
+          id_usuario_aluno: id.id, corpo_texto: corpoTexto, data_criado: dataCriado, data_fechado: null, data_limite: dataLimite, feedback: null, id_processo_estagio: idProcessoEstagio[0].id_processo_estagio, id_usuario_orientador: idProcessoEstagio[0].id_usuario_orientador, tipo_estagios: 'Acompanhamento',
         }).table('ticket')) {
           const idTicket = await knex.select(['id']).table('ticket').where({ feedback: null, id_usuario_aluno: id.id }).first();
 
@@ -269,7 +269,7 @@ class Ticket {
           const key = await Aws.uploadFile(doc, sub);
 
           await knex.insert({
-            id_ticket: idTicket.id, arquivo: key, tipo: 'Relatório de Atividades de Estágio', eProfessor,
+            id_ticket: idTicket.id, arquivo: key, tipo: 'Relatório de Atividades de Estágio', eProfessor: eProfessor,
           }).table('documento');
           return true;
         }
@@ -289,14 +289,14 @@ class Ticket {
       const idProcessoEstagio = await knex.select('t.id_processo_estagio', 't.id_usuario_orientador').from('ticket AS t').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').whereNotNull('t.feedback');
       if (idProcessoEstagio) {
         if (await knex.insert({
-          id_usuario_aluno: id.id, corpoTexto, dataCriado, data_fechado: null, dataLimite, feedback: null, id_processo_estagio: idProcessoEstagio[0].id_processo_estagio, id_usuario_orientador: idProcessoEstagio[0].id_usuario_orientador, tipo_estagios: 'Finalização de Estágio',
+          id_usuario_aluno: id.id, corpo_texto: corpoTexto, data_criado: dataCriado, data_fechado: null, data_limite: dataLimite, feedback: null, id_processo_estagio: idProcessoEstagio[0].id_processo_estagio, id_usuario_orientador: idProcessoEstagio[0].id_usuario_orientador, tipo_estagios: 'Finalização de Estágio',
         }).table('ticket')) {
           const idTicket = await knex.select(['id']).table('ticket').where({ feedback: null, id_usuario_aluno: id.id }).first();
 
           const key = await Aws.uploadFile(doc, sub);
 
           await knex.insert({
-            id_ticket: idTicket.id, arquivo: key, tipo: 'Termo de Realização de Estágio', eProfessor,
+            id_ticket: idTicket.id, arquivo: key, tipo: 'Termo de Realização de Estágio', eProfessor: eProfessor,
           }).table('documento');
           return true;
         }
