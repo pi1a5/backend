@@ -170,6 +170,7 @@ class TicketController {
 
       const checkIfTicket = await Ticket.checkIfHasStarted(sub); // sub
 
+      console.log(checkIfTicket);
       console.log(checkIfTicket.result, checkIfTicket.message);
       
       if (checkIfTicket.result) {

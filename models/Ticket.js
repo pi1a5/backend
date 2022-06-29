@@ -115,6 +115,9 @@ class Ticket {
       const result = await knex.select(['t.id', 't.feedback', 't.eAceito', 'pe.id_tipo_estagios']).from('ticket AS t').leftJoin('processo_estagio as pe', 'pe.id', 't.id_processo_estagio').where({ 't.id_usuario_aluno': id.id })
         .orderBy('id', 'asc');
       const tamanho = result.length;
+
+      console.log(tamanho);
+
       if (tamanho > 0) { // se retornar 1 ticket ou mais
         if (tamanho === 1) { // se fora apenas um ticket
           if (result[0].feedback != null && result[0].eAceito === false) { // se o ticket foi recusado
@@ -126,8 +129,9 @@ class Ticket {
           return true;
         }
         return {result: false, message: "erro2"};
+      } else{
+        return true;
       }
-      return true;
     } catch (error) {
       console.log(error);
       return false;
