@@ -212,7 +212,9 @@ class Ticket {
       const id = await knex.select(['id']).table('usuario').where({ sub }).first();
       const idExiste = await knex.select(['id_processo_estagio']).table('ticket').where({ id_usuario_aluno: id.id });
       const idProcessoEstagio = false;
-      
+
+      console.log("Antes: " + idProcessoEstagio);
+
       if (idExiste.length === 0) { // se usuario não tem processo
         idProcessoEstagio = await knex.returning('id AS id_processo_estagio').insert({
           id_tipo_estagios: 0, situação: true, data_criado: dataCriado, data_fechado: null,
@@ -221,6 +223,7 @@ class Ticket {
         idProcessoEstagio = idExiste;
       }
 
+      console.log("Depois: " + idProcessoEstagio);
 
       if (idProcessoEstagio) {
         if (await knex.insert({
