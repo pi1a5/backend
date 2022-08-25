@@ -19,10 +19,10 @@ class Course {
   async findAll() {
     try {
       const result = await knex.select('*').table('curso');
-      return result;
+      return { response: result, status: 200 };
     } catch (error) {
       console.log(error);
-      return [];
+      return { response: 'Erro ao encontrar cursos', status: 400 };
     }
   }
 }

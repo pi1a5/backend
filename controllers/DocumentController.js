@@ -5,30 +5,9 @@ class DocumentController {
   async documents(req, res) {
     try {
       const document = await Document.findAll();
-      res.status(200).json(document);
+      res.status(document.status).json(document.response);
     } catch (error) {
-      res.status(500).json(document);
-    }
-  }
-
-  async getDocumentbyTicket(req, res) {
-    try {
-      const { idTicket } = req.body;
-
-      if (idTicket === '' || idTicket === ' ' || idTicket === undefined) {
-        res.status(400).json('Id_ticket inválido');
-        return;
-      }
-
-      const document = await Document.findByTicketId(idTicket);
-
-      if (document) {
-        res.status(200).json(document);
-      } else {
-        res.status(500).json('Erro ao encontrar documento.');
-      }
-    } catch (error) {
-      res.status(500).json(document);
+      res.status(500).json(error);
     }
   }
 }

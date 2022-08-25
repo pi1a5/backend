@@ -5,11 +5,11 @@ const knex = require('../database/connection');
 class Estagio {
   async findAll() {
     try {
-      const result = await knex.select('*').table('processo_estagio');
-      return result;
+      const result = await knex.select('*').table('processo');
+      return { response: result, status: 200 };
     } catch (error) {
       console.log(error);
-      return [];
+      return { response: 'Erro ao procurar processo', status: 400 };
     }
   }
 
@@ -17,11 +17,11 @@ class Estagio {
     try {
       await knex('documento').del();
       await knex('ticket').del();
-      await knex('processo_estagio').del();
-      return true;
+      await knex('processo').del();
+      return { response: 'Banco limpo!', status: 200 };
     } catch (error) {
       console.log(error);
-      return false;
+      return { response: 'Erro ao limpar banco', status: 400 };
     }
   }
 }

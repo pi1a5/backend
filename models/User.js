@@ -1,3 +1,4 @@
+/* eslint-disable object-shorthand */
 /* eslint-disable prefer-const */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable guard-for-in */
@@ -7,55 +8,71 @@
 const knex = require('../database/connection');
 
 class User {
-  async saveIdToken(idToken, sub) {
+  async register(name, email, picture, token, sub) {
     try {
-      await knex.update({ idToken }).table('usuario').where({ sub });
-      return true;
+      await knex.insert({
+        idcurso: null, nome: name, email, foto: picture, token, sub,
+      }).table('usuario');
+      return { response: 'Usuário cadastrado com sucesso', status: 200 };
     } catch (error) {
       console.log(error);
-      return false;
+      return { response: 'Erro ao cadastrar usuário', status: 404 };
     }
   }
 
-  async saveIdCursoProntuario(idCurso, prontuario_, sub) {
+  async saveIdCursoProntuario(idCurso, prontuario, sub) {
     try {
-      await knex.update({ id_curso: idCurso, prontuario: prontuario_ }).table('usuario').where({ sub });
-      return true;
+      const user = await this.findBySub(sub);
+      if (user.status !== 200) return { response: user.response, status: user.status };
+
+      const check = await this.checarProntuario(prontuario, sub);
+      if (check.status !== 200) return { response: check.response, status: check.status };
+
+      await knex.update({ idcurso: idCurso, prontuario: prontuario }).table('usuario').where({ sub });
+      return { response: 'Prontuário e curso atualizados', status: 200 };
     } catch (error) {
       console.log(error);
-      return false;
+      return { response: 'Erro ao atualizar base', status: 404 };
+    }
+  }
+
+  async saveIdToken(token, sub) {
+    try {
+      const user = await this.findBySub(sub);
+      if (user.status !== 200) return { response: user.response, status: user.status };
+
+      await knex.update({ token })
+        .table('usuario')
+        .where({ sub });
+      return { response: 'Login realizado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao realizar update', status: 404 };
     }
   }
 
   async checarProntuario(prontuario, sub) {
-    const id = await knex.select(['id']).table('usuario').where({ sub }).first();
+    const id = await knex.select(['id'])
+      .table('usuario')
+      .where({ sub })
+      .first();
     const allProntuario = await knex.select('prontuario').table('usuario').whereNot({ id: id.id });
     for (const i in allProntuario) {
       if (allProntuario[i].prontuario === prontuario) {
-        return false;
+        return { response: 'Prontuário já existente', status: 400 };
       }
     }
-    return true;
-  }
-
-  async register(name, email, picture, idToken, sub) {
-    try {
-      await knex.insert({
-        id_curso: null, nome: name, email, foto: picture, idToken, sub,
-      }).table('usuario');
-      return true;
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
+    return { response: true, status: 200 };
   }
 
   async findByEmail(email) {
     try {
-      const result = await knex.select(['email', 'nome', 'foto']).table('usuario').where({ email });
+      const result = await knex.select(['email', 'nome', 'foto'])
+        .table('usuario')
+        .where({ email });
 
       if (result.length > 0) {
-        return result[0];
+        return result;
       }
       return undefined;
     } catch (error) {
@@ -66,21 +83,25 @@ class User {
 
   async findBySub(sub) {
     try {
-      const result = await knex.select(['email', 'nome', 'foto']).table('usuario').where({ sub });
+      const result = await knex.select(['email', 'nome', 'foto'])
+        .table('usuario')
+        .where({ sub })
+        .first();
 
-      if (result.length > 0) {
-        return result[0];
-      }
-      return undefined;
+      if (result) return { result: result, status: 200 };
+
+      return { response: 'Sub não encontrado', status: 404 };
     } catch (error) {
       console.log(error);
-      return undefined;
+      return { response: 'Erro ao encontrar pelo sub', status: 400 };
     }
   }
 
   async findByToken(idToken) {
     try {
-      const result = await knex.select(['email', 'nome', 'foto']).table('usuario').where({ idToken });
+      const result = await knex.select(['email', 'nome', 'foto'])
+        .table('usuario')
+        .where({ idToken });
 
       if (result.length > 0) {
         return result[0];
@@ -94,26 +115,41 @@ class User {
 
   async findAll() {
     try {
-      const result = await knex.select('*').table('usuario').orderBy('id', 'asc');
-      return result;
+      const result = await knex.select('*')
+        .table('usuario')
+        .orderBy('id', 'asc');
+      return { response: result, status: 200 };
     } catch (error) {
       console.log(error);
-      return [];
+      return { response: 'Erro ao encontrar usuários', status: 400 };
     }
   }
 
+  // fazer depois
+
   async checkAmount(sub) {
     try {
-      const idCurso = await knex.select(['id_curso']).table('usuario').where({ sub }).first();
-      const colegas = await knex.distinct().select('id', 'nome').table('usuario').whereNot('email', 'like', '%@aluno.ifsp.edu.br%')
-        .where({ id_curso: idCurso.id_curso });
+      const idCurso = await knex.select(['idcurso'])
+        .table('usuario')
+        .where({ sub });
+      if (idCurso.length === 0) return { response: 'Curso do usuário não encontrado', status: 404 };
+      const colegas = await knex.distinct().select('id', 'nome')
+        .table('usuario')
+        .whereNot('email', 'like', '%@aluno.ifsp.edu.br%')
+        .where({ idcurso: idCurso[0].idcurso });
+      if (colegas.length === 0) return { response: 'Nenhum orientador encontrado', status: 404 };
+
       for (const k in colegas) {
-        const data = await knex.distinct().select('id_usuario_aluno').table('ticket').where({ id_usuario_orientador: colegas[k].id });
+        const data = await knex.distinct().select('idaluno')
+          .table('estagio')
+          .where({ idorientador: colegas[k].id });
         if (data.length > 0) {
           let count = 0;
           for (const y in data) {
-            const processo = await knex.select('pe.situação').from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({ 't.id_usuario_aluno': data[y].id_usuario_aluno });
-            if (processo[0].situação !== false) {
+            const processo = await knex.select('fechado')
+              .table('estagio')
+              .where(data[y].idaluno);
+            if (processo[0].fechado !== false) {
               count += 1;
             }
           }
@@ -126,39 +162,9 @@ class User {
       return colegas.sort((a, b) => parseFloat(b.quantidade) - parseFloat(a.quantidade));
     } catch (error) {
       console.log(error);
-      return [];
+      return { response: 'Erro ao encontrar os processos dos outros orientadores', status: 400 };
     }
   }
-
-  // async findById(id) {
-  //   try {
-  //   var result = await knex.select(['id', 'email', 'name', 'role']).table("users")
-  //   .where({ id: id });
-
-  //     if (result.length > 0) {
-  //       return result[0];
-  //     } else {
-  //       return undefined;
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     return undefined;
-  //   }
-  // }
-
-  // async findEmail(email) {
-  //   try {
-  //     var result = await knex.select("*").from("users").where({ email: email });
-  //     if (result.length > 0) {
-  //       return true;
-  //     } else {
-  //       return false;
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     return false;
-  //   }
-  // }
 }
 
 module.exports = new User();

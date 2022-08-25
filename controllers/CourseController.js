@@ -5,7 +5,7 @@ class CouserController {
   async courses(req, res) {
     try {
       const course = await Course.findAll();
-      res.status(200).json(course);
+      res.status(course.status).json(course.response);
     } catch (error) {
       res.status(500).json(error);
     }

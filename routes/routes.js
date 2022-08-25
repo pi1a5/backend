@@ -27,8 +27,6 @@ router.post('/api/login', HeaderMiddleware, UserController.login);
 router.post('/api/newUser', HeaderMiddleware, UserController.newUser);
 router.post('/api/user', HeaderMiddleware, UserController.user);
 router.post('/api/checkOrientadoresAmount', HeaderMiddleware, UserController.checkOrientadoresAmount);
-
-// Para Curso
 router.post('/api/setCourseProntuario', HeaderMiddleware, UserController.setCourseProntuario);
 
 // Para Ticket Aluno
