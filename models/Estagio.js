@@ -5,11 +5,11 @@ const knex = require('../database/connection');
 class Estagio {
   async findAll() {
     try {
-      const result = await knex.select('*').table('processo');
+      const result = await knex.select('*').table('estagio');
       return { response: result, status: 200 };
     } catch (error) {
       console.log(error);
-      return { response: 'Erro ao procurar processo', status: 400 };
+      return { response: 'Erro ao procurar estágio', status: 400 };
     }
   }
 

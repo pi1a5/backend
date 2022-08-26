@@ -6,6 +6,7 @@ const DocumentController = require('../controllers/DocumentController');
 const EstagioController = require('../controllers/EstagioController');
 const HomeController = require('../controllers/HomeController');
 const TicketController = require('../controllers/TicketController');
+const ProcessoController = require('../controllers/ProcessoController');
 const UserController = require('../controllers/UserController');
 const HeaderMiddleware = require('../middleware/httpHeaders');
 
@@ -49,6 +50,7 @@ router.get('/api/users', HeaderMiddleware, UserController.users);
 router.get('/api/courses', HeaderMiddleware, CourseController.courses);
 router.get('/api/tickets', HeaderMiddleware, TicketController.tickets);
 router.get('/api/estagios', HeaderMiddleware, EstagioController.estagios);
+router.get('/api/processos', HeaderMiddleware, ProcessoController.processos);
 
 // Limpar BD
 router.get('/api/limparBanco', HeaderMiddleware, EstagioController.limparBanco);

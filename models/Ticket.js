@@ -147,6 +147,7 @@ class Ticket {
   async checkIfHasStarted(sub) {
     try {
       const id = await knex.select(['id']).table('usuario').where({ sub }).first();
+      
       const result = await knex.select(['t.id', 't.feedback', 't.eAceito', 'pe.id_tipo_estagios'])
         .from('ticket AS t')
         .leftJoin('processo_estagio as pe', 'pe.id', 't.id_processo_estagio').where({ 't.id_usuario_aluno': id.id })
