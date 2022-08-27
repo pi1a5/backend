@@ -29,7 +29,7 @@ class User {
       if (check.status !== 200) return { response: check.response, status: check.status };
 
       await knex.update({ idcurso: idCurso, prontuario: prontuario }).table('usuario').where({ sub });
-      return { response: 'Prontuário e curso atualizados', status: 200 };
+      return { response: user, status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao atualizar base', status: 404 };
