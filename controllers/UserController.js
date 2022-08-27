@@ -53,8 +53,8 @@ class UserController {
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const response = await User.saveIdCursoProntuario(idCurso, prontuario, sub);
-      res.status(response.status).json(response.response);
+      const result = await User.saveIdCursoProntuario(idCurso, prontuario, sub);
+      res.status(result.status).json(result.response);
     } catch (error) {
       res.status(500).json(error);
     }
