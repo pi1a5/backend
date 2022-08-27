@@ -23,6 +23,7 @@ Esse projeto foi desenvolvido com as seguintes tecnologias:
 - Node.js
 - Cors
 - Express
+- Jest Js
 
 ## 🚀 Cloud & Hospedagens
 
@@ -40,3 +41,5 @@ API do projeto de Gestão de Estágio.
 ## 📝 Licença
 
 Esse projeto está sob a licença MIT. Veja o arquivo [LICENSE](https://opensource.org/licenses/MIT) para mais detalhes.
+
+
