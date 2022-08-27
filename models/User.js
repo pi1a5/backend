@@ -89,6 +89,8 @@ class User {
         .where({ sub })
         .first();
 
+      if (user === undefined) return ({ response: 'Erro ao encontrar Sub', status: 400 });
+
       return { response: user, status: 200 };
     } catch (error) {
       console.log(error);
