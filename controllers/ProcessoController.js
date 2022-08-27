@@ -5,7 +5,7 @@
 const Estagio = require('../models/Estagio');
 const Validate = require('../modules/validate');
 
-class EstagioController {
+class ProcessoController {
   async processos(req, res) {
     try {
       const estagio = await Estagio.findAll();
@@ -34,4 +34,4 @@ class EstagioController {
   }
 }
 
-module.exports = new EstagioController();
+module.exports = new ProcessoController();

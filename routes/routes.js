@@ -30,6 +30,10 @@ router.post('/api/user', HeaderMiddleware, UserController.user);
 router.post('/api/checkOrientadoresAmount', HeaderMiddleware, UserController.checkOrientadoresAmount);
 router.post('/api/setCourseProntuario', HeaderMiddleware, UserController.setCourseProntuario);
 
+// Para Processos
+
+router.post('/api/findAllByCourse', HeaderMiddleware, ProcessoController.findAllByCourse);
+
 // Para Ticket Aluno
 router.post('/api/newTicketInicio', HeaderMiddleware, TicketController.newTicketInicio);
 router.post('/api/newTicketAcompanhamento', HeaderMiddleware, TicketController.newTicketAcompanhamento);

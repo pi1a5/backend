@@ -5,6 +5,7 @@
 /* eslint-disable no-console */
 /* eslint-disable class-methods-use-this */
 const knex = require('../database/connection');
+const Etapa = require('./Etapa');
 
 class Processo {
   async findAll() {
@@ -17,7 +18,7 @@ class Processo {
     }
   }
 
-  async findAllByCourse(sub) {
+  async findAllByCourse(sub) { // para visualização na hora de selecionar um processo
     try {
       const idCurso = await knex.select('idcurso')
         .table('usuario')
@@ -30,13 +31,15 @@ class Processo {
       if (processos.length === 0) return { response: 'Curso não contém processos', status: 404 };
 
       for (const i in processos) {
-        const etapas = this.getEtapas(processos[i].id);
+        const etapas = Etapa.findAllByIdProcesso(processos[i].id); // adicionar as etapas ao json
+        if (etapas.status === 400) return { response: etapas.response, status: etapas.status };
+        processos[i].etapas = etapas.response;
       }
-      const result = await knex.select('*').table('processo');
-      return { response: result, status: 200 };
+
+      return { response: processos, status: 200 };
     } catch (error) {
       console.log(error);
-      return { response: 'Erro ao procurar processo', status: 400 };
+      return { response: 'Erro ao procurar processos', status: 400 };
     }
   }
 }
