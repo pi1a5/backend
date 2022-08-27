@@ -39,15 +39,16 @@ class User {
   async saveIdToken(token, sub) {
     try {
       const user = await this.findBySub(sub);
+
       if (user.status !== 200) return { response: user.response, status: user.status };
 
       await knex.update({ token })
         .table('usuario')
         .where({ sub });
-      return { response: 'Login realizado com sucesso', status: 200 };
+      return { response: user.response, status: user.status };
     } catch (error) {
       console.log(error);
-      return { response: 'Erro ao realizar update', status: 404 };
+      return { response: 'Erro ao realizar update', status: 400 };
     }
   }
 
@@ -83,14 +84,12 @@ class User {
 
   async findBySub(sub) {
     try {
-      const result = await knex.select(['email', 'nome', 'foto'])
+      const user = await knex.select(['email', 'nome', 'foto', 'idcurso'])
         .table('usuario')
         .where({ sub })
         .first();
 
-      if (result) return { result: result, status: 200 };
-
-      return { response: 'Sub não encontrado', status: 404 };
+      return { response: user, status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao encontrar pelo sub', status: 400 };
