@@ -6,20 +6,10 @@ class Document {
   async findAll() {
     try {
       const result = await knex.select('*').table('documento');
-      return result;
+      return { response: result, status: 200 };
     } catch (error) {
       console.log(error);
-      return [];
-    }
-  }
-
-  async findByTicketId(idTicket) {
-    try {
-      const result = await knex.select(['id', 'arquivo', 'tipo']).table('documento').where({ idTicket });
-      return result;
-    } catch (error) {
-      console.log(error);
-      return false;
+      return { response: 'Erro ao encontrar documentos', status: 200 };
     }
   }
 

@@ -6,6 +6,7 @@ const DocumentController = require('../controllers/DocumentController');
 const EstagioController = require('../controllers/EstagioController');
 const HomeController = require('../controllers/HomeController');
 const TicketController = require('../controllers/TicketController');
+const ProcessoController = require('../controllers/ProcessoController');
 const UserController = require('../controllers/UserController');
 const HeaderMiddleware = require('../middleware/httpHeaders');
 
@@ -13,10 +14,12 @@ const router = express.Router();
 
 const options = {
   explorer: true,
+  defaultModelsExpandDepth: -1,
+  customCss: 'body { background-color: yellow; }',
 };
 
 router.use('/api-docs', swaggerUi.serve);
-router.get('/api-docs', swaggerUi.setup(swaggerDocument, options));
+router.get('/api-docs', swaggerUi.setup(swaggerDocument, false, options));
 
 router.get('/', HeaderMiddleware, HomeController.index);
 
@@ -25,9 +28,11 @@ router.post('/api/login', HeaderMiddleware, UserController.login);
 router.post('/api/newUser', HeaderMiddleware, UserController.newUser);
 router.post('/api/user', HeaderMiddleware, UserController.user);
 router.post('/api/checkOrientadoresAmount', HeaderMiddleware, UserController.checkOrientadoresAmount);
-
-// Para Curso
 router.post('/api/setCourseProntuario', HeaderMiddleware, UserController.setCourseProntuario);
+
+// Para Processos
+
+router.post('/api/findAllByCourse', HeaderMiddleware, ProcessoController.findAllByCourse);
 
 // Para Ticket Aluno
 router.post('/api/newTicketInicio', HeaderMiddleware, TicketController.newTicketInicio);
@@ -49,6 +54,7 @@ router.get('/api/users', HeaderMiddleware, UserController.users);
 router.get('/api/courses', HeaderMiddleware, CourseController.courses);
 router.get('/api/tickets', HeaderMiddleware, TicketController.tickets);
 router.get('/api/estagios', HeaderMiddleware, EstagioController.estagios);
+router.get('/api/processos', HeaderMiddleware, ProcessoController.processos);
 
 // Limpar BD
 router.get('/api/limparBanco', HeaderMiddleware, EstagioController.limparBanco);

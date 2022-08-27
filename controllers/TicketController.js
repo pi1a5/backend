@@ -1,15 +1,19 @@
 /* eslint-disable linebreak-style */
+/* eslint-disable consistent-return */
+/* eslint-disable object-shorthand */
 /* eslint-disable dot-notation */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable linebreak-style */
 /* eslint-disable class-methods-use-this */
+const { getAll } = require('../models/Ticket');
 const Ticket = require('../models/Ticket');
+const Validate = require('../modules/validate');
 
 class TicketController {
   async tickets(req, res) {
     try {
-      const ticket = await Ticket.findAll();
-      res.status(200).json(ticket);
+      const ticket = await Ticket.getAll();
+      res.status(ticket.status).json(ticket.response);
     } catch (error) {
       res.status(500).json(error);
     }
@@ -17,20 +21,18 @@ class TicketController {
 
   async getTicketsUser(req, res) {
     try {
-      const { sub } = req.body;
-
-      if (sub === '' || sub === ' ' || sub === undefined) {
-        res.status(400).json('Sub inválido');
-        return;
-      }
+      const {
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
 
       const getAllTickets = await Ticket.getAllbyUserId(sub);
 
-      if (getAllTickets) {
-        res.status(200).json(getAllTickets);
-      } else {
-        res.status(404).json('Tickets não encontrados');
-      }
+      res.status(getAllTickets.status).json(getAllTickets.response);
     } catch (error) {
       res.status(500).json(error);
     }
@@ -39,14 +41,14 @@ class TicketController {
   async getTicketsWithoutSupervisor(req, res) {
     try {
       const { sub } = req.body;
-
-      if (sub === '' || sub === ' ' || sub === undefined) {
-        res.status(400).json('Sub inválido');
-        return;
-      }
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
 
       const ticket = await Ticket.getJoinWithoutSupervisor(sub);
-      res.status(200).json(ticket);
+      res.status(ticket.status).json(ticket.response);
     } catch (error) {
       res.status(500).json(error);
     }
@@ -55,18 +57,14 @@ class TicketController {
   async getTicketsWithSupervisor(req, res) {
     try {
       const { sub } = req.body;
-
-      if (sub === '' || sub === ' ' || sub === undefined) {
-        res.status(400).json('Sub inválido');
-        return;
-      }
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
 
       const ticket = await Ticket.getJoinWithSupervisorOpen(sub);
-      if (ticket) {
-        res.status(200).json(ticket);
-      } else {
-        res.status(500).json('Erro ao encontrar tickets.');
-      }
+      res.status(ticket.status).json(ticket.response);
     } catch (error) {
       res.status(500).json(error);
     }
