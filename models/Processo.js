@@ -42,6 +42,16 @@ class Processo {
       return { response: 'Erro ao procurar processos', status: 400 };
     }
   }
+
+  async newProcesso() {
+    try {
+      const result = await knex.select('*').table('processo');
+      return { response: result, status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao procurar processo', status: 400 };
+    }
+  }
 }
 
 module.exports = new Processo();

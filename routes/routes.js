@@ -49,6 +49,9 @@ router.post('/api/getClosedTicketsWithSupervisor', HeaderMiddleware, TicketContr
 router.post('/api/feedbackTicket', HeaderMiddleware, TicketController.feedbackTicket);
 // router.post('/api/getPdfUrl', TicketController.getPdfUrl);
 
+// Para curso
+router.post('/api/createNewCourse', HeaderMiddleware, CourseController.createNewCourse);
+
 // Para teste
 router.get('/api/users', HeaderMiddleware, UserController.users);
 router.get('/api/courses', HeaderMiddleware, CourseController.courses);

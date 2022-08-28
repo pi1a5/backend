@@ -9,7 +9,7 @@ class Document {
       return { response: result, status: 200 };
     } catch (error) {
       console.log(error);
-      return { response: 'Erro ao encontrar documentos', status: 200 };
+      return { response: 'Erro ao encontrar documentos', status: 400 };
     }
   }
 
@@ -18,10 +18,22 @@ class Document {
       await knex.insert({
         idTicket, arquivo, tipo, eProfessor,
       }).table('documento');
-      return true;
+      return { response: 'Documento criado com sucesso', status: 200 };
     } catch (error) {
       console.log(error);
-      return false;
+      return { response: 'Erro ao criar documentos', status: 400 };
+    }
+  }
+
+  async newDocumentType(nome, sigla, template) {
+    try {
+      await knex.insert({
+        nome, sigla, template,
+      }).table('tipodocumento');
+      return { response: 'Tipo de documento criado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao criar tipo de documento', status: 400 };
     }
   }
 }
