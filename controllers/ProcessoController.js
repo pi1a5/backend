@@ -35,16 +35,17 @@ class ProcessoController {
 
   async createNewProcesso(req, res) {
     try {
-      const {
-        sub,
+      const { // pegar idcurso e nome do orientador com o sub
+        sub, processo,
       } = req.body;
       const data = {
         sub: sub,
+        processo: processo,
       };
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const estagio = await Processo.newProcesso(sub);
+      const estagio = await Processo.newProcesso(sub, processo);
       res.status(estagio.status).json(estagio.response);
     } catch (error) {
       res.status(500).json(error);
