@@ -39,12 +39,13 @@ router.post('/api/findAllByCourse', HeaderMiddleware, ProcessoController.findAll
 router.post('/api/createNewEstagio', HeaderMiddleware, EstagioController.createNewEstagio);
 
 // Para Ticket Aluno
-router.post('/api/newTicketInicio', HeaderMiddleware, TicketController.newTicketInicio);
+router.post('/api/createTicket', HeaderMiddleware, TicketController.createTicket);
 router.post('/api/newTicketAcompanhamento', HeaderMiddleware, TicketController.newTicketAcompanhamento);
 router.post('/api/newTicketFim', HeaderMiddleware, TicketController.newTicketFim);
 router.post('/api/getTicketsUser', HeaderMiddleware, TicketController.getTicketsUser);
 router.post('/api/checkIfAcompanhemento', HeaderMiddleware, TicketController.checkIfAcompanhamento);
 router.post('/api/checkIfFinalizou', HeaderMiddleware, TicketController.checkIfFinalizou);
+router.post('/api/getTicketForm', HeaderMiddleware, TicketController.getTicketForm);
 
 // Para Ticket Professor
 router.post('/api/getTicketsWithoutSupervisor', HeaderMiddleware, TicketController.getTicketsWithoutSupervisor);

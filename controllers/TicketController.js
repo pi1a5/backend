@@ -73,18 +73,51 @@ class TicketController {
   async getClosedTicketsWithSupervisor(req, res) {
     try {
       const { sub } = req.body;
-
-      if (sub === '' || sub === ' ' || sub === undefined) {
-        res.status(400).json('Sub inválido');
-        return;
-      }
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
 
       const ticket = await Ticket.getJoinWithSupervisorClosed(sub);
-      if (ticket) {
-        res.status(200).json(ticket);
-      } else {
-        res.status(500).json('Erro ao encontrar tickets.');
-      }
+      res.status(ticket.status).json(ticket.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async getTicketForm(req, res) {
+    try {
+      const { sub } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const ticket = await Ticket.getForm(sub);
+      res.status(ticket.status).json(ticket.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async createTicket(req, res) {
+    try {
+      const {
+        sub, mensagem, documentos, limite,
+      } = req.body;
+      const data = {
+        sub: sub,
+        mensagem: mensagem,
+        documentos: documentos,
+        limite: limite,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const ticket = await Ticket.create(sub, mensagem, documentos, limite);
+      res.status(ticket.status).json(ticket.response);
     } catch (error) {
       res.status(500).json(error);
     }

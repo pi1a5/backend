@@ -14,15 +14,19 @@ class Document {
   }
 
   async newDocument(arquivo, tipo, eProfessor, idTicket) {
-    try {
-      await knex.insert({
-        idTicket, arquivo, tipo, eProfessor,
-      }).table('documento');
-      return { response: 'Documento criado com sucesso', status: 200 };
-    } catch (error) {
-      console.log(error);
-      return { response: 'Erro ao criar documentos', status: 400 };
-    }
+    const {
+      nome, sigla, template,
+    } = req.body;
+    const data = {
+      nome: nome,
+      sigla: sigla,
+      template: template,
+    };
+    const val = Validate(data);
+    if (val !== true) return res.status(400).json(val);
+
+    const document = await Document.newDocumentType(nome, sigla, template);
+    res.status(document.status).json(document.response);
   }
 
   async newDocumentType(nome, sigla, template) {

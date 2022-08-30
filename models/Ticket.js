@@ -1,3 +1,7 @@
+/* eslint-disable object-shorthand */
+/* eslint-disable block-scoped-var */
+/* eslint-disable vars-on-top */
+/* eslint-disable no-var */
 /* eslint-disable linebreak-style */
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
@@ -85,7 +89,7 @@ class Ticket {
     try {
       const id = await knex.select(['id'])
         .table('usuario')
-        .where({ sub }).first();
+        .where({ sub });
       if (id.length === 0) return { response: 'Usuário não encontrado', status: 404 };
       const result = await knex.select(['t.id', 't.mensagem', 't.resposta', 't.datacriado', 't.datafechado', 't.datalimite', 't.aceito'])
         .from('ticket AS t')
@@ -110,7 +114,7 @@ class Ticket {
     try {
       const id = await knex.select(['id'])
         .table('usuario')
-        .where({ sub }).first();
+        .where({ sub });
       if (id.length === 0) return { response: 'Usuário não encontrado', status: 404 };
       const result = await knex.select(['t.id', 't.mensagem', 't.resposta', 't.datacriado', 't.datafechado', 't.datalimite', 't.aceito'])
         .from('ticket AS t')
@@ -130,6 +134,58 @@ class Ticket {
     } catch (error) {
       console.log(error);
       return false;
+    }
+  }
+
+  async getForm(sub) {
+    try {
+      let form = {};
+      const id = await knex.select(['id'])
+        .table('usuario')
+        .where({ sub });
+      if (id.length === 0) return { response: 'Usuário não encontrado', status: 404 };
+      const processo = await knex.select(['processo'])
+        .table('estagio')
+        .where({ idaluno: id[0].id });
+      if (processo.length === 0) return { response: 'Usuário sem processo', status: 404 };
+
+      for (const i in processo[0].processo.etapas) {
+        if (processo[0].processo.etapas[i].atual === true) {
+          form = processo[0].processo.etapas[i];
+          break;
+        }
+      }
+      return { response: form, status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao resgatar arquivos', status: 400 };
+    }
+  }
+
+  async create(sub, mensagem, documentos, limite) {
+    try {
+      const criado = new Date();
+      const id = await knex.select(['id'])
+        .table('usuario')
+        .where({ sub });
+      if (id.length === 0) return { response: 'Usuário não encontrado', status: 404 };
+      const idEstagio = await knex.select(['id'])
+        .table('estagio')
+        .where({ idaluno: id[0].id });
+      if (idEstagio.length === 0) return { response: 'Usuário não encontrado', status: 404 };
+      const idTicket = await knex.returning('id')
+        .insert({
+          idestagio: idEstagio[0].id, mensagem: mensagem, datacriado: criado, limite: limite,
+        }).table('ticket');
+
+      for (const i in documentos) {
+        await knex.insert({ idticket: idTicket[0].id, arquivo: documentos[i].arquivo, nome: documentos[i].nome })
+          .table('documento');
+      }
+      return { response: 'Ticket criado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao criar tickets', status: 404 };
     }
   }
 
@@ -262,113 +318,6 @@ class Ticket {
       console.log(error);
       return [];
     }
-  }
-
-  async createTicketInicio(corpoTexto, dataLimite, sub, doc1, doc2, eProfessor) {
-    try {
-      const dataCriado = new Date();
-      const id = await knex.select(['id'])
-        .table('usuario')
-        .where({ sub }).first();
-
-      const idExiste = await knex.select(['id_processo_estagio'])
-        .table('ticket')
-        .where({ id_usuario_aluno: id.id });
-
-      if (idExiste.length === 0) { // se usuario não tem processo
-        var idProcessoEstagio = await knex.returning('id AS id_processo_estagio').insert({
-          id_tipo_estagios: 0, situação: true, data_criado: dataCriado, data_fechado: null,
-        }).table('processo_estagio');
-        console.log('b');
-      } else if (idExiste.length > 0) {
-        var idProcessoEstagio = idExiste;
-        console.log('c');
-      } else {
-        var idProcessoEstagio = false;
-        console.log('d');
-      }
-
-      if (idProcessoEstagio) {
-        if (await knex.insert({
-          id_usuario_aluno: id.id, corpo_texto: corpoTexto, data_criado: dataCriado, data_fechado: null, data_limite: dataLimite, feedback: null, id_processo_estagio: idProcessoEstagio[0].id_processo_estagio, id_usuario_orientador: null, tipo_estagios: 'Início de Estágio',
-        }).table('ticket')) {
-          const idTicket = await knex.select(['id']).table('ticket').where({ feedback: null, id_usuario_aluno: id.id }).first();
-
-          const key1 = await Aws.uploadFile(doc1, sub);
-          const key2 = await Aws.uploadFile(doc2, sub);
-
-          await knex.insert({
-            id_ticket: idTicket.id, arquivo: key1, tipo: 'Termo de Compromisso de Estágio', eProfessor,
-          }).table('documento');
-          await knex.insert({
-            id_ticket: idTicket.id, arquivo: key2, tipo: 'Plano de Atividades', eProfessor,
-          }).table('documento');
-          return { result: true, message: 'Ticket criado com sucesso' };
-        }
-      } else {
-        return { result: false, message: 'Usuário já tem processo' };
-      }
-    } catch (error) {
-      console.log(error);
-      return { result: false, message: 'Erro na criação do ticket' };
-    }
-    return false;
-  }
-
-  async createTicketAcompanhamento(corpoTexto, sub, doc, eProfessor, dataLimite) {
-    try {
-      const dataCriado = new Date();
-      const id = await knex.select(['id']).table('usuario').where({ sub }).first();
-
-      const idProcessoEstagio = await knex.select('t.id_processo_estagio', 't.id_usuario_orientador').from('ticket AS t').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').whereNotNull('t.feedback');
-      if (idProcessoEstagio) {
-        if (await knex.insert({
-          id_usuario_aluno: id.id, corpo_texto: corpoTexto, data_criado: dataCriado, data_fechado: null, data_limite: dataLimite, feedback: null, id_processo_estagio: idProcessoEstagio[0].id_processo_estagio, id_usuario_orientador: idProcessoEstagio[0].id_usuario_orientador, tipo_estagios: 'Acompanhamento',
-        }).table('ticket')) {
-          const idTicket = await knex.select(['id']).table('ticket').where({ feedback: null, id_usuario_aluno: id.id }).first();
-
-          console.log(doc);
-
-          const key = await Aws.uploadFile(doc, sub);
-
-          await knex.insert({
-            id_ticket: idTicket.id, arquivo: key, tipo: 'Relatório de Atividades de Estágio', eProfessor,
-          }).table('documento');
-          return true;
-        }
-      }
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
-    return false;
-  }
-
-  async createTicketFim(corpoTexto, sub, doc, eProfessor, dataLimite) {
-    try {
-      const dataCriado = new Date();
-      const id = await knex.select(['id']).table('usuario').where({ sub }).first();
-
-      const idProcessoEstagio = await knex.select('t.id_processo_estagio', 't.id_usuario_orientador').from('ticket AS t').leftJoin('processo_estagio AS pe', 'pe.id', 't.id_processo_estagio').whereNotNull('t.feedback');
-      if (idProcessoEstagio) {
-        if (await knex.insert({
-          id_usuario_aluno: id.id, corpo_texto: corpoTexto, data_criado: dataCriado, data_fechado: null, data_limite: dataLimite, feedback: null, id_processo_estagio: idProcessoEstagio[0].id_processo_estagio, id_usuario_orientador: idProcessoEstagio[0].id_usuario_orientador, tipo_estagios: 'Finalização de Estágio',
-        }).table('ticket')) {
-          const idTicket = await knex.select(['id']).table('ticket').where({ feedback: null, id_usuario_aluno: id.id }).first();
-
-          const key = await Aws.uploadFile(doc, sub);
-
-          await knex.insert({
-            id_ticket: idTicket.id, arquivo: key, tipo: 'Termo de Realização de Estágio', eProfessor,
-          }).table('documento');
-          return true;
-        }
-      }
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
-    return false;
   }
 
   async updateFeedback(sub, idTicket, feedback, eAceito) {
