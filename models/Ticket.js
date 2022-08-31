@@ -35,7 +35,7 @@ class Ticket {
         .table('estagio')
         .where({ idaluno: id[0].id });
       if (estagio.length === 0) return { response: 'Usuário não tem estágio', status: 404 };
-      const result = await knex.select(['id', 'mensagem', 'resposta', 'datacriado', 'datafechado', 'datalimite', 'aceito'])
+      const result = await knex.select(['id', 'mensagem', 'resposta', 'datacriado', 'datafechado', 'limite', 'aceito'])
         .table('ticket')
         .where({ idestagio: estagio[0].id })
         .orderBy('id', 'desc');
@@ -64,12 +64,12 @@ class Ticket {
         .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
         .where({ 'u.idcurso': ids[0].idcurso, 'u.id': ids[0].id });
       if (area.length === 0) return { response: 'Area não encontrada', status: 404 };
-      const result = await knex.select(['t.id', 't.mensagem', 't.resposta', 't.datacriado', 't.datafechado', 't.datalimite', 't.aceito'])
+      const result = await knex.select(['t.id', 't.mensagem', 't.resposta', 't.datacriado', 't.datafechado', 't.limite', 't.aceito'])
         .from('ticket AS t')
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
-        .where({ 'c.area': area[0].area, 't.feedback': null, 'e.idorientador': null })
+        .where({ 'c.area': area[0].area, 't.resposta': null, 'e.idorientador': null })
         .orderBy('t.id', 'desc');
       if (result.length === 0) return { response: 'Usuário não tem ticket', status: 404 };
 
@@ -91,11 +91,11 @@ class Ticket {
         .table('usuario')
         .where({ sub });
       if (id.length === 0) return { response: 'Usuário não encontrado', status: 404 };
-      const result = await knex.select(['t.id', 't.mensagem', 't.resposta', 't.datacriado', 't.datafechado', 't.datalimite', 't.aceito'])
+      const result = await knex.select(['t.id', 't.mensagem', 't.resposta', 't.datacriado', 't.datafechado', 't.limite', 't.aceito'])
         .from('ticket AS t')
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
-        .where({ 't.feedback': null, 'e.idorientador': id.id })
+        .where({ 't.resposta': null, 'e.idorientador': id.id })
         .orderBy('t.id', 'desc');
       if (result.length === 0) return { response: 'Usuário não tem ticket', status: 404 };
       for (const i in result) {
@@ -116,12 +116,12 @@ class Ticket {
         .table('usuario')
         .where({ sub });
       if (id.length === 0) return { response: 'Usuário não encontrado', status: 404 };
-      const result = await knex.select(['t.id', 't.mensagem', 't.resposta', 't.datacriado', 't.datafechado', 't.datalimite', 't.aceito'])
+      const result = await knex.select(['t.id', 't.mensagem', 't.resposta', 't.datacriado', 't.datafechado', 't.limite', 't.aceito'])
         .from('ticket AS t')
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
         .where({ 'e.idorientador': id.id })
-        .whereNotNull('t.feedback')
+        .whereNotNull('t.resposta')
         .orderBy('t.id', 'desc');
       if (result.length === 0) return { response: 'Usuário não tem ticket', status: 404 };
 
@@ -204,7 +204,7 @@ class Ticket {
     try {
       const id = await knex.select(['id']).table('usuario').where({ sub }).first();
 
-      const result = await knex.select(['t.id', 't.feedback', 't.eAceito', 'pe.id_tipo_estagios'])
+      const result = await knex.select(['t.id', 't.resposta', 't.eAceito', 'pe.id_tipo_estagios'])
         .from('ticket AS t')
         .leftJoin('processo_estagio as pe', 'pe.id', 't.id_processo_estagio').where({ 't.id_usuario_aluno': id.id })
         .orderBy('id', 'asc');
@@ -213,7 +213,7 @@ class Ticket {
 
       if (tamanho > 0) { // se retornar 1 ticket ou mais
         if (tamanho === 1) { // se fora apenas um ticket
-          if (result[0].feedback != null && result[0].eAceito === false) { // se o ticket foi recusado
+          if (result[0].resposta != null && result[0].eAceito === false) { // se o ticket foi recusado
             return { result: true, message: 'ok' };
           }
           return { result: false, message: 'erro1' };

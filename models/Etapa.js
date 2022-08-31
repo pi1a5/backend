@@ -50,6 +50,22 @@ class Etapa {
       return { response: 'Erro ao procurar tipo de documentos', status: 400 };
     }
   }
+
+  async add(sub, idprocesso, etapa) {
+    try {
+      const nome = await knex.select('nome')
+        .table('usuario')
+        .where({ sub })
+      if (nome.length === 0) return { response: 'Nome não encontrado', status: 404 };
+
+      
+
+      return { response: documentos, status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao adicionar etapa ao processo', status: 400 };
+    }
+  }
 }
 
 module.exports = new Etapa();
