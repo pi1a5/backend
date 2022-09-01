@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable object-shorthand */
 /* eslint-disable block-scoped-var */
 /* eslint-disable vars-on-top */
@@ -291,6 +292,7 @@ class Ticket {
         idprocesso = await knex.returning('idprocesso').update({ prazo: etapa.prazo }).table('etapa').where({ id: idetapa });
       }
     } catch (error) {
+      return { response: 'Erro ao atualizar ticket', status: 404 };
     }
   }
 
@@ -298,7 +300,7 @@ class Ticket {
     try {
       await knex.del().table('ticket').where({ id: idTicket })
       return { response: 'Ticket deletado com sucesso', status: 200 };
-    } catch (error) {   
+    } catch (error) {
       console.log(error);
       return { response: 'Erro ao deletar ticket', status: 404 };
     }

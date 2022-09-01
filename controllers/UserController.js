@@ -104,6 +104,24 @@ class UserController {
       res.status(500).json(error);
     }
   }
+
+  async getAlunoProfile(req, res) {
+    try {
+      const {
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const users = await User.getAlunoProfile(sub);
+      res.status(200).json(users);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
 }
 
 module.exports = new UserController();

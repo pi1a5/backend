@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 /* eslint-disable object-shorthand */
 /* eslint-disable prefer-const */
 /* eslint-disable no-await-in-loop */
@@ -84,12 +85,13 @@ class User {
 
   async findBySub(sub) {
     try {
-      const user = await knex.select(['email', 'nome', 'foto', 'idcurso'])
+      const user = await knex.select(['email', 'nome', 'foto', 'idcurso', 'prontuario'])
         .table('usuario')
         .where({ sub })
         .first();
 
-      if (user === undefined) return ({ response: 'Erro ao encontrar Sub', status: 400 });
+      if (user.length === 0) return { response: 'Erro ao encontrar com sub', status: 404 };
+      if (user === undefined) return ({ response: 'Erro ao encontrar com sub', status: 400 });
 
       return { response: user, status: 200 };
     } catch (error) {
@@ -164,6 +166,25 @@ class User {
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao encontrar os processos dos outros orientadores', status: 400 };
+    }
+  }
+
+  async getAlunoProfile(sub) {
+    try {
+      const result = {};
+      const user = this.findBySub(sub);
+      if (user.status !== 200) return { response: user.response, status: user.status };
+      const curso = await knex.select(['nome'])
+        .table('curso')
+        .where({ id: user[0].idcurso });
+      if (curso.length === 0) return { response: 'Curso do usuário não encontrado', status: 404 };
+      user[0].curso = curso[0].nome;
+
+      result.user = user[0];
+      return { response: result, status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao encontrar usuários', status: 400 };
     }
   }
 }
