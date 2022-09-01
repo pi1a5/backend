@@ -53,21 +53,39 @@ class ProcessoController {
     }
   }
 
-  async addEtapa(req,res) {
+  async updateEtapa(req,res) {
     try {
       const { // pegar idcurso e nome do orientador com o sub
-        sub, idprocesso, etapa
+        sub, idetapa, etapa
       } = req.body;
       const data = {
         sub: sub,
-        idprocesso: idprocesso,
+        idetapa: idetapa,
         etapa: etapa,
       };
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const result = await Etapa.add(sub, idprocesso, etapa);
-      res.status(estagio.status).json(estagio.response);
+      const result = await Etapa.update(sub, idetapa, etapa);
+      res.status(result.status).json(result.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async deleteProcesso(req, res) {
+    try {
+      const { // pegar idcurso e nome do orientador com o sub
+        idprocesso,
+      } = req.body;
+      const data = {
+        idprocesso: idprocesso,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const result = await Processo.delete(idprocesso);
+      res.status(result.status).json(result.response);
     } catch (error) {
       res.status(500).json(error);
     }

@@ -76,6 +76,17 @@ class Processo {
       return { response: 'Erro ao criar processo', status: 400 };
     }
   }
+
+  async delete(idprocesso) {
+    try {
+      await knex.del().table('processo94').where({ id: idprocesso });
+
+      return { response: 'Processo deletado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao deletar processo', status: 400 };
+    }
+  }
 }
 
 module.exports = new Processo();

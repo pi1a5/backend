@@ -51,19 +51,30 @@ class Etapa {
     }
   }
 
-  async add(sub, idprocesso, etapa) {
+  async update(sub, idetapa, etapa) {
     try {
+      let idprocesso = 0;
       const nome = await knex.select('nome')
         .table('usuario')
         .where({ sub })
       if (nome.length === 0) return { response: 'Nome não encontrado', status: 404 };
 
-      
+      if ('nome' in etapa && 'prazo' in etapa) {
+        idprocesso = await knex.returning('idprocesso').update({ nome: etapa.nome, prazo: etapa.prazo }).table('etapa').where({ id: idetapa });
+      } else if ('nome' in etapa) {
+        idprocesso = await knex.returning('idprocesso').update({ nome: etapa.nome }).table('etapa').where({ id: idetapa });
+      } else if ('prazo' in etapa) {
+        idprocesso = await knex.returning('idprocesso').update({ prazo: etapa.prazo }).table('etapa').where({ id: idetapa });
+      }
 
-      return { response: documentos, status: 200 };
+      await knex.update({ 'modificador': nome[0].nome} )
+        .table('processo')
+        .where({ 'id': idprocesso[0].idprocesso });
+
+      return { response: 'Etapa atualizada com sucesso', status: 200 };
     } catch (error) {
       console.log(error);
-      return { response: 'Erro ao adicionar etapa ao processo', status: 400 };
+      return { response: 'Erro ao atualizar etapa', status: 400 };
     }
   }
 }

@@ -200,70 +200,6 @@ class Ticket {
     }
   }
 
-  async checkIfHasStarted(sub) {
-    try {
-      const id = await knex.select(['id']).table('usuario').where({ sub }).first();
-
-      const result = await knex.select(['t.id', 't.resposta', 't.eAceito', 'pe.id_tipo_estagios'])
-        .from('ticket AS t')
-        .leftJoin('processo_estagio as pe', 'pe.id', 't.id_processo_estagio').where({ 't.id_usuario_aluno': id.id })
-        .orderBy('id', 'asc');
-
-      const tamanho = result.length;
-
-      if (tamanho > 0) { // se retornar 1 ticket ou mais
-        if (tamanho === 1) { // se fora apenas um ticket
-          if (result[0].resposta != null && result[0].eAceito === false) { // se o ticket foi recusado
-            return { result: true, message: 'ok' };
-          }
-          return { result: false, message: 'erro1' };
-        } // se retornar mais do que um
-        if (result[tamanho - 1].id_tipo_estagios === 0 && result[tamanho - 1].feedback != null && result[tamanho - 1].eAceito === false) { // se o ultimo ticket desse usuário for sobre início de estágio e for recusado
-          return { result: true, message: 'ok' };
-        }
-        return { result: false, message: 'erro2' };
-      }
-      return { result: true, message: 'ok' };
-    } catch (error) {
-      console.log(error);
-      return { result: false, message: 'erro3' };
-    }
-  }
-
-  async checkIfinAcompanhamento(sub) {
-    try {
-      const id = await knex.select(['id'])
-        .table('usuario')
-        .where({ sub }).first();
-
-      const result = await knex.select(['t.id', 't.eAceito', 'pe.id_tipo_estagios', 't.feedback'])
-        .from('processo_estagio AS pe')
-        .leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id')
-        .where({ 't.id_usuario_aluno': id.id })
-        .orderBy('t.id', 'asc');
-
-      const tamanho = result.length;
-      if (tamanho > 0) { // se retornar 1 ticket ou mais
-        if (tamanho === 1) { // se for apenas 1 ticket
-          if (result[0].eAceito === true) { // se o ticket (inicio) for aceito
-            return true;
-          }
-          return false;
-        } // se retornar mais de 1 ticket
-        if (result[tamanho - 1].id_tipo_estagios === 0) { // se o utlimo ticket for do tipo inicio
-          return false;
-        } if (result[tamanho - 1].id_tipo_estagios === 1 && result[tamanho - 1].feedback != null) { // se o utlimo ticket for do tipo acompanhamento e tiver feedback
-          return true;
-        }
-        return false;
-      }
-      return false;
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
-  }
-
   async checkIfFim(sub) {
     try {
       const id = await knex.select(['id'])
@@ -342,6 +278,29 @@ class Ticket {
     } catch (error) {
       console.log(error);
       return [];
+    }
+  }
+
+  async updateLatest(idTicket, ticket) {
+    try {
+      if ('nome' in etapa && 'prazo' in etapa) {
+        idprocesso = await knex.returning('idprocesso').update({ nome: etapa.nome, prazo: etapa.prazo }).table('etapa').where({ id: idetapa });
+      } else if ('nome' in etapa) {
+        idprocesso = await knex.returning('idprocesso').update({ nome: etapa.nome }).table('etapa').where({ id: idetapa });
+      } else if ('prazo' in etapa) {
+        idprocesso = await knex.returning('idprocesso').update({ prazo: etapa.prazo }).table('etapa').where({ id: idetapa });
+      }
+    } catch (error) {
+    }
+  }
+
+  async deleteLatest(idTicket) {
+    try {
+      await knex.del().table('ticket').where({ id: idTicket })
+      return { response: 'Ticket deletado com sucesso', status: 200 };
+    } catch (error) {   
+      console.log(error);
+      return { response: 'Erro ao deletar ticket', status: 404 };
     }
   }
 }
