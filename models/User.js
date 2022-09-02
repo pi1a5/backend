@@ -179,8 +179,24 @@ class User {
         .where({ id: user[0].idcurso });
       if (curso.length === 0) return { response: 'Curso do usuário não encontrado', status: 404 };
       user[0].curso = curso[0].nome;
-
       result.user = user[0];
+
+      const estagio = await knex.select(['id', 'criado', 'idorientador'])
+        .table('estagio')
+        .where({ idaluno: user[0].id })
+      if (estagio.length === 0) {
+        result.estagio = [];
+        result.orientador = [];
+        return { response: result, status: 404 };
+      }
+
+      const cursoOrientador = await knex.select(['nome'])
+      .table('curso')
+      .where({ id: estagio[0].idorientador });
+      if (cursoOrientador.length === 0) return { response: 'Curso do usuário não encontrado', status: 404 };
+
+      const orientador = await knex.select('nome', 'email', )
+
       return { response: result, status: 200 };
     } catch (error) {
       console.log(error);
