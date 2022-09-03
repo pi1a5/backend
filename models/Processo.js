@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 /* eslint-disable max-len */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
@@ -22,23 +23,33 @@ class Processo {
 
   async findAllByCourse(sub) { // para visualização na hora de selecionar um processo
     try {
-      const idCurso = await knex.select('idcurso')
+      const result = {};
+      const idCurso = await knex.select('idcurso', 'email')
         .table('usuario')
         .where({ sub: sub });
       if (idCurso.length === 0) return { response: 'Curso do usuário não encontrado', status: 404 };
 
       const processos = await knex.select('*')
         .table('processo')
-        .where({ idCurso: idCurso[0].idcurso });
+        .where({ idcurso: idCurso[0].idcurso });
       if (processos.length === 0) return { response: 'Curso não contém processos', status: 404 };
 
       for (const i in processos) {
-        const etapas = Etapa.findAllByIdProcesso(processos[i].id); // adicionar as etapas ao json
+        const etapas = await Etapa.findAllByIdProcesso(processos[i].id); // adicionar as etapas ao json
+        console.log(etapas);
         if (etapas.status === 400) return { response: etapas.response, status: etapas.status };
         processos[i].etapas = etapas.response;
       }
 
-      return { response: processos, status: 200 };
+      result.processos = processos;
+
+      if (idCurso[0].email.includes('@aluno.ifsp') !== true) {
+        const tiposDocumento = await knex.select('*')
+          .table('tipodocumento');
+        result.documentos = tiposDocumento[0];
+      }
+
+      return { response: result, status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao procurar processos', status: 400 };

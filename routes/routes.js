@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('../swagger.json');
@@ -29,13 +30,13 @@ router.post('/api/newUser', HeaderMiddleware, UserController.newUser);
 router.post('/api/user', HeaderMiddleware, UserController.user);
 router.post('/api/checkOrientadoresAmount', HeaderMiddleware, UserController.checkOrientadoresAmount);
 router.post('/api/setCourseProntuario', HeaderMiddleware, UserController.setCourseProntuario);
+router.post('/api/getAlunoProfile', HeaderMiddleware, UserController.getAlunoProfile);
 
 // Para Processos
 
 router.post('/api/findAllByCourse', HeaderMiddleware, ProcessoController.findAllByCourse);
 router.post('/api/updateEtapa', HeaderMiddleware, ProcessoController.updateEtapa);
 router.post('/api/deleteProcesso', HeaderMiddleware, ProcessoController.deleteProcesso);
-
 
 // Para estagios
 

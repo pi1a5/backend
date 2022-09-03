@@ -284,12 +284,26 @@ class Ticket {
 
   async updateLatest(idTicket, ticket) {
     try {
-      if ('nome' in etapa && 'prazo' in etapa) {
-        idprocesso = await knex.returning('idprocesso').update({ nome: etapa.nome, prazo: etapa.prazo }).table('etapa').where({ id: idetapa });
-      } else if ('nome' in etapa) {
-        idprocesso = await knex.returning('idprocesso').update({ nome: etapa.nome }).table('etapa').where({ id: idetapa });
-      } else if ('prazo' in etapa) {
-        idprocesso = await knex.returning('idprocesso').update({ prazo: etapa.prazo }).table('etapa').where({ id: idetapa });
+      const ticketAtual = await knex.select('mensagem')
+        .table('ticket')
+        .where({ id: idTicket });
+      if (ticketAtual.length === 0) return { response: 'Ticket não encontrado', status: 404 };
+
+      if (ticketAtual[0].mensagem !== ticket.mensagem) {
+        await knex.update('mensagem')
+          .table('ticket')
+          .where({ id: idTicket });
+      }
+
+      const documentos = await knex.select('id', 'arquivo')
+        .table('documento')
+        .where({ idticket: idTicket });
+      if (documentos.length === 0) return { response: 'Documentos não encontrado', status: 404 };
+
+      for (const i in documentos){
+        for (const j in ticket.documentos){
+          //if documentos[i].id
+        }
       }
     } catch (error) {
       return { response: 'Erro ao atualizar ticket', status: 404 };
