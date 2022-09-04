@@ -7,6 +7,7 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable no-console */
 /* eslint-disable class-methods-use-this */
+const { updateEtapa } = require('../controllers/ProcessoController');
 const knex = require('../database/connection');
 const Etapa = require('./Etapa');
 
@@ -28,6 +29,8 @@ class Processo {
         .table('usuario')
         .where({ sub: sub });
       if (idCurso.length === 0) return { response: 'Curso do usuário não encontrado', status: 404 };
+
+      console.log(idCurso);
 
       const processos = await knex.select('*')
         .table('processo')

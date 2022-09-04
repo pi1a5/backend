@@ -53,7 +53,7 @@ class ProcessoController {
     }
   }
 
-  async updateEtapa(req,res) {
+  async updateEtapa(req, res) {
     try {
       const { // pegar idcurso e nome do orientador com o sub
         sub, idetapa, etapa,

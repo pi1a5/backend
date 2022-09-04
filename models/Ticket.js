@@ -320,7 +320,7 @@ class Ticket {
 
   async deleteLatest(idTicket) {
     try {
-      await knex.del().table('ticket').where({ id: idTicket })
+      await knex.del().table('ticket').where({ id: idTicket });
       return { response: 'Ticket deletado com sucesso', status: 200 };
     } catch (error) {
       console.log(error);

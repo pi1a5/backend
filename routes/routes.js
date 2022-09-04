@@ -37,6 +37,7 @@ router.post('/api/getAlunoProfile', HeaderMiddleware, UserController.getAlunoPro
 router.post('/api/findAllByCourse', HeaderMiddleware, ProcessoController.findAllByCourse);
 router.post('/api/updateEtapa', HeaderMiddleware, ProcessoController.updateEtapa);
 router.post('/api/deleteProcesso', HeaderMiddleware, ProcessoController.deleteProcesso);
+router.post('/api/createNewProcesso', HeaderMiddleware, ProcessoController.createNewProcesso);
 
 // Para estagios
 

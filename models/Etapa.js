@@ -1,3 +1,5 @@
+/* eslint-disable eqeqeq */
+/* eslint-disable arrow-parens */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable max-len */
 /* eslint-disable no-restricted-syntax */
@@ -53,25 +55,55 @@ class Etapa {
     }
   }
 
-  async update(sub, idetapa, etapa) {
+  async update(sub, idEtapa, etapa) {
     try {
-      let idprocesso = 0;
+      const etapaAtual = await knex.select('nome', 'prazo', 'idprocesso')
+        .table('etapa')
+        .where({ id: idEtapa });
+      if (etapaAtual.length === 0) return { response: 'Etapa não encontrada', status: 404 };
       const nome = await knex.select('nome')
         .table('usuario')
-        .where({ sub })
+        .where({ sub });
       if (nome.length === 0) return { response: 'Nome não encontrado', status: 404 };
 
-      if ('nome' in etapa && 'prazo' in etapa) {
-        idprocesso = await knex.returning('idprocesso').update({ nome: etapa.nome, prazo: etapa.prazo }).table('etapa').where({ id: idetapa });
-      } else if ('nome' in etapa) {
-        idprocesso = await knex.returning('idprocesso').update({ nome: etapa.nome }).table('etapa').where({ id: idetapa });
-      } else if ('prazo' in etapa) {
-        idprocesso = await knex.returning('idprocesso').update({ prazo: etapa.prazo }).table('etapa').where({ id: idetapa });
+      if (etapaAtual[0].nome !== etapa.nome) {
+        await knex.update({ nome: etapa.nome })
+          .table('etapa')
+          .where({ id: idEtapa });
+      }
+      if (etapaAtual[0].prazo !== etapa.prazo) {
+        await knex.update({ prazo: etapa.prazo })
+          .table('etapa')
+          .where({ id: idEtapa });
       }
 
-      await knex.update({ 'modificador': nome[0].nome} )
+      const documentos = await knex.select('idtipodocumento')
+        .table('etapa_tipodocumento')
+        .where({ idetapa: idEtapa });
+      if (documentos.length === 0) return { response: 'Documentos não encontrados', status: 404 };
+
+      console.log(documentos, etapa.documentos);
+      console.log(!etapa.documentos.some(item => item.id === 2));
+      console.log(etapa.documentos.filter(item => item.id !== 0));
+      console.log(etapa.documentos.filter(item => item.id === 0));
+
+      for (const j in documentos) {
+        if (etapa.documentos.some(item => item.id !== documentos[j].idtipodocumento)) {
+          await knex.del()
+            .table('etapa_tipodocumento')
+            .where({ idetapa: idEtapa, idtipodocumento: documentos[j].idtipodocumento });
+        }
+      }
+
+      for (const i in etapa.documentos) {
+        if (documentos.some(item => item.idtipodocumento !== etapa.documentos[i].id)) {
+          await knex.insert({ idetapa: idEtapa, idtipodocumento: etapa.documentos[i].id });
+        }
+      }
+
+      await knex.update({ modificador: nome[0].nome })
         .table('processo')
-        .where({ 'id': idprocesso[0].idprocesso });
+        .where({ id: etapaAtual[0].idprocesso });
 
       return { response: 'Etapa atualizada com sucesso', status: 200 };
     } catch (error) {
