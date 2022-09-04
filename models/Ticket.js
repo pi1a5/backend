@@ -290,7 +290,7 @@ class Ticket {
       if (ticketAtual.length === 0) return { response: 'Ticket não encontrado', status: 404 };
 
       if (ticketAtual[0].mensagem !== ticket.mensagem) {
-        await knex.update('mensagem')
+        await knex.update({ mensagem: ticket.mensagem })
           .table('ticket')
           .where({ id: idTicket });
       }
@@ -300,11 +300,19 @@ class Ticket {
         .where({ idticket: idTicket });
       if (documentos.length === 0) return { response: 'Documentos não encontrado', status: 404 };
 
-      for (const i in documentos){
-        for (const j in ticket.documentos){
-          //if documentos[i].id
+      for (const i in documentos) {
+        for (const j in ticket.documentos) {
+          if (documentos[i].id === ticket.documentos[j].id) {
+            if (documentos[i].arquivo !== ticket.documentos[j].arquivo) {
+              await knex.update({ arquivo: ticket.documentos[j].arquivo })
+                .table('documento')
+                .where({ id: ticket.documentos[j].id });
+              break;
+            }
+          }
         }
       }
+      return { response: 'Ticket atualizado com sucesso', status: 200 };
     } catch (error) {
       return { response: 'Erro ao atualizar ticket', status: 404 };
     }

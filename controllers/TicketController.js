@@ -183,17 +183,19 @@ class TicketController {
   async updateLatestTicket(req, res) {
     try {
       const {
-        idTicket, ticket
+        idTicket, ticket,
       } = req.body;
       const data = {
         idTicket: idTicket,
-        ticket: ticket
+        ticket: ticket,
       };
       const val = Validate(data);
-
-      const result = Ticket.updateLatest(idTicket, ticket);
       if (val !== true) return res.status(400).json(val);
+
+      const result = await Ticket.updateLatest(idTicket, ticket);
+      res.status(result.status).json(result.response);
     } catch (error) {
+      res.status(500).json(error);
     }
   }
 
