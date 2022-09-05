@@ -13,7 +13,7 @@ const knex = require('knex')({
     ssl: {
       require: true,
       rejectUnauthorized: false,
-    },
+    },  
   },
 });
 
