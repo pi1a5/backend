@@ -73,14 +73,15 @@ class Processo {
 
       for (const i in processo.etapas) {
         const idEtapa = await knex.returning('id').insert({
-          idprocesso: idProcesso[0].id, nome: processo.etapas[i].nome, prazo: processo.etapas[i].prazo, ultima: processo.etapas[i].ultima,
+          idprocesso: idProcesso[0].id, nome: processo.etapas[i].nome, prazo: processo.etapas[i].prazo,
         }).table('etapa');
         if (idEtapa.length === 0) return { response: 'Erro ao criar Etapa', status: 404 };
 
         for (const j in processo.etapas[i].documentos) {
           await knex.insert({
-            idetapa: idEtapa[0].id, idtipodocumento: processo.etapas[i].documentos[j],
-          });
+            idetapa: idEtapa[0].id, idtipodocumento: processo.etapas[i].documentos[j].id,
+          })
+            .table('etapa_tipodocumento');
         }
       }
 

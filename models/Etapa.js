@@ -82,13 +82,8 @@ class Etapa {
         .where({ idetapa: idEtapa });
       if (documentos.length === 0) return { response: 'Documentos não encontrados', status: 404 };
 
-      console.log(documentos, etapa.documentos);
-      console.log(!etapa.documentos.some(item => item.id === 2));
-      console.log(etapa.documentos.filter(item => item.id !== 0));
-      console.log(etapa.documentos.filter(item => item.id === 0));
-
       for (const j in documentos) {
-        if (etapa.documentos.some(item => item.id !== documentos[j].idtipodocumento)) {
+        if (!etapa.documentos.some(item => item.id === documentos[j].idtipodocumento)) {
           await knex.del()
             .table('etapa_tipodocumento')
             .where({ idetapa: idEtapa, idtipodocumento: documentos[j].idtipodocumento });
@@ -96,8 +91,10 @@ class Etapa {
       }
 
       for (const i in etapa.documentos) {
-        if (documentos.some(item => item.idtipodocumento !== etapa.documentos[i].id)) {
-          await knex.insert({ idetapa: idEtapa, idtipodocumento: etapa.documentos[i].id });
+        if (!documentos.some(item => item.idtipodocumento === etapa.documentos[i].id)) {
+          await knex.insert({ idetapa: idEtapa, idtipodocumento: etapa.documentos[i].id })
+            .table('etapa_tipodocumento')
+            .where({ idetapa: idEtapa, idtipodocumento: etapa.documentos[i].id });
         }
       }
 
