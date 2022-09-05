@@ -7,7 +7,6 @@
 /* eslint-disable linebreak-style */
 /* eslint-disable no-console */
 /* eslint-disable class-methods-use-this */
-const { updateEtapa } = require('../controllers/ProcessoController');
 const knex = require('../database/connection');
 const Etapa = require('./Etapa');
 
