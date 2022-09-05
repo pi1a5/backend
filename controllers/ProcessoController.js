@@ -90,6 +90,84 @@ class ProcessoController {
       res.status(500).json(error);
     }
   }
+
+  async limparBanco(req, res) {
+    try {
+      const limpar = await Processo.limpar();
+      res.status(limpar.status).json(limpar.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async createExample(req, res) {
+    try {
+      const processo = {
+        "sub": "teste",
+        "processo": {
+        "id": 0,
+        "nome": "Padrão",
+        "etapas": [
+            {
+                "id": 0,
+                "nome": "Início",
+                "prazo": 10,
+                "documentos": [
+                    {
+                        "id": 0,
+                        "nome": "docteste1",
+                        "sigla": "dc1",
+                        "template": "aoba"
+                    },
+                    {
+                        "id": 1,
+                        "nome": "docteste2",
+                        "sigla": "dc2",
+                        "template": "aoba2"
+                    }
+                ]
+            },
+            {
+                "id": 1,
+                "nome": "Acompanhamento",
+                "prazo": 15,
+                "documentos": [
+                    {
+                        "id": 0,
+                        "nome": "docteste1",
+                        "sigla": "dc1",
+                        "template": "aoba"
+                    }
+                ]
+            },
+            {
+                "id": 2,
+                "nome": "Finalização",
+                "prazo": 5,
+                "documentos": [
+                    {
+                        "id": 0,
+                        "nome": "docteste1",
+                        "sigla": "dc1",
+                        "template": "aoba"
+                    },
+                    {
+                        "id": 1,
+                        "nome": "docteste2",
+                        "sigla": "dc2",
+                        "template": "aoba2"
+                    }
+                ]
+            }
+        ]
+    }
+    }
+      const criar = await Processo.newProcesso(processo.sub, processo.processo);
+      res.status(criar.status).json(criar.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
 }
 
 module.exports = new ProcessoController();

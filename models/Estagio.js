@@ -19,18 +19,6 @@ class Estagio {
     }
   }
 
-  async limpar() {
-    try {
-      await knex('documento').del();
-      await knex('ticket').del();
-      await knex('processo').del();
-      return { response: 'Banco limpo!', status: 200 };
-    } catch (error) {
-      console.log(error);
-      return { response: 'Erro ao limpar banco', status: 400 };
-    }
-  }
-
   async newEstagio(idProcesso, sub) {
     try {
       const dataCriado = new Date();

@@ -34,7 +34,7 @@ class Processo {
       const processos = await knex.select('*')
         .table('processo')
         .where({ idcurso: idCurso[0].idcurso });
-      if (processos.length === 0) return { response: 'Curso não contém processos', status: 404 };
+      if (processos.length === 0) return { response: 'Curso não contém processos', status: 200 };
 
       for (const i in processos) {
         const etapas = await Etapa.findAllByIdProcesso(processos[i].id); // adicionar as etapas ao json
@@ -99,6 +99,16 @@ class Processo {
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao deletar processo', status: 400 };
+    }
+  }
+
+  async limpar() {
+    try {
+      await knex('processo').del();
+      return { response: 'Banco limpo!', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao limpar banco', status: 400 };
     }
   }
 }
