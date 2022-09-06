@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 require('dotenv').config();
 
 const knex = require('knex')({
@@ -13,7 +14,7 @@ const knex = require('knex')({
     ssl: {
       require: true,
       rejectUnauthorized: false,
-    },  
+    },
   },
 });
 

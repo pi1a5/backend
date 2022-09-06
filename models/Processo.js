@@ -1,3 +1,5 @@
+/* eslint-disable dot-notation */
+/* eslint-disable no-param-reassign */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable max-len */
 /* eslint-disable no-await-in-loop */
