@@ -23,16 +23,18 @@ class Etapa {
 
   async findAllByIdProcesso(idProcesso) {
     try {
+      const idEtapa = {};
       const etapas = await knex.select('*')
         .table('etapa')
-        .where({ idprocesso: idProcesso });
+        .where( idProcesso );
       if (etapas.length === 0) return { response: 'Etapas não encontradas', status: 400 };
 
       for (const i in etapas) {
-        const documentos = await this.findAllDocumentosByIdEtapa(etapas[i].id);
-        if (documentos.status === 400) return { response: documentos.response, status: documentos.status };
-        etapas[i].documentos = documentos.response;
+        idEtapa.idetapa = etapas[i].id;
       }
+      const documentos = await this.findAllDocumentosByIdEtapa(idEtapa);
+      if (documentos.status === 400) return { response: documentos.response, status: documentos.status };
+      etapas[i].documentos = documentos.response;
 
       return { response: etapas, status: 200 };
     } catch (error) {
@@ -46,7 +48,9 @@ class Etapa {
       const documentos = await knex.select('*')
         .from('tipodocumento AS td')
         .leftJoin('etapa_tipodocumento AS etd', 'etd.idtipodocumento', 'td.id')
-        .where({ 'etd.idetapa': idEtapa });
+        .where({ 'etd.idetapa': idEtapa.idetapa  });
+
+      console.log(documentos);
 
       return { response: documentos, status: 200 };
     } catch (error) {

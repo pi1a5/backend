@@ -168,6 +168,20 @@ class ProcessoController {
       res.status(500).json(error);
     }
   }
+
+  async test(req, res){
+    const { // pegar idcurso e nome do orientador com o sub
+      documentos,
+    } = req.body;
+    const data = {
+      documentos: documentos,
+    };
+    const val = Validate  (data);
+    if (val !== true) return res.status(400).json(val);
+
+    const response = await Processo.test(documentos);
+    res.status(response.status).json(response.response);
+  }
 }
 
 module.exports = new ProcessoController();

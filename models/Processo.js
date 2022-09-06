@@ -24,6 +24,7 @@ class Processo {
   async findAllByCourse(sub) { // para visualização na hora de selecionar um processo
     try {
       const result = {};
+      const idProcesso = {};
       const idCurso = await knex.select('idcurso', 'email')
         .table('usuario')
         .where({ sub: sub });
@@ -31,19 +32,14 @@ class Processo {
 
       console.log(idCurso);
 
-      const processos = await knex.select('*')
-        .table('processo')
+      const processos = await knex('processo AS p').select('p.*')
+        .leftJoin(knex('etapa AS e').select(knex.raw('json_agg(e.*) as etapas')), 'e.idprocesso', 'p.id')
+        .leftJoin(knex('etapa_tipodocumento AS et').select(knex.raw('json_agg(et.*) as etapas')), 'et.idetapa', 'e.id')
+        .leftJoin(knex('tipodocumento AS td').select(knex.raw('json_agg(et.*) as etapas')), 'et.idtipodocumento')
         .where({ idcurso: idCurso[0].idcurso });
       if (processos.length === 0) return { response: 'Curso não contém processos', status: 200 };
-
-      for (const i in processos) {
-        const etapas = await Etapa.findAllByIdProcesso(processos[i].id); // adicionar as etapas ao json
-        console.log(etapas);
-        if (etapas.status === 400) return { response: etapas.response, status: etapas.status };
-        processos[i].etapas = etapas.response;
-      }
-
-      result.processos = processos;
+      console.log(processos[0]);
+      console.log(processos[0].etapas);
 
       if (idCurso[0].email.includes('@aluno.ifsp') !== true) {
         const tiposDocumento = await knex.select('*')
@@ -77,11 +73,15 @@ class Processo {
         if (idEtapa.length === 0) return { response: 'Erro ao criar Etapa', status: 404 };
 
         for (const j in processo.etapas[i].documentos) {
-          await knex.insert({
-            idetapa: idEtapa[0].id, idtipodocumento: processo.etapas[i].documentos[j].id,
-          })
-            .table('etapa_tipodocumento');
+          processo.etapas[i].documentos[j].idetapa = idEtapa[0].id
+          processo.etapas[i].documentos[j].idtipodocumento = processo.etapas[i].documentos[j].id;
+          delete processo.etapas[i].documentos[j]['id'];
+          delete processo.etapas[i].documentos[j]['nome'];
+          delete processo.etapas[i].documentos[j]['sigla'];
+          delete processo.etapas[i].documentos[j]['template'];
         }
+        await knex.insert(processo.etapas[i].documentos)
+          .table('etapa_tipodocumento');
       }
 
       return { response: 'Processo criado com sucesso', status: 200 };
@@ -106,6 +106,17 @@ class Processo {
     try {
       await knex('processo').del();
       return { response: 'Banco limpo!', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao limpar banco', status: 400 };
+    }
+  }
+
+  async test(documentos) {
+    try {
+      await knex.insert(documentos)
+        .table('documento');
+      return { response: 'inserido com sucesso', status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao limpar banco', status: 400 };

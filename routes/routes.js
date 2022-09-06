@@ -67,6 +67,8 @@ router.get('/api/tickets', HeaderMiddleware, TicketController.tickets);
 router.get('/api/estagios', HeaderMiddleware, EstagioController.estagios);
 router.get('/api/processos', HeaderMiddleware, ProcessoController.processos);
 router.get('/api/createExample', HeaderMiddleware, ProcessoController.createExample);
+router.post('/api/test', HeaderMiddleware, ProcessoController.test);
+
 
 // Limpar BD
 router.get('/api/limparBanco', HeaderMiddleware, ProcessoController.limparBanco);
