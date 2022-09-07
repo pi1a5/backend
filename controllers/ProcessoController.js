@@ -73,11 +73,32 @@ class ProcessoController {
     }
   }
 
+  async updateProcesso(req, res) {
+    try {
+      const { // pegar idcurso e nome do orientador com o sub
+        sub, processo
+      } = req.body;
+      const data = {
+        sub: sub,
+        processo: processo,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const result = await Processo.update(sub, processo);
+      res.status(result.status).json(result.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
   async deleteProcesso(req, res) {
     try {
       const { // pegar idcurso e nome do orientador com o sub
         idprocesso,
       } = req.body;
+
+      console.log(idprocesso);
       const data = {
         idprocesso: idprocesso,
       };
