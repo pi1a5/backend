@@ -31,7 +31,7 @@ class Processo {
         .where({ sub: sub });
         if (idCurso.length === 0) return { response: 'Curso do usuário não encontrado', status: 404 };
 
-        const processos = await knex.raw("SELECT json_agg( json_build_object( 'nome', p.nome, 'etapas', etapas ) ) processos FROM processo p LEFT JOIN ( SELECT idprocesso, json_agg( json_build_object( 'nome', e.nome, 'prazo', e.prazo, 'documentos', etapatipodocumento ) ) etapas FROM etapa e LEFT JOIN ( SELECT idetapa, json_agg( tipodocumento ) etapatipodocumento FROM etapa_tipodocumento et LEFT JOIN ( SELECT id, json_agg(td.*) tipodocumento FROM tipodocumento td group by id ) td on et.idtipodocumento = td.id group by idetapa ) et on e.id = et.idetapa group by idprocesso ) e on p.id = e.idprocesso WHERE p.idcurso = " + idCurso[0].idcurso + ";");
+        const processos = await knex.raw("SELECT json_agg( json_build_object( 'nome', p.nome, 'id', p.id, 'etapas', etapas ) ) processos FROM processo p LEFT JOIN ( SELECT idprocesso, json_agg( json_build_object( 'nome', e.nome, 'prazo', e.prazo, 'documentos', etapatipodocumento ) ) etapas FROM etapa e LEFT JOIN ( SELECT idetapa, json_agg( tipodocumento ) etapatipodocumento FROM etapa_tipodocumento et LEFT JOIN ( SELECT id, json_agg(td.*) tipodocumento FROM tipodocumento td group by id ) td on et.idtipodocumento = td.id group by idetapa ) et on e.id = et.idetapa group by idprocesso ) e on p.id = e.idprocesso WHERE p.idcurso = " + idCurso[0].idcurso + ";");
       if (processos.rows.length === 0) return { response: 'Curso não contém processos', status: 200 };
       console.log(processos.rows[0].processos[0].etapas[0]);
       result.processos = processos.rows[0].processos;
@@ -93,7 +93,7 @@ class Processo {
       for (const i in processo.etapas) {
         delete processo.etapas[i]['nome'];
         delete processo.etapas[i]
-      }
+      }e
 
       await knex.update()
 
