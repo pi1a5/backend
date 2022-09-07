@@ -1,3 +1,7 @@
+/* eslint-disable consistent-return */
+/* eslint-disable prefer-arrow-callback */
+/* eslint-disable func-names */
+/* eslint-disable prefer-template */
 /* eslint-disable dot-notation */
 /* eslint-disable no-param-reassign */
 /* eslint-disable prefer-destructuring */
@@ -29,9 +33,9 @@ class Processo {
       const idCurso = await knex.select('idcurso', 'email')
         .table('usuario')
         .where({ sub: sub });
-        if (idCurso.length === 0) return { response: 'Curso do usuário não encontrado', status: 404 };
+      if (idCurso.length === 0) return { response: 'Curso do usuário não encontrado', status: 404 };
 
-        const processos = await knex.raw("SELECT json_agg( json_build_object( 'nome', p.nome, 'id', p.id, 'etapas', etapas ) ) processos FROM processo p LEFT JOIN ( SELECT idprocesso, json_agg( json_build_object( 'nome', e.nome, 'prazo', e.prazo, 'documentos', etapatipodocumento ) ) etapas FROM etapa e LEFT JOIN ( SELECT idetapa, json_agg( tipodocumento ) etapatipodocumento FROM etapa_tipodocumento et LEFT JOIN ( SELECT id, json_agg(td.*) tipodocumento FROM tipodocumento td group by id ) td on et.idtipodocumento = td.id group by idetapa ) et on e.id = et.idetapa group by idprocesso ) e on p.id = e.idprocesso WHERE p.idcurso = " + idCurso[0].idcurso + ";");
+      const processos = await knex.raw("SELECT json_agg( json_build_object( 'nome', p.nome, 'id', p.id, 'etapas', etapas ) ) processos FROM processo p LEFT JOIN ( SELECT idprocesso, json_agg( json_build_object( 'id', e.id, 'nome', e.nome, 'prazo', e.prazo, 'documentos', etapatipodocumento ) ) etapas FROM etapa e LEFT JOIN ( SELECT idetapa, json_agg( tipodocumento ) etapatipodocumento FROM etapa_tipodocumento et LEFT JOIN ( SELECT id, json_agg(td.*) tipodocumento FROM tipodocumento td group by id ) td on et.idtipodocumento = td.id group by idetapa ) et on e.id = et.idetapa group by idprocesso ) e on p.id = e.idprocesso WHERE p.idcurso = " + idCurso[0].idcurso + ";");
       if (processos.rows.length === 0) return { response: 'Curso não contém processos', status: 200 };
       console.log(processos.rows[0].processos[0].etapas[0]);
       result.processos = processos.rows[0].processos;
@@ -45,39 +49,44 @@ class Processo {
       return { response: result, status: 200 };
     } catch (error) {
       console.log(error);
-      return { response: 'Erro ao procurar processos', status: 400 };
+      return { response: 'Erro ao procurar processos', status: 500 };
     }
   }
 
   async newProcesso(sub, processo) {
     try {
+      const etapas = [{}];
+      const documentos = [{}];
       const idCurso = await knex.select('idcurso', 'nome')
         .table('usuario')
         .where({ sub: sub });
       if (idCurso.length === 0) return { response: 'Curso do usuário não encontrado', status: 404 };
 
-      const idProcesso = await knex.returning('id').insert({
-        idcurso: idCurso[0].idcurso, nome: processo.nome, criador: idCurso[0].nome, modificador: null,
-      }).table('processo');
-      if (idCurso.length === 0) return { response: 'Erro ao criar processo', status: 404 };
+      await knex.transaction(async function (t) {
+        const idProcesso = await knex.returning('id').insert({
+          idcurso: idCurso[0].idcurso, nome: processo.nome, criador: idCurso[0].nome, modificador: null,
+        }).table('processo');
+        if (idCurso.length === 0) return { response: 'Erro ao criar processo', status: 404 };
 
-      for (const i in processo.etapas) {
-        const idEtapa = await knex.returning('id').insert({
-          idprocesso: idProcesso[0].id, nome: processo.etapas[i].nome, prazo: processo.etapas[i].prazo,
-        }).table('etapa');
-        if (idEtapa.length === 0) return { response: 'Erro ao criar Etapa', status: 404 };
-
-        for (const j in processo.etapas[i].documentos) {
-          processo.etapas[i].documentos[j].idetapa = idEtapa[0].id
-          processo.etapas[i].documentos[j].idtipodocumento = processo.etapas[i].documentos[j].id;
-          delete processo.etapas[i].documentos[j]['id'];
-          delete processo.etapas[i].documentos[j]['nome'];
-          delete processo.etapas[i].documentos[j]['sigla'];
-          delete processo.etapas[i].documentos[j]['template'];
+        for (const k in processo.etapas) {
+          etapas[k] = {
+            nome: processo.etapas[k].nome, prazo: processo.etapas[k].prazo, idprocesso: idProcesso[0].id,
+          };
         }
-        await knex.insert(processo.etapas[i].documentos)
+
+        const ids = await knex('etapa').returning('id').insert(etapas);
+        let count = 0;
+        for (const k in processo.etapas) {
+          for (const b in processo.etapas[k].documentos) {
+            documentos[count] = { idetapa: ids[k].id, idtipodocumento: processo.etapas[k].documentos[b].id };
+            count += 1;
+          }
+        }
+
+        await knex.insert(documentos)
           .table('etapa_tipodocumento');
-      }
+        await t.commit;
+      });
 
       return { response: 'Processo criado com sucesso', status: 200 };
     } catch (error) {
@@ -85,7 +94,7 @@ class Processo {
       return { response: 'Erro ao criar processo', status: 400 };
     }
   }
-  
+
   async update(sub, processo) {
     try {
       await knex.update({ nome: processo.nome }).table('processo').where({ id: processo.id }); 
