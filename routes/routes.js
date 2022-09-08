@@ -38,6 +38,7 @@ router.post('/api/findAllByCourse', HeaderMiddleware, ProcessoController.findAll
 router.post('/api/updateEtapa', HeaderMiddleware, ProcessoController.updateEtapa);
 router.post('/api/deleteProcesso', HeaderMiddleware, ProcessoController.deleteProcesso);
 router.post('/api/createNewProcesso', HeaderMiddleware, ProcessoController.createNewProcesso);
+router.post('/api/updateProcesso', HeaderMiddleware, ProcessoController.updateProcesso);
 
 // Para estagios
 

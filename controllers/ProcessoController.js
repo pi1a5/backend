@@ -56,7 +56,7 @@ class ProcessoController {
   async updateEtapa(req, res) {
     try {
       const { // pegar idcurso e nome do orientador com o sub
-        sub, idetapa, etapa,
+        sub, preco, etapa,
       } = req.body;
       const data = {
         sub: sub,
@@ -76,16 +76,17 @@ class ProcessoController {
   async updateProcesso(req, res) {
     try {
       const { // pegar idcurso e nome do orientador com o sub
-        sub, processo
+        sub, processoAntigo, processoNovo,
       } = req.body;
       const data = {
         sub: sub,
-        processo: processo,
+        processoAntigo: processoAntigo,
+        processoNovo: processoNovo,
       };
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const result = await Processo.update(sub, processo);
+      const result = await Processo.update(sub, processoAntigo, processoNovo);
       res.status(result.status).json(result.response);
     } catch (error) {
       res.status(500).json(error);

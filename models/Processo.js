@@ -95,62 +95,18 @@ class Processo {
     }
   }
 
-  async update(sub, processo) {
+  async update(sub, processoAntigo, processoNovo) {
     try {
-      await knex.update({ nome: processo.nome }).table('processo').where({ id: processo.id }); 
+      const content = this.compareObjects(processoAntigo, processoNovo, 'processo');
 
-      for (const i in processo.etapas) {
-        delete processo.etapas[i]['nome'];
-        delete processo.etapas[i]
-      }e
-
-      await knex.update()
-
-
-      const etapaAtual = await knex.select('nome', 'prazo', 'idprocesso')
-        .table('etapa')
-        .where({ id: idEtapa });
-      if (etapaAtual.length === 0) return { response: 'Etapa não encontrada', status: 404 };
-      const nome = await knex.select('nome')
-        .table('usuario')
-        .where({ sub });
-      if (nome.length === 0) return { response: 'Nome não encontrado', status: 404 };
-
-      if (etapaAtual[0].nome !== etapa.nome) {
-        await knex.update({ nome: etapa.nome })
-          .table('etapa')
-          .where({ id: idEtapa });
-      }
-      if (etapaAtual[0].prazo !== etapa.prazo) {
-        await knex.update({ prazo: etapa.prazo })
-          .table('etapa')
-          .where({ id: idEtapa });
-      }
-
-      const documentos = await knex.select('idtipodocumento')
-        .table('etapa_tipodocumento')
-        .where({ idetapa: idEtapa });
-      if (documentos.length === 0) return { response: 'Documentos não encontrados', status: 404 };
-
-      for (const j in documentos) {
-        if (!etapa.documentos.some(item => item.id === documentos[j].idtipodocumento)) {
-          await knex.del()
-            .table('etapa_tipodocumento')
-            .where({ idetapa: idEtapa, idtipodocumento: documentos[j].idtipodocumento });
-        }
-      }
-
-      for (const i in etapa.documentos) {
-        if (!documentos.some(item => item.idtipodocumento === etapa.documentos[i].id)) {
-          await knex.insert({ idetapa: idEtapa, idtipodocumento: etapa.documentos[i].id })
-            .table('etapa_tipodocumento')
-            .where({ idetapa: idEtapa, idtipodocumento: etapa.documentos[i].id });
-        }
-      }
-
-      await knex.update({ modificador: nome[0].nome })
-        .table('processo')
-        .where({ id: etapaAtual[0].idprocesso });
+      await knex.transaction(async (trx) => {
+        content.map(async (tuple) => knex(tuple.table)
+          .where('id', tuple.id)
+          .update(tuple.update)
+          .transacting(trx),
+        );
+        await trx.commit;
+      });
 
       return { response: 'Etapa atualizada com sucesso', status: 200 };
     } catch (error) {
@@ -188,6 +144,24 @@ class Processo {
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao limpar banco', status: 400 };
+    }
+  }
+
+  async compareObjects(obj1, obj2, mainKey) {
+    const result = [{}];
+
+    for (const key in obj1) {
+      if (typeof obj1[key] === 'object') {
+        this.compareObjects(obj1[key], obj2[key], key);
+      } else {
+        console.log(obj1[key], obj2[key]);
+        result.push({ table: mainKey, id: obj1['id'], [key]: obj2[key] });
+        console.log(result);
+      }
+
+    // const result = obj1.map((x) => {
+    //   console.log(x);
+    // });
     }
   }
 }
