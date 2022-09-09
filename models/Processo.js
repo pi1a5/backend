@@ -17,6 +17,7 @@ const knex = require('../database/connection');
 const Etapa = require('./Etapa');
 
 class Processo {
+  result = [];
   async findAll() {
     try {
       const result = await knex.select('*').table('processo');
@@ -98,7 +99,9 @@ class Processo {
   async update(sub, processoAntigo, processoNovo) {
     try {
       const content = this.compareObjects(processoAntigo, processoNovo, 'processo');
-
+      console.log(this.result);
+      console.log(processoAntigo.processo.etapas);
+      this.result = [];
       await knex.transaction(async (trx) => {
         content.map(async (tuple) => knex(tuple.table)
           .where('id', tuple.id)
@@ -107,6 +110,8 @@ class Processo {
         );
         await trx.commit;
       });
+
+      if (JSON.stringify(processoAntigo.processo.etapas.documentos) !== JSON.stringify(processoNovo.processo.etapas.documentos))
 
       return { response: 'Etapa atualizada com sucesso', status: 200 };
     } catch (error) {
@@ -148,20 +153,25 @@ class Processo {
   }
 
   async compareObjects(obj1, obj2, mainKey) {
-    const result = [{}];
-
     for (const key in obj1) {
       if (typeof obj1[key] === 'object') {
-        this.compareObjects(obj1[key], obj2[key], key);
+        if (key === 'documentos') {
+          continue;
+        }
+        if (!isNaN(key)) {
+          this.compareObjects(obj1[key], obj2[key], mainKey);
+        } else{
+          this.compareObjects(obj1[key], obj2[key], key);
+        }
       } else {
+        if (key === 'id') {
+          continue;
+        }
         console.log(obj1[key], obj2[key]);
-        result.push({ table: mainKey, id: obj1['id'], [key]: obj2[key] });
-        console.log(result);
+        if (obj1[key] !== obj2[key]) {
+          this.result.push({ table: mainKey, id: obj1.id, update: { [key]: obj2[key] } });
+        }
       }
-
-    // const result = obj1.map((x) => {
-    //   console.log(x);
-    // });
     }
   }
 }
