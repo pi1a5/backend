@@ -146,19 +146,24 @@ class Processo {
         }
       }
 
-      if (JSON.stringify(docNovos) !== JSON.stringify(docAntigos)) {
+      if (JSON.stringify(docNovos) !== JSON.stringify(docAntigos)) { // caso tenha diferença nos documentos 
         const idEtapa = [];
         const idEtapaIdDocumento = [];
         for (const i in processoAntigo.etapas) {
-          idEtapa.push(processoAntigo.etapas[i].id)
+          if (JSON.stringify(processoAntigo.etapas[i].documentos) !== JSON.stringify(processoNovo.etapas[i].documentos)) {
+            idEtapa.push(processoAntigo.etapas[i].id)
+          }
         }
+        console.log(idEtapa);
         await knex('etapa_tipodocumento').del().whereIn('idetapa', idEtapa);
         for (const j in processoNovo.etapas) {
+          if (!idEtapa.includes(processoNovo.etapas[j].id)) {
+            continue;
+          }
           for (const k in processoNovo.etapas[j].documentos){
             idEtapaIdDocumento.push({ idetapa: processoNovo.etapas[j].id, idtipodocumento: processoNovo.etapas[j].documentos[k].id})
           }
         }
-        console.log(idEtapaIdDocumento);
         await knex('etapa_tipodocumento').insert(idEtapaIdDocumento);
       }
 
