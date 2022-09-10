@@ -36,7 +36,7 @@ class Processo {
         .where({ sub: sub });
       if (idCurso.length === 0) return { response: 'Curso do usuário não encontrado', status: 404 };
 
-      const processos = await knex.raw("SELECT json_agg( json_build_object( 'nome', p.nome, 'id', p.id, 'etapas', etapas ) ) processos FROM processo p LEFT JOIN ( SELECT idprocesso, json_agg( json_build_object( 'id', e.id, 'nome', e.nome, 'prazo', e.prazo, 'documentos', etapatipodocumento ) ) etapas FROM etapa e LEFT JOIN ( SELECT idetapa, json_agg( tipodocumento ) etapatipodocumento FROM etapa_tipodocumento et LEFT JOIN ( SELECT id, json_agg(td.*) tipodocumento FROM tipodocumento td group by id ) td on et.idtipodocumento = td.id group by idetapa ) et on e.id = et.idetapa group by idprocesso ) e on p.id = e.idprocesso WHERE p.idcurso = " + idCurso[0].idcurso + ";");
+      const processos = await knex.raw("SELECT json_agg( json_build_object( 'nome', p.nome, 'id', p.id, 'etapas', etapas ) ORDER BY p.id ASC) processos FROM processo p LEFT JOIN ( SELECT idprocesso, json_agg( json_build_object( 'id', e.id, 'nome', e.nome, 'prazo', e.prazo, 'documentos', etapatipodocumento ) ORDER BY e.id ASC) etapas FROM etapa e LEFT JOIN ( SELECT idetapa, json_agg( tipodocumento ) etapatipodocumento FROM etapa_tipodocumento et LEFT JOIN ( SELECT id, json_agg(td.*) tipodocumento FROM tipodocumento td group by id ) td on et.idtipodocumento = td.id group by idetapa ) et on e.id = et.idetapa group by idprocesso ) e on p.id = e.idprocesso WHERE p.idcurso = " + idCurso[0].idcurso + ";");
       if (processos.rows.length === 0) return { response: 'Curso não contém processos', status: 200 };
       console.log(processos.rows[0].processos[0].etapas[0]);
       result.processos = processos.rows[0].processos;
@@ -98,10 +98,33 @@ class Processo {
 
   async update(sub, processoAntigo, processoNovo) {
     try {
-      const content = this.compareObjects(processoAntigo, processoNovo, 'processo');
-      console.log(this.result);
-      console.log(processoAntigo.processo.etapas);
+      this.compareObjects(processoAntigo, processoNovo, 'processo');
+      console.timeEnd("jorge");
+      const content = this.result;
       this.result = [];
+
+      // const resusult = [];
+
+      // for (const i in content) { // para cada elemento atualizavel
+      //   if (!resusult.some((item) => item.table === content[i].table)) { // caso tabela não esteja na lista
+      //     resusult.push({ table: content[i].table, ids: [content[i].id], updates: [content[i].update] }); // add tabela na lista
+      //   } else { // tabela já está na lista
+      //     for (const j in resusult) { // procurando a tabela na lista
+      //       if (resusult[j].table === content[i].table) { // achou a tabela na lista
+      //         resusult[j].ids.push(content[i].id);
+      //         resusult[j].updates.push(content[i].update);
+      //       }
+      //     }
+      //   }
+      // }
+
+      // console.log('resultados');
+
+      // for (const k in resusult) {
+      //   console.log(resusult[k]);
+      //   await knex(resusult[k].table).update(["nome", "prazo"], ["jorge", 10]).whereIn('id', resusult[k].ids);
+      // }
+
       await knex.transaction(async (trx) => {
         content.map(async (tuple) => knex(tuple.table)
           .where('id', tuple.id)
@@ -111,7 +134,33 @@ class Processo {
         await trx.commit;
       });
 
-      if (JSON.stringify(processoAntigo.processo.etapas.documentos) !== JSON.stringify(processoNovo.processo.etapas.documentos))
+      const docNovos = [];
+      const docAntigos = [];
+
+      for (const l in processoNovo.etapas) {
+        for (const m in processoNovo.etapas[l].documentos){
+          docNovos.push(processoNovo.etapas[l].documentos[m])
+        }
+        for (const n in processoAntigo.etapas[l].documentos){
+          docAntigos.push(processoAntigo.etapas[l].documentos[n])
+        }
+      }
+
+      if (JSON.stringify(docNovos) !== JSON.stringify(docAntigos)) {
+        const idEtapa = [];
+        const idEtapaIdDocumento = [];
+        for (const i in processoAntigo.etapas) {
+          idEtapa.push(processoAntigo.etapas[i].id)
+        }
+        await knex('etapa_tipodocumento').del().whereIn('idetapa', idEtapa);
+        for (const j in processoNovo.etapas) {
+          for (const k in processoNovo.etapas[j].documentos){
+            idEtapaIdDocumento.push({ idetapa: processoNovo.etapas[j].id, idtipodocumento: processoNovo.etapas[j].documentos[k].id})
+          }
+        }
+        console.log(idEtapaIdDocumento);
+        await knex('etapa_tipodocumento').insert(idEtapaIdDocumento);
+      }
 
       return { response: 'Etapa atualizada com sucesso', status: 200 };
     } catch (error) {
@@ -153,6 +202,7 @@ class Processo {
   }
 
   async compareObjects(obj1, obj2, mainKey) {
+    console.time("jorge");
     for (const key in obj1) {
       if (typeof obj1[key] === 'object') {
         if (key === 'documentos') {
@@ -169,7 +219,11 @@ class Processo {
         }
         console.log(obj1[key], obj2[key]);
         if (obj1[key] !== obj2[key]) {
-          this.result.push({ table: mainKey, id: obj1.id, update: { [key]: obj2[key] } });
+          if (mainKey === 'etapas') {
+            this.result.push({ table: 'etapa', id: obj1.id, update: { [key]: obj2[key] } });
+          } else {
+            this.result.push({ table: mainKey, id: obj1.id, update: { [key]: obj2[key] } });
+          }
         }
       }
     }
