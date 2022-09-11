@@ -25,6 +25,18 @@ class Course {
       return { response: 'Erro ao encontrar cursos', status: 400 };
     }
   }
+
+  async newCourse(nome, descricao, imagem, area, tipo) {
+    try {
+      await knex.insert({
+        nome, descricao, imagem, area, tipo,
+      }).table('curso');
+      return { response: 'Curso criado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao criar curso', status: 400 };
+    }
+  }
 }
 
 module.exports = new Course();

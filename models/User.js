@@ -1,3 +1,5 @@
+/* eslint-disable linebreak-style */
+/* eslint-disable prefer-destructuring */
 /* eslint-disable object-shorthand */
 /* eslint-disable prefer-const */
 /* eslint-disable no-await-in-loop */
@@ -29,7 +31,7 @@ class User {
       if (check.status !== 200) return { response: check.response, status: check.status };
 
       await knex.update({ idcurso: idCurso, prontuario: prontuario }).table('usuario').where({ sub });
-      return { response: 'Prontuário e curso atualizados', status: 200 };
+      return { response: user.response, status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao atualizar base', status: 404 };
@@ -84,12 +86,14 @@ class User {
 
   async findBySub(sub) {
     try {
-      const user = await knex.select(['email', 'nome', 'foto', 'idcurso'])
+      const user = await knex.select(['id', 'email', 'nome', 'foto', 'idcurso', 'prontuario'])
         .table('usuario')
-        .where({ sub })
-        .first();
+        .where({ sub });
 
-      return { response: user, status: 200 };
+      if (user.length === 0) return { response: 'Erro ao encontrar com sub', status: 404 };
+      if (user === undefined) return ({ response: 'Erro ao encontrar com sub', status: 400 });
+
+      return { response: user[0], status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao encontrar pelo sub', status: 400 };
@@ -123,8 +127,6 @@ class User {
       return { response: 'Erro ao encontrar usuários', status: 400 };
     }
   }
-
-  // fazer depois
 
   async checkAmount(sub) {
     try {
@@ -162,6 +164,71 @@ class User {
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao encontrar os processos dos outros orientadores', status: 400 };
+    }
+  }
+
+  async getAlunoProfile(sub) {
+    try {
+      const result = {};
+      let countAceito = 0;
+      let countRecusado = 0;
+      const user = await this.findBySub(sub);
+
+      if (user.status !== 200) return { response: user.response, status: user.status };
+      const curso = await knex.select(['nome'])
+        .table('curso')
+        .where({ id: user.response.idcurso });
+      if (curso.length === 0) return { response: 'Curso do usuário não encontrado', status: 404 };
+      user.response.curso = curso[0].nome;
+      result.user = user.response;
+
+      const estagio = await knex.select(['id', 'criado', 'idorientador'])
+        .table('estagio')
+        .where({ idaluno: user.response.id });
+      if (estagio.length === 0 || estagio[0].idorientador === null) {
+        result.estagio = [];
+        result.orientador = [];
+        return { response: result, status: 404 };
+      }
+
+      const tickets = await knex.select(['aceito'])
+        .table('ticket')
+        .where({ idestagio: estagio[0].id });
+
+      if (tickets.length === 0) return { response: 'Tickets do usuário não encontrado', status: 404 };
+
+      for (const i in tickets) {
+        if (tickets[i].aceito === true) {
+          countAceito += 1;
+        } else if (tickets[i].aceito === false) {
+          countRecusado += 1;
+        }
+      }
+
+      estagio[0].ticketsTotal = tickets.length;
+
+      console.log(estagio[0]);
+      estagio[0].ticketsAceitos = countAceito;
+      estagio[0].ticketsRecusados = countRecusado;
+
+      result.estagio = estagio[0];
+
+      const cursoOrientador = await knex.select(['nome'])
+        .table('curso')
+        .where({ id: estagio[0].idorientador });
+      if (cursoOrientador.length === 0) return { response: 'Curso do orientador não encontrado', status: 404 };
+      const orientador = await knex.select('nome', 'email')
+        .table('usuario')
+        .where({ id: estagio[0].idorientador });
+      if (orientador.length === 0) return { response: 'Orientador não encontrado', status: 404 };
+      orientador[0].curso = cursoOrientador[0].nome;
+
+      result.orientador = orientador[0];
+
+      return { response: result, status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao coletar informações do usuário', status: 400 };
     }
   }
 }

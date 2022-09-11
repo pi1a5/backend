@@ -53,8 +53,8 @@ class UserController {
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const response = await User.saveIdCursoProntuario(idCurso, prontuario, sub);
-      res.status(response.status).json(response.response);
+      const result = await User.saveIdCursoProntuario(idCurso, prontuario, sub);
+      res.status(result.status).json(result.response);
     } catch (error) {
       res.status(500).json(error);
     }
@@ -99,6 +99,24 @@ class UserController {
       if (val !== true) return res.status(400).json(val);
 
       const users = await User.checkAmount(sub);
+      res.status(200).json(users);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async getAlunoProfile(req, res) {
+    try {
+      const {
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const users = await User.getAlunoProfile(sub);
       res.status(200).json(users);
     } catch (error) {
       res.status(500).json(error);

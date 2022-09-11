@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-console */
 /* eslint-disable class-methods-use-this */
 const knex = require('../database/connection');
@@ -9,19 +10,35 @@ class Document {
       return { response: result, status: 200 };
     } catch (error) {
       console.log(error);
-      return { response: 'Erro ao encontrar documentos', status: 200 };
+      return { response: 'Erro ao encontrar documentos', status: 400 };
     }
   }
 
   async newDocument(arquivo, tipo, eProfessor, idTicket) {
+    const {
+      nome, sigla, template,
+    } = req.body;
+    const data = {
+      nome: nome,
+      sigla: sigla,
+      template: template,
+    };
+    const val = Validate(data);
+    if (val !== true) return res.status(400).json(val);
+
+    const document = await Document.newDocumentType(nome, sigla, template);
+    res.status(document.status).json(document.response);
+  }
+
+  async newDocumentType(nome, sigla, template) {
     try {
       await knex.insert({
-        idTicket, arquivo, tipo, eProfessor,
-      }).table('documento');
-      return true;
+        nome, sigla, template,
+      }).table('tipodocumento');
+      return { response: 'Tipo de documento criado com sucesso', status: 200 };
     } catch (error) {
       console.log(error);
-      return false;
+      return { response: 'Erro ao criar tipo de documento', status: 400 };
     }
   }
 }

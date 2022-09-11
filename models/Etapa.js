@@ -1,3 +1,6 @@
+/* eslint-disable eqeqeq */
+/* eslint-disable arrow-parens */
+/* eslint-disable no-await-in-loop */
 /* eslint-disable max-len */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
@@ -18,36 +21,57 @@ class Etapa {
     }
   }
 
-  async findAllByIdProcesso(idProcesso) {
+  async update(sub, idEtapa, etapa) {
     try {
-      const etapas = await knex.select('*')
+      const etapaAtual = await knex.select('nome', 'prazo', 'idprocesso')
         .table('etapa')
-        .where({ idprocesso: idProcesso });
-      if (etapas.length === 0) return { response: 'Etapas não encontradas', status: 404 };
+        .where({ id: idEtapa });
+      if (etapaAtual.length === 0) return { response: 'Etapa não encontrada', status: 404 };
+      const nome = await knex.select('nome')
+        .table('usuario')
+        .where({ sub });
+      if (nome.length === 0) return { response: 'Nome não encontrado', status: 404 };
 
-      for (const i in etapas) {
-        const documentos = this.findAllDocumentosByIdEtapa(etapas[i].id);
-        if (documentos.status === 400) return { response: documentos.response, status: documentos.status };
-        etapas[i].documentos = documentos;
+      if (etapaAtual[0].nome !== etapa.nome) {
+        await knex.update({ nome: etapa.nome })
+          .table('etapa')
+          .where({ id: idEtapa });
+      }
+      if (etapaAtual[0].prazo !== etapa.prazo) {
+        await knex.update({ prazo: etapa.prazo })
+          .table('etapa')
+          .where({ id: idEtapa });
       }
 
-      return { response: etapas, status: 200 };
-    } catch (error) {
-      console.log(error);
-      return { response: 'Erro ao procurar processo', status: 400 };
-    }
-  }
-
-  async findAllDocumentosByIdEtapa(idEtapa) {
-    try {
-      const documentos = await knex.select('*')
-        .table('tipodocumento')
+      const documentos = await knex.select('idtipodocumento')
+        .table('etapa_tipodocumento')
         .where({ idetapa: idEtapa });
+      if (documentos.length === 0) return { response: 'Documentos não encontrados', status: 404 };
 
-      return { response: documentos, status: 200 };
+      for (const j in documentos) {
+        if (!etapa.documentos.some(item => item.id === documentos[j].idtipodocumento)) {
+          await knex.del()
+            .table('etapa_tipodocumento')
+            .where({ idetapa: idEtapa, idtipodocumento: documentos[j].idtipodocumento });
+        }
+      }
+
+      for (const i in etapa.documentos) {
+        if (!documentos.some(item => item.idtipodocumento === etapa.documentos[i].id)) {
+          await knex.insert({ idetapa: idEtapa, idtipodocumento: etapa.documentos[i].id })
+            .table('etapa_tipodocumento')
+            .where({ idetapa: idEtapa, idtipodocumento: etapa.documentos[i].id });
+        }
+      }
+
+      await knex.update({ modificador: nome[0].nome })
+        .table('processo')
+        .where({ id: etapaAtual[0].idprocesso });
+
+      return { response: 'Etapa atualizada com sucesso', status: 200 };
     } catch (error) {
       console.log(error);
-      return { response: 'Erro ao procurar tipo de documentos', status: 400 };
+      return { response: 'Erro ao atualizar etapa', status: 400 };
     }
   }
 }
