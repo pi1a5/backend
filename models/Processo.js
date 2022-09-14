@@ -93,6 +93,7 @@ class Processo {
           for (const l in documento) {
             if (documento[l].idetapa === processoCriado.processo.etapas[m].id) {
               console.log(documento[l]);
+              documento[l].id = documento[l].idtipodocumento;
               processoCriado.processo.etapas[m].documentos.push(documento[l]);
             }
           }
