@@ -62,20 +62,22 @@ class Processo {
         .table('usuario')
         .where({ sub: sub });
       if (idCurso.length === 0) return { response: 'Curso do usuário não encontrado', status: 404 };
+      const processoCriado = {};
 
       await knex.transaction(async function (t) {
-        const idProcesso = await knex.returning('id').insert({
+        const idProcesso = await knex.returning('*').insert({
           idcurso: idCurso[0].idcurso, nome: processo.nome, criador: idCurso[0].nome, modificador: null,
         }).table('processo');
         if (idCurso.length === 0) return { response: 'Erro ao criar processo', status: 404 };
-
+        processoCriado.processo = idProcesso[0];
         for (const k in processo.etapas) {
           etapas[k] = {
             nome: processo.etapas[k].nome, prazo: processo.etapas[k].prazo, idprocesso: idProcesso[0].id,
           };
         }
 
-        const ids = await knex('etapa').returning('id').insert(etapas);
+        const ids = await knex('etapa').returning('*').insert(etapas);
+        processoCriado.processo.etapas = ids;
         let count = 0;
         for (const k in processo.etapas) {
           for (const b in processo.etapas[k].documentos) {
@@ -84,12 +86,23 @@ class Processo {
           }
         }
 
-        await knex.insert(documentos)
+        const documento = await knex.returning('*').insert(documentos)
           .table('etapa_tipodocumento');
+        for (const m in processoCriado.processo.etapas) {
+          processoCriado.processo.etapas[m].documentos = [];
+          for (const l in documento) {
+            if (documento[l].idetapa === processoCriado.processo.etapas[m].id) {
+              console.log(documento[l]);
+              processoCriado.processo.etapas[m].documentos.push(documento[l]);
+            }
+          }
+        }
+        console.log(processoCriado)
+
         await t.commit;
       });
 
-      return { response: 'Processo criado com sucesso', status: 200 };
+      return { response: processoCriado, status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao criar processo', status: 400 };
