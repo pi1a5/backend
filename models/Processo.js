@@ -65,7 +65,7 @@ class Processo {
       const processoCriado = {};
 
       await knex.transaction(async function (t) {
-        const idProcesso = await knex.returning('*').insert({
+        const idProcesso = await knex.returning('id', 'nome').insert({
           idcurso: idCurso[0].idcurso, nome: processo.nome, criador: idCurso[0].nome, modificador: null,
         }).table('processo');
         if (idCurso.length === 0) return { response: 'Erro ao criar processo', status: 404 };
@@ -76,7 +76,7 @@ class Processo {
           };
         }
 
-        const ids = await knex('etapa').returning('*').insert(etapas);
+        const ids = await knex('etapa').returning('id', 'nome', 'prazo').insert(etapas);
         processoCriado.processo.etapas = ids;
         let count = 0;
         for (const k in processo.etapas) {
