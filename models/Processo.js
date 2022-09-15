@@ -233,6 +233,9 @@ class Processo {
           this.compareObjects(obj1[key], obj2[key], key);
         }
       } else {
+        if (!obj2.hasOwnProperty(key)) {
+          continue;
+        }
         if (key === 'id') {
           continue;
         }
