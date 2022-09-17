@@ -16,6 +16,10 @@ const knex = require('../database/connection');
 const Aws = require('./Aws');
 
 class Ticket {
+  async new(){
+
+  }
+
   async getAll() {
     try {
       const result = await knex.select('*').table('ticket');

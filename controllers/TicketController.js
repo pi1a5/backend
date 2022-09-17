@@ -10,6 +10,24 @@ const Ticket = require('../models/Ticket');
 const Validate = require('../modules/validate');
 
 class TicketController {
+  async newTicket(req, res) {
+    const {
+      corpoTexto, dataLimite, sub, eProfessor, 
+    } = req.body;
+    const data = {
+      corpoTexto: corpoTexto,
+      dataLimite: dataLimite,
+      sub: sub,
+      eProfessor,
+    };
+    const val = Validate(data);
+
+    console.log(req['files']);
+
+
+    if (val !== true) return res.status(400).json(val);
+  }
+
   async tickets(req, res) {
     try {
       const ticket = await Ticket.getAll();
