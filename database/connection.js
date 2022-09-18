@@ -2,7 +2,7 @@
 require('dotenv').config();
 
 const knex = require('knex')({
-  debug: true,
+  debug: false,
   client: 'postgresql',
   connection: {
     host: process.env.DB_HOST,

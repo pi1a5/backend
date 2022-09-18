@@ -11,21 +11,30 @@ const Validate = require('../modules/validate');
 
 class TicketController {
   async newTicket(req, res) {
-    const {
-      corpoTexto, dataLimite, sub, eProfessor, 
-    } = req.body;
-    const data = {
-      corpoTexto: corpoTexto,
-      dataLimite: dataLimite,
-      sub: sub,
-      eProfessor,
-    };
-    const val = Validate(data);
+    try {
+      console.log('1');
+      const {
+        corpoTexto, dataLimite, sub, // idestagio,
+      } = req.body;
 
-    console.log(req['files']);
+      const data = {
+        corpoTexto: corpoTexto,
+        dataLimite: dataLimite,
+        sub: sub,
+        // idestagio: idestagio,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
 
+      const files = req['files'];
+      const idestagio = 3;
+      console.log('a');
 
-    if (val !== true) return res.status(400).json(val);
+      const result = await Ticket.new(corpoTexto, dataLimite, sub, idestagio, files);
+      res.status(result.status).json(result.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
   }
 
   async tickets(req, res) {

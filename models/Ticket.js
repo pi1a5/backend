@@ -16,8 +16,23 @@ const knex = require('../database/connection');
 const Aws = require('./Aws');
 
 class Ticket {
-  async new(){
+  async new(corpoTexto, dataLimite, sub, idestagio, files){
+    try {
+      console.log('b');
+      const dataCriado = new Date();
+      const ticketid = await knex('ticket').returning('id').insert({ mensagem: corpoTexto, limite: dataLimite, idestagio: idestagio, datacriado: dataCriado});
+      const documentos = [];
 
+      for (const file in files) {
+        documentos.push({ idticket: ticketid[0].id, arquivo: await Aws.uploadFile(files[file], sub), nome: file })
+      }
+      await knex('documento').insert(documentos);
+
+      return { response: 'Ticket criado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao criar tickets', status: 404 };
+    }
   }
 
   async getAll() {
