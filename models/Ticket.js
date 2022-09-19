@@ -16,11 +16,30 @@ const knex = require('../database/connection');
 const Aws = require('./Aws');
 
 class Ticket {
-  async new(corpoTexto, dataLimite, sub, idestagio, files){
+  async new(corpoTexto, sub, idestagio, files){
     try {
       console.log('b');
       const dataCriado = new Date();
-      const ticketid = await knex('ticket').returning('id').insert({ mensagem: corpoTexto, limite: dataLimite, idestagio: idestagio, datacriado: dataCriado});
+      const ticketid = await knex('ticket').returning('id').insert({ mensagem: corpoTexto, idestagio: idestagio, datacriado: dataCriado });
+      const documentos = [];
+
+      for (const file in files) {
+        documentos.push({ idticket: ticketid[0].id, arquivo: await Aws.uploadFile(files[file], sub), nome: file })
+      }
+      await knex('documento').insert(documentos);
+
+      return { response: 'Ticket criado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao criar tickets', status: 404 };
+    }
+  }
+
+  async newFirstTicket(corpoTexto, sub, idestagio, files, dataLimite){
+    try {
+      console.log('b');
+      const dataCriado = new Date();
+      const ticketid = await knex('ticket').returning('id').insert({ mensagem: corpoTexto, idestagio: idestagio, datacriado: dataCriado, limite: dataLimite });
       const documentos = [];
 
       for (const file in files) {
@@ -55,7 +74,7 @@ class Ticket {
         .table('estagio')
         .where({ idaluno: id[0].id });
       if (estagio.length === 0) return { response: 'Usuário não tem estágio', status: 404 };
-      const result = await knex.select(['id', 'mensagem', 'resposta', 'datacriado', 'datafechado', 'limite', 'aceito'])
+      const result = await knex.select(['id', 'mensagem', 'resposta', 'datacriado', 'datafechado', 'aceito'])
         .table('ticket')
         .where({ idestagio: estagio[0].id })
         .orderBy('id', 'desc');
@@ -84,7 +103,7 @@ class Ticket {
         .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
         .where({ 'u.idcurso': ids[0].idcurso, 'u.id': ids[0].id });
       if (area.length === 0) return { response: 'Area não encontrada', status: 404 };
-      const result = await knex.select(['t.id', 't.mensagem', 't.resposta', 't.datacriado', 't.datafechado', 't.limite', 't.aceito'])
+      const result = await knex.select(['t.id', 't.mensagem', 't.resposta', 't.datacriado', 't.datafechado', 't.aceito'])
         .from('ticket AS t')
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
@@ -111,7 +130,7 @@ class Ticket {
         .table('usuario')
         .where({ sub });
       if (id.length === 0) return { response: 'Usuário não encontrado', status: 404 };
-      const result = await knex.select(['t.id', 't.mensagem', 't.resposta', 't.datacriado', 't.datafechado', 't.limite', 't.aceito'])
+      const result = await knex.select(['t.id', 't.mensagem', 't.resposta', 't.datacriado', 't.datafechado', 't.aceito'])
         .from('ticket AS t')
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
@@ -136,7 +155,7 @@ class Ticket {
         .table('usuario')
         .where({ sub });
       if (id.length === 0) return { response: 'Usuário não encontrado', status: 404 };
-      const result = await knex.select(['t.id', 't.mensagem', 't.resposta', 't.datacriado', 't.datafechado', 't.limite', 't.aceito'])
+      const result = await knex.select(['t.id', 't.mensagem', 't.resposta', 't.datacriado', 't.datafechado', 't.aceito'])
         .from('ticket AS t')
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
@@ -182,7 +201,7 @@ class Ticket {
     }
   }
 
-  async create(sub, mensagem, documentos, limite) {
+  async create(sub, mensagem, documentos) {
     try {
       const criado = new Date();
       const id = await knex.select(['id'])
@@ -195,7 +214,7 @@ class Ticket {
       if (idEstagio.length === 0) return { response: 'Usuário não encontrado', status: 404 };
       const idTicket = await knex.returning('id')
         .insert({
-          idestagio: idEstagio[0].id, mensagem: mensagem, datacriado: criado, limite: limite,
+          idestagio: idEstagio[0].id, mensagem: mensagem, datacriado: criado,
         }).table('ticket');
 
       for (const i in documentos) {

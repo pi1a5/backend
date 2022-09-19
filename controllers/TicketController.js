@@ -12,14 +12,13 @@ const Validate = require('../modules/validate');
 class TicketController {
   async newTicket(req, res) {
     try {
-      console.log('1');
       const {
-        corpoTexto, dataLimite, sub, // idestagio,
+        corpoTexto, sub, cargaHoraria // idestagio,
       } = req.body;
 
       const data = {
         corpoTexto: corpoTexto,
-        dataLimite: dataLimite,
+        cargaHoraria: cargaHoraria,
         sub: sub,
         // idestagio: idestagio,
       };
@@ -30,7 +29,34 @@ class TicketController {
       const idestagio = 3;
       console.log('a');
 
-      const result = await Ticket.new(corpoTexto, dataLimite, sub, idestagio, files);
+      const result = await Ticket.new(corpoTexto, sub, idestagio, files);
+      res.status(result.status).json(result.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async newFirstTicket(req, res) {
+    try {
+      const {
+        corpoTexto, sub, cargaHoraria, dataLimite, // idestagio,
+      } = req.body;
+
+      const data = {
+        corpoTexto: corpoTexto,
+        cargaHoraria: cargaHoraria,
+        sub: sub,
+        dataLimite: dataLimite,
+        // idestagio: idestagio,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const files = req['files'];
+      const idestagio = 3;
+      console.log('a');
+
+      const result = await Ticket.newFirst(corpoTexto, sub, idestagio, files, dataLimite);
       res.status(result.status).json(result.response);
     } catch (error) {
       res.status(500).json(error);
@@ -132,18 +158,17 @@ class TicketController {
   async createTicket(req, res) {
     try {
       const {
-        sub, mensagem, documentos, limite,
+        sub, mensagem, documentos,
       } = req.body;
       const data = {
         sub: sub,
         mensagem: mensagem,
         documentos: documentos,
-        limite: limite,
       };
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const ticket = await Ticket.create(sub, mensagem, documentos, limite);
+      const ticket = await Ticket.create(sub, mensagem, documentos);
       res.status(ticket.status).json(ticket.response);
     } catch (error) {
       res.status(500).json(error);
