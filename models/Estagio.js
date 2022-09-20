@@ -31,11 +31,7 @@ class Estagio {
 
       const processo = await knex.raw("SELECT json_agg( json_build_object( 'nome', p.nome, 'id', p.id, 'etapas', etapas ) ORDER BY p.id ASC) processos FROM processo p LEFT JOIN ( SELECT idprocesso, json_agg( json_build_object( 'id', e.id, 'nome', e.nome, 'prazo', e.prazo, 'documentos', etapatipodocumento ) ORDER BY e.id ASC) etapas FROM etapa e LEFT JOIN ( SELECT idetapa, json_agg( tipodocumento ) etapatipodocumento FROM etapa_tipodocumento et LEFT JOIN ( SELECT id, json_agg(td.*) tipodocumento FROM tipodocumento td group by id ) td on et.idtipodocumento = td.id group by idetapa ) et on e.id = et.idetapa group by idprocesso ) e on p.id = e.idprocesso WHERE p.id = " + idProcesso + ";");
 
-      await knex.transaction(async function (t) {
-        const idestagio = await knex.returning('id').insert({ idaluno: id[0].id, criado: dataCriado, processo: processo.rows[0].processos[0], cargahoraria: cargaHoraria }).table('estagio');
-        await Ticket.newInicio(corpoTexto, sub, idestagio[0].id, files, dataLimite);
-        await t.commit;
-      });
+      await knex.insert({ idaluno: id[0].id, criado: dataCriado, processo: processo.rows[0].processos[0], cargahoraria: cargaHoraria }).table('estagio');
 
       return { response: 'Estágio Criado com Sucesso', status: 200 };
     } catch (error) {

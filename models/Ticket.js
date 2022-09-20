@@ -35,25 +35,6 @@ class Ticket {
     }
   }
 
-  async newFirstTicket(corpoTexto, sub, idestagio, files, dataLimite){
-    try {
-      console.log('b');
-      const dataCriado = new Date();
-      const ticketid = await knex('ticket').returning('id').insert({ mensagem: corpoTexto, idestagio: idestagio, datacriado: dataCriado, limite: dataLimite });
-      const documentos = [];
-
-      for (const file in files) {
-        documentos.push({ idticket: ticketid[0].id, arquivo: await Aws.uploadFile(files[file], sub), nome: file })
-      }
-      await knex('documento').insert(documentos);
-
-      return { response: 'Ticket criado com sucesso', status: 200 };
-    } catch (error) {
-      console.log(error);
-      return { response: 'Erro ao criar tickets', status: 404 };
-    }
-  }
-
   async getAll() {
     try {
       const result = await knex.select('*').table('ticket');

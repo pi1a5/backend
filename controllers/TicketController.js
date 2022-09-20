@@ -36,32 +36,6 @@ class TicketController {
     }
   }
 
-  async newFirstTicket(req, res) {
-    try {
-      const {
-        corpoTexto, sub, cargaHoraria, dataLimite, // idestagio,
-      } = req.body;
-
-      const data = {
-        corpoTexto: corpoTexto,
-        cargaHoraria: cargaHoraria,
-        sub: sub,
-        dataLimite: dataLimite,
-        // idestagio: idestagio,
-      };
-      const val = Validate(data);
-      if (val !== true) return res.status(400).json(val);
-
-      const files = req['files'];
-      const idestagio = 3;
-      console.log('a');
-
-      const result = await Ticket.newFirst(corpoTexto, sub, idestagio, files, dataLimite);
-      res.status(result.status).json(result.response);
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  }
 
   async tickets(req, res) {
     try {
