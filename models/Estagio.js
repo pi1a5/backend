@@ -31,12 +31,7 @@ class Estagio {
       if (result.length === 0) {
         response = null;
       } else {
-        for (const i in result[0].processo.etapas) {
-          if (result[0].processo.etapas[i].atual === true) {
-            response = result[0].processo.etapas[i];
-            break;
-          }
-        }
+        response = result[0].processo;
       }
 
       return { response: response, status: 200 };
