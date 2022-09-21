@@ -49,6 +49,29 @@ class Ticket {
     }
   }
 
+  async getPending(sub) {
+    try {
+      const result = await knex.select('t.*', knex.raw('json_agg(d.*) as documentos'))
+        .from('ticket AS t')
+        .leftJoin('estagio AS e', 'e.id', 't.idestagio')
+        .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
+        .leftJoin('documento AS d', 'd.idticket', 't.id')
+        .where({ 'u.sub': sub })
+        .orderBy('t.id', 'desc')
+        .groupBy('t.id')
+        .first();
+
+      if (result.resposta == null) {
+        return { response: result, status: 200 };
+      } else {
+        return { response: null, status: 404 };
+      }
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao resgatar tickets', status: 404 };
+    }
+  }
+
   async getAllbyUserId(sub) {
     try {
       const id = await knex.select(['id'])

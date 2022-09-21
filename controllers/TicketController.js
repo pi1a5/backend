@@ -62,6 +62,25 @@ class TicketController {
     }
   }
 
+  async getPendingTicket(req, res) {
+    try {
+      const {
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const getAllTickets = await Ticket.getPending(sub);
+
+      res.status(getAllTickets.status).json(getAllTickets.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
   async getTicketsWithoutSupervisor(req, res) {
     try {
       const { sub } = req.body;

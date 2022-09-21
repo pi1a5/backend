@@ -52,6 +52,7 @@ router.post('/api/checkIfFinalizou', HeaderMiddleware, TicketController.checkIfF
 router.post('/api/getTicketForm', HeaderMiddleware, TicketController.getTicketForm);
 router.post('/api/updateLatestTicket', HeaderMiddleware, TicketController.updateLatestTicket);
 router.post('/api/newTicket', HeaderMiddleware, TicketController.newTicket);
+router.post('/api/getPendingTicket', HeaderMiddleware, TicketController.getPendingTicket);
 
 // Para Ticket Professor
 router.post('/api/getTicketsWithoutSupervisor', HeaderMiddleware, TicketController.getTicketsWithoutSupervisor);
