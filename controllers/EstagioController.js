@@ -26,27 +26,17 @@ class EstagioController {
   async createNewEstagio(req, res) {
     try {
       const { // pegar idcurso e nome do orientador com o sub
-        idProcesso, cargaHoraria, sub, dataLimite, corpoTexto,
+        idProcesso, cargaHoraria, sub,
       } = req.body;
       const data = {
         sub: sub,
         idProcesso: idProcesso,
         cargaHoraria: cargaHoraria,
-        dataLimite: dataLimite,
-        corpoTexto: corpoTexto,
       };
-
-      const files = req['files'];
-
-      console.log(data);
-      console.log(files);
-
-
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-
-      const result = await Estagio.newEstagio(idProcesso, sub, cargaHoraria, dataLimite, corpoTexto, files);
+      const result = await Estagio.newEstagio(idProcesso, sub, cargaHoraria);
       res.status(result.status).json(result.response);
     } catch (error) {
       res.status(500).json(error);

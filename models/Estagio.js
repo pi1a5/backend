@@ -20,7 +20,7 @@ class Estagio {
     }
   }
 
-  async newEstagio(idProcesso, sub, cargaHoraria, dataLimite, corpoTexto, files) {
+  async newEstagio(idProcesso, sub, cargaHoraria) {
     try {
       console.log("aaaaaaaa");
       const dataCriado = new Date();

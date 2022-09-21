@@ -18,13 +18,13 @@ const Aws = require('./Aws');
 class Ticket {
   async new(corpoTexto, sub, idestagio, files){
     try {
-      console.log('b');
       const dataCriado = new Date();
       const ticketid = await knex('ticket').returning('id').insert({ mensagem: corpoTexto, idestagio: idestagio, datacriado: dataCriado });
       const documentos = [];
 
       for (const file in files) {
-        documentos.push({ idticket: ticketid[0].id, arquivo: await Aws.uploadFile(files[file], sub), nome: file })
+        console.log(files[file].name);
+        documentos.push({ idticket: ticketid[0].id, arquivo: await Aws.uploadFile(files[file], sub), nome: file, limite: files[file].dataLimite })
       }
       await knex('documento').insert(documentos);
 
