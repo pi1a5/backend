@@ -19,7 +19,7 @@ class Ticket {
   async new(corpoTexto, sub, files){
     try {
       const dataCriado = new Date();
-      const estagioid = await knex.select('e.id')
+      const estagioid = await knex.select(['e.id'])
         .from('estagio AS e')
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
         .where({ 'u.sub': sub })

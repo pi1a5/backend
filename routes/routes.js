@@ -43,6 +43,7 @@ router.post('/api/updateProcesso', HeaderMiddleware, ProcessoController.updatePr
 // Para estagios
 
 router.post('/api/createNewEstagio', HeaderMiddleware, EstagioController.createNewEstagio);
+router.post('/api/checkIfHasEstagio', HeaderMiddleware, EstagioController.checkIfHasEstagio);
 
 // Para Ticket Aluno
 router.post('/api/createTicket', HeaderMiddleware, TicketController.createTicket);

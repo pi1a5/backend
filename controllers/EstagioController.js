@@ -23,6 +23,24 @@ class EstagioController {
     }
   }
 
+  async checkIfHasEstagio(req, res) {
+    try {
+      const { // pegar idcurso e nome do orientador com o sub
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const limpar = await Estagio.checkIfHas(sub);
+      res.status(limpar.status).json(limpar.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
   async createNewEstagio(req, res) {
     try {
       const { // pegar idcurso e nome do orientador com o sub
