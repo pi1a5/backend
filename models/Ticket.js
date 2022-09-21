@@ -56,12 +56,34 @@ class Ticket {
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
         .leftJoin('documento AS d', 'd.idticket', 't.id')
-        .where({ 'u.sub': sub })
+        .where({ 'u.sub': sub, 't.resposta': null})
         .orderBy('t.id', 'desc')
-        .groupBy('t.id')
-        .first();
+        .groupBy('t.id');
 
-      if (result.resposta == null) {
+      if (result.length !== 0) {
+        return { response: result, status: 200 };
+      } else {
+        return { response: null, status: 404 };
+      }
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao resgatar tickets', status: 404 };
+    }
+  }
+
+  async getClosed(sub) {
+    try {
+      const result = await knex.select('t.*', knex.raw('json_agg(d.*) as documentos'))
+        .from('ticket AS t')
+        .leftJoin('estagio AS e', 'e.id', 't.idestagio')
+        .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
+        .leftJoin('documento AS d', 'd.idticket', 't.id')
+        .where({ 'u.sub': sub })
+        .whereNotNull('t.resposta')
+        .orderBy('t.id', 'desc')
+        .groupBy('t.id');
+
+      if (result.length !== 0) {
         return { response: result, status: 200 };
       } else {
         return { response: null, status: 404 };
