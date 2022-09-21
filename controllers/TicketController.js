@@ -13,23 +13,20 @@ class TicketController {
   async newTicket(req, res) {
     try {
       const {
-        corpoTexto, sub, cargaHoraria // idestagio,
+        corpoTexto, sub,
       } = req.body;
 
       const data = {
         corpoTexto: corpoTexto,
-        cargaHoraria: cargaHoraria,
         sub: sub,
-        // idestagio: idestagio,
       };
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
       const files = req['files'];
-      const idestagio = 3;
       console.log('a');
 
-      const result = await Ticket.new(corpoTexto, sub, idestagio, files);
+      const result = await Ticket.new(corpoTexto, sub, files);
       res.status(result.status).json(result.response);
     } catch (error) {
       res.status(500).json(error);

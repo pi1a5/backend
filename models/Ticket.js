@@ -16,10 +16,15 @@ const knex = require('../database/connection');
 const Aws = require('./Aws');
 
 class Ticket {
-  async new(corpoTexto, sub, idestagio, files){
+  async new(corpoTexto, sub, files){
     try {
       const dataCriado = new Date();
-      const ticketid = await knex('ticket').returning('id').insert({ mensagem: corpoTexto, idestagio: idestagio, datacriado: dataCriado });
+      const estagioid = await knex.select('e.id')
+        .from('estagio AS e')
+        .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
+        .where({ 'u.sub': sub })
+
+      const ticketid = await knex('ticket').returning('id').insert({ mensagem: corpoTexto, idestagio: estagioid[0].id , datacriado: dataCriado });
       const documentos = [];
 
       for (const file in files) {
