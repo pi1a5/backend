@@ -14,7 +14,7 @@ class EstagioController {
     }
   }
 
-  async limparBanco(req, res) {
+  async limparEstagios(req, res) {
     try {
       const limpar = await Estagio.limpar();
       res.status(limpar.status).json(limpar.response);

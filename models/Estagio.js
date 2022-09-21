@@ -20,6 +20,16 @@ class Estagio {
     }
   }
 
+  async limpar() {
+    try {
+      await knex.del().table('estagio');
+      return { response: 'Estágios deletados com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao procurar estágio', status: 400 };
+    }
+  }
+
   async checkIfHas(sub) {
     try {
       const result = await knex.select('e.processo')
