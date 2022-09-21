@@ -23,8 +23,7 @@ class Ticket {
       const documentos = [];
 
       for (const file in files) {
-        console.log(files[file].name);
-        documentos.push({ idticket: ticketid[0].id, arquivo: await Aws.uploadFile(files[file], sub), nome: file, limite: files[file].dataLimite })
+        documentos.push({ idticket: ticketid[0].id, arquivo: await Aws.uploadFile(files[file], sub), nome: file})
       }
       await knex('documento').insert(documentos);
 
