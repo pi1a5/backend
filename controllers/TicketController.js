@@ -125,7 +125,7 @@ class TicketController {
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const ticket = await Ticket.getJoinWithSupervisorOpen(sub);
+      const ticket = await Ticket.getWithSupervisor(sub);
       res.status(ticket.status).json(ticket.response);
     } catch (error) {
       res.status(500).json(error);
@@ -141,7 +141,7 @@ class TicketController {
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const ticket = await Ticket.getJoinWithSupervisorClosed(sub);
+      const ticket = await Ticket.getWithSupervisor(sub);
       res.status(ticket.status).json(ticket.response);
     } catch (error) {
       res.status(500).json(error);
