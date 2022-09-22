@@ -73,7 +73,7 @@ class Ticket {
       if (result.length !== 0) {
         return { response: result, status: 200 };
       } else {
-        return { response: null, status: 404 };
+        return { response: null, status: 200 };
       }
     } catch (error) {
       console.log(error);
