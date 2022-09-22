@@ -16,7 +16,7 @@ const knex = require('../database/connection');
 const Aws = require('./Aws');
 
 class Ticket {
-  async new(corpoTexto, sub, files){
+  async new(corpoTexto, sub, files) {
     try {
       const dataCriado = new Date();
       const estagioid = await knex.select(['e.id'])
@@ -139,7 +139,7 @@ class Ticket {
         .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
         .where({ 'u.sub': sub });
       if (area.length === 0) return { response: "Usuario não tem area", status: 404 };
-      const tickets = await knex.select('t.*', knex.raw('json_agg(d.*) as documentos'))
+      const tickets = await knex.select('t.*', knex.raw('json_agg(d.*) as documentos'), 'u.*')
         .from('ticket AS t')
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')
         .leftJoin('documento AS d', 'd.idticket', 't.id')
@@ -147,7 +147,7 @@ class Ticket {
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
         .where({'e.idorientador': null, 't.resposta': null, 'c.area': area[0].area})
         .orderBy('t.id', 'asc')
-        .groupBy('t.id');
+        .groupBy('t.id', 'u.id');
       if (tickets.length === 0) return { response: null, status: 404 };
 
       return { response: tickets, status: 200 };
@@ -325,28 +325,23 @@ class Ticket {
     }
   }
 
-  async updateFeedback(sub, idTicket, feedback, eAceito) {
+  async updateFeedback(sub, idTicket, feedback, aceito, etapa) {
     try {
-      const dataFechado = new Date();
-      const id = await knex.select(['id']).table('usuario').where({ sub }).first();
-      if (eAceito === true) {
-        const idTipoEstagios = await knex.select(['pe.id_tipo_estagios', 'pe.id', 't.tipo_estagios']).from('processo_estagio AS pe').leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id').where({ 't.id': idTicket })
-          .first();
-        if (idTipoEstagios.id_tipo_estagios === 0) {
-          await knex.update({ id_tipo_estagios: 1 }).table('processo_estagio').where({ id: idTipoEstagios.id });
-        } else if (idTipoEstagios.id_tipo_estagios === 1) {
-          if (idTipoEstagios.tipo_estagios === 'Finalização de Estágio') {
-            await knex.update({ id_tipo_estagios: 2, situação: false }).table('processo_estagio').where({ id: idTipoEstagios.id });
-          }
-        }
+      const datafechado = new Date();
+      if( etapa.etapa.loop === true ) {
+        
+      } else {
+        await knex.transaction(async (trx) => {
+          const processoAtual = await knex.select('e.processo')
+            .from('estagio AS e')
+            .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
+            .where({ 'u.sub': sub });
+          await knex.update({ resposta: feedback, datafechado: datafechado, aceito: aceito })
+          await trx.commit;
+        });
       }
-      await knex.update({
-        feedback, eAceito, id_usuario_orientador: id.id, data_fechado: dataFechado,
-      }).table('ticket').where({ id: idTicket });
-      return true;
     } catch (error) {
-      console.log(error);
-      return [];
+      return { response: 'Erro ao atualizar feedback do ticket', status: 404 };
     }
   }
 
