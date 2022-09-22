@@ -86,7 +86,7 @@ class Ticket {
       if (result.length !== 0) {
         return { response: result, status: 200 };
       } else {
-        return { response: null, status: 404 };
+        return { response: null, status: 200 };
       }
     } catch (error) {
       console.log(error);
@@ -122,32 +122,18 @@ class Ticket {
     }
   }
 
-  async getJoinWithoutSupervisor(sub) {
+  async getWithoutSupervisor(sub) {
     try {
-      const ids = await knex.select(['idcurso', 'id'])
-        .table('usuario')
-        .where({ sub });
-      if (ids.length === 0) return { response: 'Usuário não encontrado', status: 404 };
-      const area = await knex.select(['area'])
-        .from('curso AS c')
-        .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
-        .where({ 'u.idcurso': ids[0].idcurso, 'u.id': ids[0].id });
-      if (area.length === 0) return { response: 'Area não encontrada', status: 404 };
-      const result = await knex.select(['t.id', 't.mensagem', 't.resposta', 't.datacriado', 't.datafechado', 't.aceito'])
+      const tickets = await knex.select('t.*', knex.raw('json_agg(d.*) as documentos'))
         .from('ticket AS t')
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')
-        .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
-        .leftJoin('curso AS c', 'c.id', 'u.idcurso')
-        .where({ 'c.area': area[0].area, 't.resposta': null, 'e.idorientador': null })
-        .orderBy('t.id', 'desc');
-      if (result.length === 0) return { response: 'Usuário não tem ticket', status: 404 };
+        .leftJoin('documento AS d', 'd.idticket', 't.id')
+        .where({'e.idorientador': null, 't.resposta': null })
+        .orderBy('t.id', 'asc')
+        .groupBy('t.id');
+      if (tickets.length === 0) return { response: null, status: 404 };
 
-      for (const i in result) {
-        const arquivos = await this.getPdfUrl(result[i].id);
-        if (arquivos.status !== 200) return { response: arquivos.status, status: arquivos.status };
-        result[i].arquivos = arquivos.response;
-      }
-      return { response: result, status: 200 };
+      return { response: tickets, status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao resgatar tickets', status: 404 };

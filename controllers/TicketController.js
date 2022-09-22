@@ -109,7 +109,7 @@ class TicketController {
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const ticket = await Ticket.getJoinWithoutSupervisor(sub);
+      const ticket = await Ticket.getWithoutSupervisor(sub);
       res.status(ticket.status).json(ticket.response);
     } catch (error) {
       res.status(500).json(error);
