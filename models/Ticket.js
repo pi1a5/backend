@@ -161,10 +161,10 @@ class Ticket {
     try {
       const id = await knex('usuario').select('id').where({ sub: sub });
       if (id.length === 0) return { response: "Usuario não tem area", status: 404 };
-      const tickets = await knex.select('t.*', knex.raw('json_agg(d.*) as documentos', 'u.*', 'c.nome'))
+      const tickets = await knex.select('t.*', knex.raw('json_agg(d.*) as documentos'), knex.raw('json_agg(u.*) as usuario'), knex.raw('json_agg(c.nome) as curso'))
         .from('ticket AS t')
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')
-        .leftJoin('documento AS d', 'd.idticket', 't.id')
+        .leftJoin('documento AS d', 'd.idticket', 't.id') 
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
         .where({ 'e.idorientador': id[0].id, 't.resposta': null })
