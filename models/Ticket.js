@@ -139,7 +139,7 @@ class Ticket {
         .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
         .where({ 'u.sub': sub });
       if (area.length === 0) return { response: "Usuario não tem area", status: 404 };
-      const tickets = await knex.select('t.*', knex.raw('json_agg(d.*) as documentos'), 'u.*', 'c.nome')
+      const tickets = await knex.select('t.*', knex.raw('json_agg(d.*) as documentos'), knex.raw("json_agg(DISTINCT u.*) as usuario"), knex.raw('json_agg(DISTINCT c.nome) as curso'))
         .from('ticket AS t')
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')
         .leftJoin('documento AS d', 'd.idticket', 't.id')
@@ -147,7 +147,7 @@ class Ticket {
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
         .where({'e.idorientador': null, 't.resposta': null, 'c.area': area[0].area})
         .orderBy('t.id', 'asc')
-        .groupBy('t.id', 'u.id');
+        .groupBy('t.id');
       if (tickets.length === 0) return { response: null, status: 404 };
 
       return { response: tickets, status: 200 };
@@ -161,7 +161,7 @@ class Ticket {
     try {
       const id = await knex('usuario').select('id').where({ sub: sub });
       if (id.length === 0) return { response: "Usuario não tem area", status: 404 };
-      const tickets = await knex.select('t.*', knex.raw('json_agg(d.*) as documentos'), knex.raw('json_agg(u.*) as usuario'), knex.raw('json_agg(c.nome) as curso'))
+      const tickets = await knex.select('t.*', knex.raw('t.*', knex.raw('json_agg(d.*) as documentos'), knex.raw("json_agg(DISTINCT u.*) as usuario"), knex.raw('json_agg(DISTINCT c.nome) as curso')))
         .from('ticket AS t')
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')
         .leftJoin('documento AS d', 'd.idticket', 't.id') 
