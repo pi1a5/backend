@@ -201,11 +201,7 @@ class TicketController {
 
       const ticket = await Ticket.updateFeedback(sub, idTicket, feedback, aceito, etapa);
 
-      if (ticket) {
-        res.status(200).json(ticket);
-      } else {
-        res.status(500).json('Erro ao encontrar tickets.');
-      }
+      res.status(ticket.status).json(ticket.response);
     } catch (error) {
       res.status(500).json(error);
     }
