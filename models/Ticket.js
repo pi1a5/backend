@@ -307,8 +307,16 @@ class Ticket {
       
       if( etapa.etapa.loop === true ) { // se a etapa depender de banco de horas
         if (aceito === true) {
-          await knex('usuario').increment('u.cargatotal', estagio[0].cargahoraria)
+          const carga = await knex('usuario').returning('cargahoraria').increment('u.cargatotal', estagio[0].cargahoraria)
             .where({ 'id': estagio[0].idaluno })
+          const cargaCurso = await knex.select('c.carga')
+            .from('curso AS c')
+            .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
+            .where({ 'u.id': estagio[0].idaluno });
+          if (carga >= cargaCurso) {
+            processoAtual[0].processo.etapas[i].atual === false;
+            processoAtual[0].processo.etapas[i + 1].atual === true;
+          }
         }
         await knex('ticket').update({ resposta: feedback, datafechado: datafechado, aceito: aceito })
             .where({ 'id': idTicket});
