@@ -226,7 +226,8 @@ class Processo {
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
         .where({ 'e.idorientador': idorientador[0].id })
-        .groupBy('e.id');
+        .groupBy('e.id', 't.id')
+        .orderBy('t.id');
       if (estagios.length === 0) return { response: null, status: 200 };
       return { response: estagios, status: 200 };
     } catch (error) {
