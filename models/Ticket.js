@@ -37,10 +37,10 @@ class Ticket {
       const ticketid = await knex('ticket').returning('id').insert({ mensagem: corpoTexto, idestagio: estagioid[0].id , datacriado: dataCriado , etapa: etapaAtual});
       const documentos = [];
 
-      for (const file in files) {
-        documentos.push({ idticket: ticketid[0].id, arquivo: await Aws.uploadFile(files[file], sub), nome: file})
-      }
-      await knex('documento').insert(documentos);
+      // for (const file in files) {
+      //   documentos.push({ idticket: ticketid[0].id, arquivo: await Aws.uploadFile(files[file], sub), nome: file})
+      // }
+      // await knex('documento').insert(documentos);
 
       return { response: 'Ticket criado com sucesso', status: 200 };
     } catch (error) {
