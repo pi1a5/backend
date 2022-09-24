@@ -214,7 +214,7 @@ class Processo {
       const idorientador = await knex('usuario').select('id')
         .where({ sub: sub })
       const estagios = await knex.select(
-          'e.criado',
+          knex.raw("TO_CHAR(e.criado, 'DD/MM/YYYY') as criado"),
           'e.fechado', 
           knex.raw("e.processo->'nome' as processo"), 
           'e.cargahoraria',
@@ -227,6 +227,7 @@ class Processo {
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
         .where({ 'e.idorientador': idorientador[0].id })
         .groupBy('e.id');
+      if (estagios.length === 0) return { response: null, status: 200 };
       return { response: estagios, status: 200 };
     } catch (error) {
       console.log(error);
