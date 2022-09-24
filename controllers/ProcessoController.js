@@ -204,6 +204,20 @@ class ProcessoController {
     const response = await Processo.test(documentos);
     res.status(response.status).json(response.response);
   }
+
+  async getAllBySupervisor(req, res){
+    const { // pegar idcurso e nome do orientador com o sub
+      sub,
+    } = req.body;
+    const data = {
+      sub: sub,
+    };
+    const val = Validate  (data);
+    if (val !== true) return res.status(400).json(val);
+
+    const response = await Processo.getAllBySupervisor(sub);
+    res.status(response.status).json(response.response);
+  }
 }
 
 module.exports = new ProcessoController();

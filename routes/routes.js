@@ -39,6 +39,7 @@ router.post('/api/updateEtapa', HeaderMiddleware, ProcessoController.updateEtapa
 router.post('/api/deleteProcesso', HeaderMiddleware, ProcessoController.deleteProcesso);
 router.post('/api/createNewProcesso', HeaderMiddleware, ProcessoController.createNewProcesso);
 router.post('/api/updateProcesso', HeaderMiddleware, ProcessoController.updateProcesso);
+router.post('/api/getAllBySupervisor', HeaderMiddleware, ProcessoController.getAllBySupervisor);
 
 // Para estagios
 

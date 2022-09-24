@@ -209,6 +209,31 @@ class Processo {
     }
   }
 
+  async getAllBySupervisor(sub) {
+    try {
+      const idorientador = await knex('usuario').select('id')
+        .where({ sub: sub })
+      const estagios = await knex.select(
+          'e.criado',
+          'e.fechado', 
+          knex.raw("e.processo->'nome' as processo"), 
+          'e.cargahoraria',
+          knex.raw("json_agg(DISTINCT jsonb_build_object('nome', u.nome, 'cargatotal', u.cargatotal, 'foto', u.foto, 'email', u.email, 'prontuario', u.prontuario, 'curso', jsonb_build_object('nome', c.nome, 'area', c.area))) as aluno"),
+          knex.raw('json_agg(t.*) as tickets'),
+        )
+        .from('estagio AS e')
+        .leftJoin('ticket AS t', 't.idestagio', 'e.id')
+        .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
+        .leftJoin('curso AS c', 'c.id', 'u.idcurso')
+        .where({ 'e.idorientador': idorientador[0].id })
+        .groupBy('e.id');
+      return { response: estagios, status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao limpar banco', status: 400 };
+    }
+  }
+
   async test(documentos) {
     try {
       await knex.insert(documentos)
