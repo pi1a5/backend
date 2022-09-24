@@ -77,6 +77,19 @@ class Estagio {
       return { response: 'Erro ao criar estágio', status: 400 };
     }
   }
+
+  async ended(sub) {
+    try {
+      const result = await knex.select('e.fechado')
+        .from('estagio AS e')
+        .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
+        .where({ 'u.sub': sub });
+        return { response: result[0].fechado, status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao criar estágio', status: 400 };
+    }
+  }
 }
 
 module.exports = new Estagio();

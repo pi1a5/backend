@@ -27,6 +27,28 @@ class Aws {
     }
   }
 
+  async deleteFile(file, sub) {
+    try {
+      console.log(file);
+      const params = {
+        Bucket: process.env.AWS_BUCKET,
+        Key: sub + "/" + file,
+      };
+
+      const bucket = await this.getS3Bucket();
+
+      if (bucket) {
+        await bucket.deleteObject(params).promise();
+        return { response: 'Arquivo deleteado com sucesso!', status: 200 };
+      } else {
+        return { response: 'Erro ao deletar arquivo', status: 400 };
+      }
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao deletar arquivo', status: 400 };
+    }
+  }
+
   async getS3Bucket() {
     try {
       const bucket = new AWS.S3(

@@ -2,6 +2,7 @@
 /* eslint-disable no-console */
 /* eslint-disable class-methods-use-this */
 const knex = require('../database/connection');
+const Aws = require('./Aws');
 
 class Document {
   async findAll() {
@@ -36,6 +37,16 @@ class Document {
         nome, sigla, template,
       }).table('tipodocumento');
       return { response: 'Tipo de documento criado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao criar tipo de documento', status: 400 };
+    }
+  }
+
+  async delete(file, sub) {
+    try {
+      const deletar = await Aws.deleteFile(file, sub);
+      return { response: deletar.response, status: deletar.status };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao criar tipo de documento', status: 400 };

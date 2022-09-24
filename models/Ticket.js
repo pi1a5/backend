@@ -269,34 +269,6 @@ class Ticket {
     }
   }
 
-  async checkFinalizou(sub) {
-    try {
-      const id = await knex.select(['id'])
-        .table('usuario')
-        .where({ sub }).first();
-
-      const situacao = await knex.select('situação')
-        .from('processo_estagio AS pe')
-        .leftJoin('ticket AS t', 't.id_processo_estagio', 'pe.id')
-        .where({ 't.id_usuario_aluno': id.id })
-        .first();
-
-      console.log(situacao);
-      if (situacao) {
-        if (situacao.situação) {
-          return true;
-        }
-        return false;
-      // eslint-disable-next-line no-else-return
-      } else {
-        return true;
-      }
-    } catch (error) {
-      console.log(error);
-      return [];
-    }
-  }
-
   async updateFeedback(sub, idTicket, feedback, aceito, etapa) {
     try {
       const datafechado = new Date();

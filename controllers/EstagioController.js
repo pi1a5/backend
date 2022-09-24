@@ -60,6 +60,24 @@ class EstagioController {
       res.status(500).json(error);
     }
   }
+
+  async checkIfEnded(req, res) {
+    try {
+      const { // pegar idcurso e nome do orientador com o sub
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const result = await Estagio.ended(sub);
+      res.status(result.status).json(result.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
 }
 
 module.exports = new EstagioController();
