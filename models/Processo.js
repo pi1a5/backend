@@ -72,7 +72,7 @@ class Processo {
         processoCriado.processo = idProcesso[0];
         for (const k in processo.etapas) {
           etapas[k] = {
-            nome: processo.etapas[k].nome, prazo: processo.etapas[k].prazo, idprocesso: idProcesso[0].id,
+            nome: processo.etapas[k].nome, prazo: processo.etapas[k].prazo, idprocesso: idProcesso[0].id, loop: processo.etapas[k].loop
           };
         }
 

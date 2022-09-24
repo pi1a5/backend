@@ -99,7 +99,7 @@ class UserController {
       if (val !== true) return res.status(400).json(val);
 
       const users = await User.checkAmount(sub);
-      res.status(200).json(users);
+      res.status(users.status).json(users.response);
     } catch (error) {
       res.status(500).json(error);
     }
