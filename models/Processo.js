@@ -214,18 +214,19 @@ class Processo {
       const idorientador = await knex('usuario').select('id')
         .where({ sub: sub })
       const estagios = await knex.select(
+          'e.id',
           knex.raw("TO_CHAR(e.criado, 'DD/MM/YYYY') as criado"),
           'e.fechado', 
           knex.raw("e.processo->'nome' as processo"), 
           'e.cargahoraria',
           knex.raw("json_agg(DISTINCT jsonb_build_object('nome', u.nome, 'cargatotal', u.cargatotal, 'foto', u.foto, 'email', u.email, 'prontuario', u.prontuario, 'curso', jsonb_build_object('nome', c.nome, 'area', c.area))) as aluno"),
-          knex.raw("json_agg(jsonb_build_object('id', t.id, 'mensagem', t.mensagem, 'resposta', t.resposta, 'datacriado', t.datacriado, 'datafechado', t.datafechado, 'aceito', t.aceito, 'etapa', t.etapa, 'documentos', jsonb_build_object('arquivo', d.arquivo, 'nome', d.nome)) ORDER BY t.id ) as tickets"),
+          knex.raw("jsonb_build_object('id', t.id, 'mensagem', t.mensagem, 'resposta', t.resposta, 'datacriado', t.datacriado, 'datafechado', t.datafechado, 'aceito', t.aceito, 'etapa', t.etapa, 'documentos', json_agg(d.*), 'aluno', json_agg(DISTINCT u.*), 'orientador', jsonb_build_object('nome',(SELECT nome FROM usuario WHERE id = " + idorientador[0].id + "), 'foto', (SELECT foto FROM usuario WHERE id = " + idorientador[0].id + "))) AS tickets"),
         )
-        .from('estagio AS e')
+        .from('estagio AS e').distinctOn('id')
         .leftJoin('ticket AS t', 't.idestagio', 'e.id')
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
-        .leftJoin('documento AS d', 'd.idticket', 't.id')
+        .leftJoin('documento AS d', 'd.idticket', 't.id').groupBy('t.id')
         .where({ 'e.idorientador': idorientador[0].id })
         .groupBy('e.id');
       if (estagios.length === 0) return { response: null, status: 200 };
