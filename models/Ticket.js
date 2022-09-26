@@ -14,17 +14,19 @@
 /* eslint-disable class-methods-use-this */
 const knex = require('../database/connection');
 const Aws = require('./Aws');
+const Documento = require('./Document');
 
 class Ticket {
   async new(corpoTexto, sub, files) {
     try {
       const dataCriado = new Date();
-      const estagioid = await knex.select(['e.id'])
+      const estagioid = await knex.select(['e.id', 'e.idaluno', 'e.idorientador'])
         .from('estagio AS e')
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
         .where({ 'u.sub': sub })
       const processo = await knex('estagio').select('processo').where({ id: estagioid[0].id});
       let etapaAtual = {};
+      let envolvidos = {};
 
       for (const i in processo[0].processo.etapas) {
         if (processo[0].processo.etapas[i].atual === true) {
@@ -34,7 +36,12 @@ class Ticket {
         }
       }
 
-      const ticketid = await knex('ticket').returning('id').insert({ mensagem: corpoTexto, idestagio: estagioid[0].id , datacriado: dataCriado , etapa: etapaAtual});
+      envolvidos['orientador'] = await knex('usuario').select('*')
+        .where({ id: estagioid[0].idorientador });
+      envolvidos['aluno'] = await knex('usuario').select('*')
+        .where({ id: estagioid[0].idaluno });
+
+      const ticketid = await knex('ticket').returning('id').insert({ mensagem: corpoTexto, idestagio: estagioid[0].id , datacriado: dataCriado , etapa: etapaAtual, envolvidos: envolvidos });
       const documentos = [];
 
       for (const file in files) {
@@ -390,9 +397,18 @@ class Ticket {
     }
   }
 
-  async deleteLatest(idTicket) {
+  async deletePending(idTicket, sub) {
     try {
-      await knex.del().table('ticket').where({ id: idTicket });
+      await knex.transaction(async (trx) => {
+        const documentos = await knex('documento').select('arquivo')
+          .where({ idticket: idTicket })
+        await knex.del().table('ticket').where({ id: idTicket });
+        for (const i in documentos) {
+          await Documento.delete(documentos[i].arquivo, sub)
+        }
+        await trx.commit;
+      })
+
       return { response: 'Ticket deletado com sucesso', status: 200 };
     } catch (error) {
       console.log(error);

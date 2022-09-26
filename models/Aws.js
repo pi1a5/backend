@@ -29,10 +29,10 @@ class Aws {
 
   async deleteFile(file, sub) {
     try {
-      console.log(file);
+      console.log("arquiv", file)
       const params = {
         Bucket: process.env.AWS_BUCKET,
-        Key: sub + "/" + file,
+        Key: file,
       };
 
       const bucket = await this.getS3Bucket();

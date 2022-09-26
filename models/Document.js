@@ -45,7 +45,7 @@ class Document {
 
   async delete(file, sub) {
     try {
-      const deletar = await Aws.deleteFile(file, sub);
+      const deletar = await Aws.deleteFile(file.substring(file.indexOf('.com/') + 5), sub);
       return { response: deletar.response, status: deletar.status };
     } catch (error) {
       console.log(error);

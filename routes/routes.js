@@ -56,6 +56,7 @@ router.post('/api/updateLatestTicket', HeaderMiddleware, TicketController.update
 router.post('/api/newTicket', HeaderMiddleware, TicketController.newTicket);
 router.post('/api/getPendingTicket', HeaderMiddleware, TicketController.getPendingTicket);
 router.post('/api/getClosedTickets', HeaderMiddleware, TicketController.getClosedTickets);
+router.post('/api/deletePendingTicket', HeaderMiddleware, TicketController.deletePendingTicket);
 
 // Para Ticket Professor
 router.post('/api/getTicketsWithoutSupervisor', HeaderMiddleware, TicketController.getTicketsWithoutSupervisor);

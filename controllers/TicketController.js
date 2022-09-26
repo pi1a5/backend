@@ -226,6 +226,25 @@ class TicketController {
     }
   }
 
+  async deletePendingTicket(req, res) {
+    try {
+      const {
+        idTicket, sub
+      } = req.body;
+      const data = {
+        idTicket: idTicket,
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const result = await Ticket.deletePending(idTicket, sub);
+      res.status(result.status).json(result.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
   // async getPdfUrl(req, res){
   //   try {
   //     const { id }  = req.body
