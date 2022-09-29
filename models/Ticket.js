@@ -36,8 +36,15 @@ class Ticket {
         }
       }
 
-      envolvidos['orientador'] = await knex('usuario').select('*')
+      const orientador = await knex('usuario').select('*')
         .where({ id: estagioid[0].idorientador });
+      
+      if (orientador.length === 0) {
+        envolvidos['orientador'] = null;
+      } else {
+        envolvidos['orientador'] = orientador;  
+      }
+
       envolvidos['aluno'] = await knex('usuario').select('*')
         .where({ id: estagioid[0].idaluno });
 
