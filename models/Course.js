@@ -3,6 +3,7 @@
 const knex = require('../database/connection');
 
 class Course {
+  result = [];
   async findById(id) {
     try {
       const result = await knex.select(['sigla']).table('curso').where({ id });
@@ -83,6 +84,72 @@ class Course {
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao editar área', status: 400 };
+    }
+  }
+
+  async createCourse(nome) {
+    try {
+      await knex('area').insert({ nome: nome });
+
+      return { response: "Área criada com sucesso", status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao criar área', status: 400 };
+    }
+  }
+
+  async delete(idcurso) {
+    try {
+      await knex('curso').del().where({ id: idcurso });
+      
+      return { response: "Curso deletada com sucesso", status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao deletar curso', status: 400 };
+    }
+  }
+
+  async edit(idcurso, cursoantigo, cursonovo) {
+    try {
+      this.compareObjects(cursoantigo, cursonovo, 'curso');
+      const content = this.result;
+      this.result = [];
+
+      return { response: "Curso deletada com sucesso", status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao deletar curso', status: 400 };
+    }
+  }
+
+  async compareObjects(obj1, obj2, mainKey) {
+    console.time("jorge");
+    for (const key in obj1) {
+      if (typeof obj1[key] === 'object') {
+        if (key === 'documentos') {
+          continue;
+        }
+        if (!isNaN(key)) {
+          this.compareObjects(obj1[key], obj2[key], mainKey);
+        } else{
+          this.compareObjects(obj1[key], obj2[key], key);
+        }
+      } else {
+        if (!obj2.hasOwnProperty(key)) {
+          continue;
+        }
+        if (key === 'id') {
+          continue;
+        }
+        console.log(obj1[key], obj2[key]);
+        if (obj1[key] !== obj2[key]) {
+          if (mainKey === 'etapas') {
+            this.result.push({ table: 'etapa', id: obj1.id, update: { [key]: obj2[key] } });
+          } else {
+            this.result.push({ table: mainKey, id: obj1.id, update: { [key]: obj2[key] } });
+          }
+        }
+      }
     }
   }
 }
