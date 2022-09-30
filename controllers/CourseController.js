@@ -35,6 +35,15 @@ class CouserController {
       res.status(500).json(error);
     }
   }
+
+  async getAreasWithCourses(req, res) {
+    try {
+      const course = await Course.getAreasWithCourses();
+      res.status(course.status).json(course.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
 }
 
 module.exports = new CouserController();

@@ -37,6 +37,21 @@ class Course {
       return { response: 'Erro ao criar curso', status: 400 };
     }
   }
+
+  async getAreasWithCourses() {
+    try {
+      const response = await knex.select('a.nome', knex.raw("json_agg(c.*) as cursos"))
+        .from('area AS a')
+        .leftJoin('curso AS c', 'c.idarea', 'a.id')
+        .groupBy('a.nome')
+
+
+      return { response: response, status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao resgatar cursos', status: 400 };
+    }
+  }
 }
 
 module.exports = new Course();
