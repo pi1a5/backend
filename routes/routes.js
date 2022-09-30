@@ -31,6 +31,9 @@ router.post('/api/user', HeaderMiddleware, UserController.user);
 router.post('/api/checkOrientadoresAmount', HeaderMiddleware, UserController.checkOrientadoresAmount);
 router.post('/api/setCourseProntuario', HeaderMiddleware, UserController.setCourseProntuario);
 router.post('/api/getAlunoProfile', HeaderMiddleware, UserController.getAlunoProfile);
+router.post('/api/getSupervisorsByArea', HeaderMiddleware, UserController.getSupervisorsByArea);
+
+
 
 // Para Processos
 
@@ -47,6 +50,9 @@ router.post('/api/createNewEstagio', HeaderMiddleware, EstagioController.createN
 router.post('/api/checkIfHasEstagio', HeaderMiddleware, EstagioController.checkIfHasEstagio);
 router.get('/api/limparEstagios', HeaderMiddleware, EstagioController.limparEstagios);
 router.post('/api/checkIfEnded', HeaderMiddleware, EstagioController.checkIfEnded);
+router.post('/api/endInternship', HeaderMiddleware, EstagioController.endInternship);
+router.post('/api/transferInternship', HeaderMiddleware, EstagioController.transferInternship);
+
 
 // Para Ticket Aluno
 router.post('/api/createTicket', HeaderMiddleware, TicketController.createTicket);

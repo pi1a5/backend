@@ -232,6 +232,25 @@ class User {
       return { response: 'Erro ao coletar informações do usuário', status: 400 };
     }
   }
+
+  async getSupervisorsByArea(sub) {
+    try {
+      const area = await knex.select('c.area')
+      .from('curso AS c')
+      .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
+      .where({ 'u.sub': sub })
+      const result = await knex.select('u.*', 'c.nome AS curso')
+        .from('usuario AS u')
+        .leftJoin('curso AS c', 'c.id', 'u.idcurso')
+        .where({ 'c.area': area[0].area })
+        .where('u.email', 'like', '%@ifsp.edu.br%')
+        .orderBy('u.id', 'asc');
+      return { response: result, status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao encontrar usuários', status: 400 };
+    }
+  }
 }
 
 module.exports = new User();

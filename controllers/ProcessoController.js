@@ -192,31 +192,39 @@ class ProcessoController {
   }
 
   async test(req, res){
-    const { // pegar idcurso e nome do orientador com o sub
-      documentos,
-    } = req.body;
-    const data = {
-      documentos: documentos,
-    };
-    const val = Validate  (data);
-    if (val !== true) return res.status(400).json(val);
+    try {
+      const { // pegar idcurso e nome do orientador com o sub
+        documentos,
+      } = req.body;
+      const data = {
+        documentos: documentos,
+      };
+      const val = Validate  (data);
+      if (val !== true) return res.status(400).json(val);
 
-    const response = await Processo.test(documentos);
-    res.status(response.status).json(response.response);
+      const response = await Processo.test(documentos);
+      res.status(response.status).json(response.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
   }
 
   async getAllBySupervisor(req, res){
-    const { // pegar idcurso e nome do orientador com o sub
-      sub,
-    } = req.body;
-    const data = {
-      sub: sub,
-    };
-    const val = Validate  (data);
-    if (val !== true) return res.status(400).json(val);
+    try {
+      const { // pegar idcurso e nome do orientador com o sub
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate  (data);
+      if (val !== true) return res.status(400).json(val);
 
-    const response = await Processo.getAllBySupervisor(sub);
-    res.status(response.status).json(response.response);
+      const response = await Processo.getAllBySupervisor(sub);
+      res.status(response.status).json(response.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
   }
 }
 

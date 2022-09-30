@@ -90,6 +90,32 @@ class Estagio {
       return { response: 'Erro ao criar estágio', status: 400 };
     }
   }
+
+  
+  async end(idestagio) {
+    try {
+      const datafechado = new Date();
+      await knex('estagio').update({ datafechado: datafechado })
+        .where({ id: idestagio })
+      
+      return { response: 'Estágio encerrado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao encerrar estágio', status: 400 };
+    }
+  }
+
+  async transfer(idestagio, idorientador) {
+    try {
+      await knex('estagio').update({ idorientador: idorientador })
+        .where({ id: idestagio })
+      
+      return { response: 'Estágio transferido com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao encerrar estágio', status: 400 };
+    }
+  }
 }
 
 module.exports = new Estagio();

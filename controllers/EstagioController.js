@@ -78,6 +78,47 @@ class EstagioController {
       res.status(500).json(error);
     }
   }
+
+  async endInternship(req, res) {
+    try {
+      const { // pegar idcurso e nome do orientador com o sub
+        idestagio,
+      } = req.body;
+
+      console.log(idprocesso);
+      const data = {
+        idestagio: idestagio,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const result = await Estagio.end(idestagio);
+      res.status(result.status).json(result.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async transferInternship(req, res) {
+    try {
+      const { // pegar idcurso e nome do orientador com o sub
+        idestagio, idorientador
+      } = req.body;
+
+      console.log(idprocesso);
+      const data = {
+        idestagio: idestagio,
+        idorientador: idorientador,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const result = await Estagio.transfer(idestagio, idorientador);
+      res.status(result.status).json(result.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
 }
 
 module.exports = new EstagioController();
