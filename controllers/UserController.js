@@ -140,6 +140,15 @@ class UserController {
       res.status(500).json(error);
     }
   }
+
+  async getSupervisors(req, res) {
+    try {
+      const users = await User.getSupervisors();
+      res.status(users.status).json(users.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
 }
 
 module.exports = new UserController();

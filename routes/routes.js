@@ -32,6 +32,7 @@ router.post('/api/checkOrientadoresAmount', HeaderMiddleware, UserController.che
 router.post('/api/setCourseProntuario', HeaderMiddleware, UserController.setCourseProntuario);
 router.post('/api/getAlunoProfile', HeaderMiddleware, UserController.getAlunoProfile);
 router.post('/api/getSupervisorsByArea', HeaderMiddleware, UserController.getSupervisorsByArea);
+router.get('/api/getSupervisors', HeaderMiddleware, UserController.getSupervisors);
 
 
 

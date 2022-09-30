@@ -251,6 +251,18 @@ class User {
       return { response: 'Erro ao encontrar usuários', status: 400 };
     }
   }
+
+  async getSupervisors() {
+    try {
+      const result = await knex('usuario').select('*')
+        .where('email', 'like', '%@ifsp.edu.br%')
+        .orderBy('id', 'asc');
+      return { response: result, status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao encontrar usuários', status: 400 };
+    }
+  }
 }
 
 module.exports = new User();
