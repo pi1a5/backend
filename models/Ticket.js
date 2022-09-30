@@ -148,7 +148,7 @@ class Ticket {
 
   async getWithoutSupervisor(sub) {
     try {
-      const area = await knex.select('c.area')
+      const area = await knex.select('c.idarea')
         .from('curso AS c')
         .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
         .where({ 'u.sub': sub });
@@ -159,7 +159,7 @@ class Ticket {
         .leftJoin('documento AS d', 'd.idticket', 't.id')
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
-        .where({'e.idorientador': null, 't.resposta': null, 'c.area': area[0].area})
+        .where({'e.idorientador': null, 't.resposta': null, 'c.idarea': area[0].idarea})
         .orderBy('t.id', 'asc')
         .groupBy('t.id');
       if (tickets.length === 0) return { response: null, status: 200 };
@@ -174,7 +174,7 @@ class Ticket {
   async getWithSupervisor(sub) {
     try {
       const id = await knex('usuario').select('id').where({ sub: sub });
-      if (id.length === 0) return { response: "Usuario não tem area", status: 404 };
+      if (id.length === 0) return { response: "Usuario não tem encontrado", status: 404 };
       const tickets = await knex.select('t.*', knex.raw('json_agg(d.*) as documentos'), knex.raw("json_agg(DISTINCT u.*) as usuario"), knex.raw('json_agg(DISTINCT c.nome) as curso'))
         .from('ticket AS t')
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')

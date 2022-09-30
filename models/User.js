@@ -131,7 +131,7 @@ class User {
   async checkAmount(sub) {
     try {
       const total = [];
-      const area = await knex.select(['area'])
+      const area = await knex.select(['idarea'])
         .from('curso AS c')
         .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
         .where({ sub: sub} );
@@ -140,7 +140,7 @@ class User {
         .from('usuario AS u')
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
         .whereNot('u.email', 'like', '%@aluno.ifsp.edu.br%')
-        .where({ 'c.area': area[0].area });
+        .where({ 'c.idarea': area[0].idarea });
       if (colegas.length === 0) return { response: 'Nenhum orientador encontrado', status: 404 };
 
       const colegasids = [];
@@ -235,14 +235,14 @@ class User {
 
   async getSupervisorsByArea(sub) {
     try {
-      const area = await knex.select('c.area')
+      const area = await knex.select('c.idarea')
       .from('curso AS c')
       .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
       .where({ 'u.sub': sub })
       const result = await knex.select('u.*', 'c.nome AS curso')
         .from('usuario AS u')
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
-        .where({ 'c.area': area[0].area })
+        .where({ 'c.idarea': area[0].idarea })
         .where('u.email', 'like', '%@ifsp.edu.br%')
         .orderBy('u.id', 'asc');
       return { response: result, status: 200 };
