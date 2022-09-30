@@ -95,7 +95,7 @@ class Estagio {
   async end(idestagio) {
     try {
       const datafechado = new Date();
-      await knex('estagio').update({ datafechado: datafechado })
+      await knex('estagio').update({ datafechado: datafechado, encerrado: true })
         .where({ id: idestagio })
       
       return { response: 'Estágio encerrado com sucesso', status: 200 };
