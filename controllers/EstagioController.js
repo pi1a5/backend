@@ -101,11 +101,10 @@ class EstagioController {
 
   async transferInternship(req, res) {
     try {
-      const { // pegar idcurso e nome do orientador com o sub
+      const { 
         idestagio, idorientador
       } = req.body;
 
-      console.log(idprocesso);
       const data = {
         idestagio: idestagio,
         idorientador: idorientador,
