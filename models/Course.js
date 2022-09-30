@@ -43,7 +43,7 @@ class Course {
       const response = await knex.select('a.nome', 'a.id', knex.raw("json_agg(c.*) as cursos"))
         .from('area AS a')
         .leftJoin('curso AS c', 'c.idarea', 'a.id')
-        .groupBy('a.nome')
+        .groupBy('a.nome', 'a.id')
 
 
       return { response: response, status: 200 };
