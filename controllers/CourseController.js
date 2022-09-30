@@ -44,6 +44,61 @@ class CouserController {
       res.status(500).json(error);
     }
   }
+
+  async createArea(req, res) {
+    try {
+      const {
+        nome, 
+      } = req.body;
+      const data = {
+        nome: nome,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const course = await Course.createArea(nome);
+      res.status(course.status).json(course.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async deleteArea(req, res) {
+    try {
+      const {
+        idarea, 
+      } = req.body;
+      const data = {
+        idarea: idarea,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const course = await Course.deleteArea(idarea);
+      res.status(course.status).json(course.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async editArea(req, res) {
+    try {
+      const {
+        idarea, nome 
+      } = req.body;
+      const data = {
+        idarea: idarea,
+        nome: nome,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const course = await Course.editArea(idarea, nome);
+      res.status(course.status).json(course.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
 }
 
 module.exports = new CouserController();

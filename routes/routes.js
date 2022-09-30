@@ -75,6 +75,10 @@ router.post('/api/feedbackTicket', HeaderMiddleware, TicketController.feedbackTi
 // Para curso
 router.post('/api/createNewCourse', HeaderMiddleware, CourseController.createNewCourse);
 router.get('/api/getAreasWithCourses', HeaderMiddleware, CourseController.getAreasWithCourses);
+router.post('/api/createArea', HeaderMiddleware, CourseController.createArea);
+router.post('/api/deleteArea', HeaderMiddleware, CourseController.deleteArea);
+router.post('/api/editArea', HeaderMiddleware, CourseController.editArea);
+
 
 
 // Para teste

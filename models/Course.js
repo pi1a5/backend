@@ -40,7 +40,7 @@ class Course {
 
   async getAreasWithCourses() {
     try {
-      const response = await knex.select('a.nome', knex.raw("json_agg(c.*) as cursos"))
+      const response = await knex.select('a.nome', 'a.id', knex.raw("json_agg(c.*) as cursos"))
         .from('area AS a')
         .leftJoin('curso AS c', 'c.idarea', 'a.id')
         .groupBy('a.nome')
@@ -50,6 +50,39 @@ class Course {
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao resgatar cursos', status: 400 };
+    }
+  }
+
+  async createArea(nome) {
+    try {
+      await knex('area').insert({ nome: nome });
+
+      return { response: "Área criada com sucesso", status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao criar área', status: 400 };
+    }
+  }
+
+  async deleteArea(idarea) {
+    try {
+      await knex('area').del().where({ id: idarea });
+
+      return { response: "Área deletada com sucesso", status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao deletar área', status: 400 };
+    }
+  }
+
+  async editArea(idarea, nome) {
+    try {
+      await knex('area').update({ nome: nome }).where({ id: idarea });
+
+      return { response: "Área editada com sucesso", status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao editar área', status: 400 };
     }
   }
 }
