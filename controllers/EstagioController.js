@@ -85,7 +85,6 @@ class EstagioController {
         idestagio,
       } = req.body;
 
-      console.log(idprocesso);
       const data = {
         idestagio: idestagio,
       };
