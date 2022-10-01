@@ -98,7 +98,6 @@ class Processo {
             }
           }
         }
-        console.log(processoCriado)
 
         await t.commit;
       });

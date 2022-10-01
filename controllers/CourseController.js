@@ -26,15 +26,15 @@ class CouserController {
   async createArea(req, res) {
     try {
       const {
-        nome, 
+        area, 
       } = req.body;
       const data = {
-        nome: nome,
+        area: area,
       };
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const course = await Course.createArea(nome);
+      const course = await Course.createArea(area);
       res.status(course.status).json(course.response);
     } catch (error) {
       res.status(500).json(error);
@@ -59,43 +59,6 @@ class CouserController {
     }
   }
 
-  async editArea(req, res) {
-    try {
-      const {
-        idarea, nome 
-      } = req.body;
-      const data = {
-        idarea: idarea,
-        nome: nome,
-      };
-      const val = Validate(data);
-      if (val !== true) return res.status(400).json(val);
-
-      const course = await Course.editArea(idarea, nome);
-      res.status(course.status).json(course.response);
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  }
-
-  async editArea(req, res) {
-    try {
-      const {
-        idarea, nome 
-      } = req.body;
-      const data = {
-        idarea: idarea,
-        nome: nome,
-      };
-      const val = Validate(data);
-      if (val !== true) return res.status(400).json(val);
-
-      const course = await Course.editArea(idarea, nome);
-      res.status(course.status).json(course.response);
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  }
 
   async createCourse(req, res) {
     try {
@@ -135,19 +98,19 @@ class CouserController {
     }
   }
 
-  async editCourse(req, res) {
+  async editArea(req, res) {
     try {
       const {
-        cursoantigo, cursonovo,
+        areaantiga, areanova,
       } = req.body;
       const data = {
-        cursoantigo: cursoantigo,
-        cursonovo: cursonovo,
+        areaantiga: areaantiga,
+        areanova: areanova,
       };
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const course = await Course.edit(cursoantigo, cursonovo);
+      const course = await Course.edit(areaantiga, areanova);
       res.status(course.status).json(course.response);
     } catch (error) {
       res.status(500).json(error);

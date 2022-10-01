@@ -44,11 +44,22 @@ class Course {
     }
   }
 
-  async createArea(nome) {
+  async createArea(area) {
     try {
-      await knex('area').insert({ nome: nome });
-
-      return { response: "Área criada com sucesso", status: 200 };
+      const areanova = {};
+      const cursosnovos = [{}];
+      
+      await knex.transaction(async function (t) {
+        const areacriada = await knex('area').returning('id').insert({ nome: area.nome });
+        areanova.area = areacriada[0];
+        for (const i in area.cursos) {
+          cursosnovos[i] = { nome: area.cursos[i].nome, carga: area.cursos[i].cargaHoraria, idmodalidade: area.cursos[i].modalidade.id, idarea: areacriada[0].id }
+        }
+        const cursos = await knex('curso').returning('*').insert(cursosnovos);
+        areanova.area.cursos = cursos;
+        await t.commit;
+      });
+      return { response: areanova, status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao criar área', status: 400 };
@@ -66,16 +77,6 @@ class Course {
     }
   }
 
-  async editArea(idarea, nome) {
-    try {
-      await knex('area').update({ nome: nome }).where({ id: idarea });
-
-      return { response: "Área editada com sucesso", status: 200 };
-    } catch (error) {
-      console.log(error);
-      return { response: 'Erro ao editar área', status: 400 };
-    }
-  }
 
   async create(nome, cargatotal, idmodalidade) {
     try {
@@ -99,9 +100,9 @@ class Course {
     }
   }
 
-  async edit(cursoantigo, cursonovo) {
+  async edit(areaantiga, areanova) {
     try {
-      this.compareObjects(cursoantigo, cursonovo, 'curso');
+      this.compareObjects(areaantiga, areanova, 'area');
       const content = this.result;
       this.result = [];
 
