@@ -78,7 +78,7 @@ router.get('/api/getAreasWithCourses', HeaderMiddleware, CourseController.getAre
 router.post('/api/createArea', HeaderMiddleware, CourseController.createArea);
 router.post('/api/deleteArea', HeaderMiddleware, CourseController.deleteArea);
 router.post('/api/editArea', HeaderMiddleware, CourseController.editArea);
-
+router.get('/api/getModalities', HeaderMiddleware, CourseController.getModalities);
 
 
 // Para teste

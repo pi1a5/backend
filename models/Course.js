@@ -41,11 +41,13 @@ class Course {
 
   async getAreasWithCourses() {
     try {
-      const response = await knex.select('a.nome', 'a.id', knex.raw("json_agg(c.*) as cursos"))
+      const response = {};
+      response['areas'] = await knex.select('a.nome', 'a.id', knex.raw("json_agg(c.*) as cursos"))
         .from('area AS a')
         .leftJoin('curso AS c', 'c.idarea', 'a.id')
         .groupBy('a.nome', 'a.id')
 
+      response['modalidades'] = await knex('modalidade').select('*');
 
       return { response: response, status: 200 };
     } catch (error) {
@@ -115,7 +117,27 @@ class Course {
       const content = this.result;
       this.result = [];
 
-      return { response: "Curso deletada com sucesso", status: 200 };
+      await knex.transaction(async (trx) => {
+        content.map(async (tuple) => knex(tuple.table)
+          .where('id', tuple.id)
+          .update(tuple.update)
+          .transacting(trx),
+        );
+        await trx.commit;
+      });
+
+      return { response: "Curso atualizado com sucesso", status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao atualizar curso', status: 400 };
+    }
+  }
+
+  async modalities() {
+    try {
+      const modalidades = await knex('modalidade').select('*');
+      
+      return { response: modalidades, status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao deletar curso', status: 400 };

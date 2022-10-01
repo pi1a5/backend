@@ -156,6 +156,15 @@ class CouserController {
       res.status(500).json(error);
     }
   }
+
+  async getModalities(req, res) {
+    try {
+      const modalities = await Course.modalities();
+      res.status(modalities.status).json(modalities.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
 }
 
 module.exports = new CouserController();
