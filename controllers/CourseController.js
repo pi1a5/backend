@@ -14,28 +14,6 @@ class CouserController {
     }
   }
 
-  async createNewCourse(req, res) {
-    try {
-      const {
-        nome, descricao, imagem, area, tipo,
-      } = req.body;
-      const data = {
-        nome: nome,
-        descricao: descricao,
-        imagem: imagem,
-        area: area,
-        tipo: tipo,
-      };
-      const val = Validate(data);
-      if (val !== true) return res.status(400).json(val);
-
-      const course = await Course.newCourse(nome, descricao, imagem, area, tipo);
-      res.status(course.status).json(course.response);
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  }
-
   async getAreasWithCourses(req, res) {
     try {
       const course = await Course.getAreasWithCourses();
@@ -119,6 +97,26 @@ class CouserController {
     }
   }
 
+  async createCourse(req, res) {
+    try {
+      const {
+        nome, cargatotal, idmodalidade,
+      } = req.body;
+      const data = {
+        nome: nome,
+        cargatotal: cargatotal,
+        idmodalidade: idmodalidade
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const course = await Course.create(nome, cargatotal, idmodalidade);
+      res.status(course.status).json(course.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
   async deleteCourse(req, res) {
     try {
       const {
@@ -140,17 +138,16 @@ class CouserController {
   async editCourse(req, res) {
     try {
       const {
-        idcurso, cursoantigo, cursonovo,
+        cursoantigo, cursonovo,
       } = req.body;
       const data = {
-        idcurso: idcurso,
         cursoantigo: cursoantigo,
         cursonovo: cursonovo,
       };
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const course = await Course.edit(idcurso, cursoantigo, cursonovo);
+      const course = await Course.edit(cursoantigo, cursonovo);
       res.status(course.status).json(course.response);
     } catch (error) {
       res.status(500).json(error);

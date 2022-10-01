@@ -73,7 +73,9 @@ router.post('/api/feedbackTicket', HeaderMiddleware, TicketController.feedbackTi
 // router.post('/api/getPdfUrl', TicketController.getPdfUrl);
 
 // Para curso
-router.post('/api/createNewCourse', HeaderMiddleware, CourseController.createNewCourse);
+router.post('/api/createCourse', HeaderMiddleware, CourseController.createCourse);
+router.post('/api/editCourse', HeaderMiddleware, CourseController.editCourse);
+router.post('/api/deleteCourse', HeaderMiddleware, CourseController.deleteCourse);
 router.get('/api/getAreasWithCourses', HeaderMiddleware, CourseController.getAreasWithCourses);
 router.post('/api/createArea', HeaderMiddleware, CourseController.createArea);
 router.post('/api/deleteArea', HeaderMiddleware, CourseController.deleteArea);

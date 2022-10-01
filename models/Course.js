@@ -27,18 +27,6 @@ class Course {
     }
   }
 
-  async newCourse(nome, descricao, imagem, area, tipo) {
-    try {
-      await knex.insert({
-        nome, descricao, imagem, area, tipo,
-      }).table('curso');
-      return { response: 'Curso criado com sucesso', status: 200 };
-    } catch (error) {
-      console.log(error);
-      return { response: 'Erro ao criar curso', status: 400 };
-    }
-  }
-
   async getAreasWithCourses() {
     try {
       const response = {};
@@ -89,14 +77,14 @@ class Course {
     }
   }
 
-  async createCourse(nome) {
+  async create(nome, cargatotal, idmodalidade) {
     try {
-      await knex('area').insert({ nome: nome });
+      await knex('area').insert({ nome: nome, cargatotal: cargatotal, idmodalidade: idmodalidade});
 
-      return { response: "Área criada com sucesso", status: 200 };
+      return { response: "Curso criado com sucesso", status: 200 };
     } catch (error) {
       console.log(error);
-      return { response: 'Erro ao criar área', status: 400 };
+      return { response: 'Erro ao criar curso', status: 400 };
     }
   }
 
@@ -111,11 +99,13 @@ class Course {
     }
   }
 
-  async edit(idcurso, cursoantigo, cursonovo) {
+  async edit(cursoantigo, cursonovo) {
     try {
       this.compareObjects(cursoantigo, cursonovo, 'curso');
       const content = this.result;
       this.result = [];
+
+      console.log(content);
 
       await knex.transaction(async (trx) => {
         content.map(async (tuple) => knex(tuple.table)
@@ -145,7 +135,6 @@ class Course {
   }
 
   async compareObjects(obj1, obj2, mainKey) {
-    console.time("jorge");
     for (const key in obj1) {
       if (typeof obj1[key] === 'object') {
         if (key === 'documentos') {
