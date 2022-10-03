@@ -78,7 +78,7 @@ router.post('/api/deleteCourse', HeaderMiddleware, CourseController.deleteCourse
 router.get('/api/getAreasWithCourses', HeaderMiddleware, CourseController.getAreasWithCourses);
 router.post('/api/createArea', HeaderMiddleware, CourseController.createArea);
 router.post('/api/deleteArea', HeaderMiddleware, CourseController.deleteArea);
-router.post('/api/editArea', HeaderMiddleware, CourseController.editArea);
+router.post('/api/updateArea', HeaderMiddleware, CourseController.updateArea);
 router.get('/api/getModalities', HeaderMiddleware, CourseController.getModalities);
 
 

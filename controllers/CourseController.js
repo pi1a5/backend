@@ -98,19 +98,19 @@ class CouserController {
     }
   }
 
-  async editArea(req, res) {
+  async updateArea(req, res) {
     try {
       const {
-        areaantiga, areanova,
+        areaAntiga, areaNova,
       } = req.body;
       const data = {
-        areaantiga: areaantiga,
-        areanova: areanova,
+        areaAntiga: areaAntiga,
+        areaNova: areaNova,
       };
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const course = await Course.edit(areaantiga, areanova);
+      const course = await Course.update(areaAntiga, areaNova);
       res.status(course.status).json(course.response);
     } catch (error) {
       res.status(500).json(error);

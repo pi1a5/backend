@@ -4,6 +4,8 @@ const knex = require('../database/connection');
 
 class Course {
   result = [];
+  remover = [];
+  adicionar = [];
   async findById(id) {
     try {
       const result = await knex.select(['sigla']).table('curso').where({ id });
@@ -100,18 +102,42 @@ class Course {
     }
   }
 
-  async edit(areaantiga, areanova) {
+  async update(areaantiga, areanova) {
     try {
       this.compareObjects(areaantiga, areanova, 'area');
       const content = this.result;
+      const removeContent = this.remover;
+      const addContent = this.adicionar;
+      this.remover = [];
       this.result = [];
+      this.adicionar = [];
 
-      console.log(content);
+      console.log(content)
+      console.log(removeContent)
+      console.log(addContent)
 
       await knex.transaction(async (trx) => {
         content.map(async (tuple) => knex(tuple.table)
           .where('id', tuple.id)
           .update(tuple.update)
+          .transacting(trx),
+        );
+        await trx.commit;
+      });
+
+      await knex.transaction(async (trx) => {
+        removeContent.map(async (tuple) => knex(tuple.table)
+          .where('id', tuple.id)
+          .del()
+          .transacting(trx),
+        );
+        await trx.commit;
+      });
+      console.log('asddas')
+
+      await knex.transaction(async (trx) => {
+        addContent.map(async (tuple) => knex('curso')
+          .insert({ nome: tuple.nome, carga: tuple.carga, idarea: tuple.idarea, idmodalidade: tuple.idmodalidade})
           .transacting(trx),
         );
         await trx.commit;
@@ -135,25 +161,51 @@ class Course {
     }
   }
 
-  async compareObjects(obj1, obj2, mainKey) {
+  async compareObjects(obj1, obj2, mainKey) { // obj1 = antiga obj2 = nova
     for (const key in obj1) {
-      if (typeof obj1[key] === 'object') {
-        if (key === 'documentos') {
+      if (typeof obj1[key] === 'object') { // se for nested
+        if (key === 'documentos') { 
           continue;
         }
-        if (!isNaN(key)) {
-          this.compareObjects(obj1[key], obj2[key], mainKey);
-        } else{
+        if (!isNaN(key)) { // se for array
+          if (key === '0') { // caso seja primeiro element do array
+            if (JSON.stringify(obj1) === JSON.stringify(obj2)){ // caso não tenha diferença
+              continue;
+            } else { // caso sejam diferentes
+              for (const index in obj1) { // para cada elemento no objeto antigo
+                if (obj2.filter((item) => item.id === obj1[index].id).length !== 0) { // checar se ele ainda existe no novo
+                  if (JSON.stringify(obj2).indexOf(JSON.stringify(obj1[index])) !== -1) { // se existir, ver se tem diferença
+                    continue;
+                  } else{
+                    let indexOf = obj2.map(object => object.id).indexOf(obj1[index].id)
+                    this.compareObjects(obj1[index], obj2[indexOf], mainKey);
+                  }
+                } else{
+                  this.remover.push({ id: obj1[index].id, table: mainKey})
+                }
+              }
+              for (const index2 in obj2) { // para cada elemento no objeto novo
+                if (obj1.filter((item) => item.id === obj2[index2].id).length === 0) { // checar se existe algum novo
+                  console.log(obj2[index2])
+                  delete obj2[index2]['id']
+                  console.log(obj2[index2])
+                  this.adicionar.push(obj2[index2])
+                } else {
+                  continue;
+                }
+              }
+            }
+          }
+        } else{ // se não for array
           this.compareObjects(obj1[key], obj2[key], key);
         }
       } else {
-        if (!obj2.hasOwnProperty(key)) {
+        if (!obj2.hasOwnProperty(key)) { // se a nova 
           continue;
         }
         if (key === 'id') {
           continue;
         }
-        console.log(obj1[key], obj2[key]);
         if (obj1[key] !== obj2[key]) {
           if (mainKey === 'etapas') {
             this.result.push({ table: 'etapa', id: obj1.id, update: { [key]: obj2[key] } });
