@@ -112,37 +112,43 @@ class Course {
       this.result = [];
       this.adicionar = [];
 
-      console.log(content)
-      console.log(removeContent)
+      console.log("Atualizar: ")
+      console.log(content);
+      console.log("Remover: ")
+      console.log(removeContent);
+      console.log("Adicionar: ")
       console.log(addContent)
 
-      await knex.transaction(async (trx) => {
-        content.map(async (tuple) => knex(tuple.table)
-          .where('id', tuple.id)
-          .update(tuple.update)
-          .transacting(trx),
-        );
-        await trx.commit;
-      });
-
-      await knex.transaction(async (trx) => {
-        removeContent.map(async (tuple) => knex(tuple.table)
-          .where('id', tuple.id)
-          .del()
-          .transacting(trx),
-        );
-        await trx.commit;
-      });
-      console.log('asddas')
-
-      await knex.transaction(async (trx) => {
-        addContent.map(async (tuple) => knex('curso')
-          .insert({ nome: tuple.nome, carga: tuple.carga, idarea: tuple.idarea, idmodalidade: tuple.idmodalidade})
-          .transacting(trx),
-        );
-        await trx.commit;
-      });
-
+      // if (content.length !== 0 ) {
+      //   await knex.transaction(async (trx) => {
+      //     content.map(async (tuple) => knex(tuple.table)
+      //       .where('id', tuple.id)
+      //       .update(tuple.update)
+      //       .transacting(trx),
+      //     );
+      //     await trx.commit;
+      //   });
+      // }
+      // if (removeContent.length !== 0) {
+      //   await knex.transaction(async (trx) => {
+      //     removeContent.map(async (tuple) => knex(tuple.table)
+      //       .where('id', tuple.id)
+      //       .del()
+      //       .transacting(trx),
+      //     );
+      //     await trx.commit;
+      //   });
+      // }
+      
+      // if (addContent.length !== 0) {
+      //   await knex.transaction(async (trx) => {
+      //     addContent.map(async (tuple) => knex('curso')
+      //       .insert({ nome: tuple.nome, carga: tuple.carga, idarea: tuple.idarea, idmodalidade: tuple.idmodalidade})
+      //       .transacting(trx),
+      //     );
+      //     await trx.commit;
+      //   });
+      // }
       return { response: "Curso atualizado com sucesso", status: 200 };
     } catch (error) {
       console.log(error);
@@ -161,59 +167,58 @@ class Course {
     }
   }
 
-  async compareObjects(obj1, obj2, mainKey) { // obj1 = antiga obj2 = nova
-    for (const key in obj1) {
-      if (typeof obj1[key] === 'object') { // se for nested
-        if (key === 'documentos') { 
-          continue;
-        }
-        if (!isNaN(key)) { // se for array
-          if (key === '0') { // caso seja primeiro element do array
-            if (JSON.stringify(obj1) === JSON.stringify(obj2)){ // caso não tenha diferença
-              continue;
-            } else { // caso sejam diferentes
-              for (const index in obj1) { // para cada elemento no objeto antigo
-                if (obj2.filter((item) => item.id === obj1[index].id).length !== 0) { // checar se ele ainda existe no novo
-                  if (JSON.stringify(obj2).indexOf(JSON.stringify(obj1[index])) !== -1) { // se existir, ver se tem diferença
-                    continue;
-                  } else{
-                    let indexOf = obj2.map(object => object.id).indexOf(obj1[index].id)
-                    this.compareObjects(obj1[index], obj2[indexOf], mainKey);
-                  }
-                } else{
-                  this.remover.push({ id: obj1[index].id, table: mainKey})
-                }
+  async compareObjects(oldObject, newObject, table) {
+    for (const key in oldObject) {
+      if (typeof oldObject[key] === 'object') { // se for nested
+        this.compareNestedObjects(oldObject, newObject, table, key);
+      } else {
+        this.compareNormalObjects(oldObject, newObject, table, key)
+      }
+    }
+  }
+
+  async compareNestedObjects(oldObject, newObject, table, key) {
+    if (!isNaN(key)) { // se for array
+      if (key === '0') { // caso seja primeiro element do array
+        if (JSON.stringify(oldObject) === JSON.stringify(newObject)){ // caso não tenha diferença
+          return;
+        } else { // caso sejam diferentes
+          for (const index in oldObject) { // para cada elemento no objeto antigo
+            if (newObject.filter((item) => item.id === oldObject[index].id).length !== 0) { // checar se ele ainda existe no novo
+              if (JSON.stringify(newObject).indexOf(JSON.stringify(oldObject[index])) !== -1) { // se existir, ver se tem diferença
+                return;
+              } else{
+                let indexOf = newObject.map(object => object.id).indexOf(oldObject[index].id)
+                this.compareObjects(oldObject[index], newObject[indexOf], table);
               }
-              for (const index2 in obj2) { // para cada elemento no objeto novo
-                if (obj1.filter((item) => item.id === obj2[index2].id).length === 0) { // checar se existe algum novo
-                  console.log(obj2[index2])
-                  delete obj2[index2]['id']
-                  console.log(obj2[index2])
-                  this.adicionar.push(obj2[index2])
-                } else {
-                  continue;
-                }
-              }
+            } else{
+              this.remover.push({ id: oldObject[index].id, table: table})
             }
           }
-        } else{ // se não for array
-          this.compareObjects(obj1[key], obj2[key], key);
-        }
-      } else {
-        if (!obj2.hasOwnProperty(key)) { // se a nova 
-          continue;
-        }
-        if (key === 'id') {
-          continue;
-        }
-        if (obj1[key] !== obj2[key]) {
-          if (mainKey === 'etapas') {
-            this.result.push({ table: 'etapa', id: obj1.id, update: { [key]: obj2[key] } });
-          } else {
-            this.result.push({ table: mainKey, id: obj1.id, update: { [key]: obj2[key] } });
+          for (const index2 in newObject) { // para cada elemento no objeto novo
+            if (oldObject.filter((item) => item.id === newObject[index2].id).length === 0) { // checar se existe algum novo
+              delete newObject[index2]['id']
+              this.adicionar.push(newObject[index2])
+            } else {
+              continue;
+            }
           }
         }
       }
+    } else{ // se não for array
+      this.compareObjects(oldObject[key], newObject[key], key);
+    }
+  }
+
+  async compareNormalObjects(oldObject, newObject, table, key) {
+    if (!newObject.hasOwnProperty(key)) { // se a nova 
+      return;
+    }
+    if (key === 'id') {
+      return;
+    }
+    if (oldObject[key] !== newObject[key]) {
+      this.result.push({ table: table, id: oldObject.id, update: { [key]: newObject[key] } });
     }
   }
 }
