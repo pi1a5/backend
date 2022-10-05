@@ -32,7 +32,7 @@ class Course {
   async getAreasWithCourses() {
     try {
       const response = {};
-      response['areas'] = await knex.select('a.nome', 'a.id', knex.raw("json_agg(c.*) as cursos"))
+      response['areas'] = await knex.select('a.nome', 'a.id', knex.raw("json_agg(c.*) as curso"))
         .from('area AS a')
         .leftJoin('curso AS c', 'c.idarea', 'a.id')
         .groupBy('a.nome', 'a.id')
@@ -104,6 +104,14 @@ class Course {
 
   async update(areaantiga, areanova) {
     try {
+      for (const i in areanova.curso) {
+        if (areanova.curso[i].hasOwnProperty('modalidade')) {
+          console.log("aa")
+          console.log(areanova.curso[i].modalidade)
+          console.log(areanova.curso[i].idmodalidade)
+          delete areanova.curso[i].modalidade;
+        }
+      }
       this.compareObjects(areaantiga, areanova, 'area');
       const content = this.result;
       const removeContent = this.remover;
@@ -119,36 +127,23 @@ class Course {
       console.log("Adicionar: ")
       console.log(addContent)
 
-      // if (content.length !== 0 ) {
-      //   await knex.transaction(async (trx) => {
-      //     content.map(async (tuple) => knex(tuple.table)
-      //       .where('id', tuple.id)
-      //       .update(tuple.update)
-      //       .transacting(trx),
-      //     );
-      //     await trx.commit;
-      //   });
-      // }
-      // if (removeContent.length !== 0) {
-      //   await knex.transaction(async (trx) => {
-      //     removeContent.map(async (tuple) => knex(tuple.table)
-      //       .where('id', tuple.id)
-      //       .del()
-      //       .transacting(trx),
-      //     );
-      //     await trx.commit;
-      //   });
-      // }
-      
-      // if (addContent.length !== 0) {
-      //   await knex.transaction(async (trx) => {
-      //     addContent.map(async (tuple) => knex('curso')
-      //       .insert({ nome: tuple.nome, carga: tuple.carga, idarea: tuple.idarea, idmodalidade: tuple.idmodalidade})
-      //       .transacting(trx),
-      //     );
-      //     await trx.commit;
-      //   });
-      // }
+      await knex.transaction(async (trx) => {
+        if (content.length !== 0 ) {
+          content.map(async (tuple) => knex(tuple.table)
+            .where('id', tuple.id)
+            .update(tuple.update)
+            .transacting(trx),
+          );
+        }
+        if (removeContent.length !== 0) {
+          await knex('curso').del().whereIn('id', removeContent)
+        }
+        if (addContent.length !== 0) {
+          
+          await knex('curso').insert(addContent);
+        }
+        await trx.commit;
+      });
       return { response: "Curso atualizado com sucesso", status: 200 };
     } catch (error) {
       console.log(error);
@@ -186,13 +181,15 @@ class Course {
           for (const index in oldObject) { // para cada elemento no objeto antigo
             if (newObject.filter((item) => item.id === oldObject[index].id).length !== 0) { // checar se ele ainda existe no novo
               if (JSON.stringify(newObject).indexOf(JSON.stringify(oldObject[index])) !== -1) { // se existir, ver se tem diferença
-                return;
+                continue;
               } else{
                 let indexOf = newObject.map(object => object.id).indexOf(oldObject[index].id)
                 this.compareObjects(oldObject[index], newObject[indexOf], table);
               }
             } else{
-              this.remover.push({ id: oldObject[index].id, table: table})
+              // this.remover.push({ id: oldObject[index].id, table: table})
+              console.log('aaa')
+              this.remover.push(oldObject[index].id)
             }
           }
           for (const index2 in newObject) { // para cada elemento no objeto novo
@@ -204,6 +201,8 @@ class Course {
             }
           }
         }
+      } else {
+        return; ''
       }
     } else{ // se não for array
       this.compareObjects(oldObject[key], newObject[key], key);
@@ -211,6 +210,8 @@ class Course {
   }
 
   async compareNormalObjects(oldObject, newObject, table, key) {
+    console.log(newObject);
+    console.log(oldObject);
     if (!newObject.hasOwnProperty(key)) { // se a nova 
       return;
     }
