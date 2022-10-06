@@ -21,8 +21,19 @@ class Course {
 
   async findAll() {
     try {
-      const result = await knex.select('*').table('curso');
-      return { response: result, status: 200 };
+      const cursos = await knex.select('*').table('curso');
+      const modalidades = await knex.select('*').table('modalidade');
+
+      for (const indexModalidades in modalidades) {
+        modalidades[indexModalidades]['curso'] = [];
+        for (const indexCursos in cursos) {
+          if (modalidades[indexModalidades].id === cursos[indexCursos].idmodalidade) {
+            modalidades[indexModalidades].curso.push(cursos[indexCursos]);
+          }
+        }
+      }
+
+      return { response: modalidades, status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao encontrar cursos', status: 400 };
