@@ -21,17 +21,11 @@ class Course {
 
   async findAll() {
     try {
-      const cursos = await knex.select('*').table('curso');
-      const modalidades = await knex.select('*').table('modalidade');
-
-      for (const indexModalidades in modalidades) {
-        modalidades[indexModalidades]['curso'] = [];
-        for (const indexCursos in cursos) {
-          if (modalidades[indexModalidades].id === cursos[indexCursos].idmodalidade) {
-            modalidades[indexModalidades].curso.push(cursos[indexCursos]);
-          }
-        }
-      }
+      const modalidades = await knex.select('m.id', 'm.nome', knex.raw('json_agg(c.*) as curso'))
+        .from('modalidade AS m')
+        .leftJoin('curso AS c', 'c.idmodalidade', 'm.id')
+        .groupBy('m.id')
+        .orderBy('m.nome');
 
       return { response: modalidades, status: 200 };
     } catch (error) {
