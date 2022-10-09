@@ -12,6 +12,11 @@ const knex = require('../database/connection');
 class User {
   async new(name, email, picture, token, sub) {
     try {
+      let orientador = false;
+
+      
+
+
       await knex.insert({
         idcurso: null, nome: name, email, foto: picture, token, sub,
       }).table('usuario');
