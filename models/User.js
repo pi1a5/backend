@@ -27,8 +27,8 @@ class User {
       const user = await knex('usuario').select('*')
         .where({ sub: sub });
       if (user.length === 0) return {response: 'Erro ao encontrar usuario', status: 404};
-      
-      return { response: user.response, status: 200 };
+
+      return { response: user[0], status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao atualizar base', status: 404 };
