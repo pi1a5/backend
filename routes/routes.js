@@ -26,7 +26,6 @@ router.get('/', HeaderMiddleware, HomeController.index);
 
 // Para Usuario
 router.post('/api/login', HeaderMiddleware, UserController.login);
-router.post('/api/newUser', HeaderMiddleware, UserController.newUser);
 router.post('/api/user', HeaderMiddleware, UserController.user);
 router.post('/api/checkOrientadoresAmount', HeaderMiddleware, UserController.checkOrientadoresAmount);
 router.post('/api/setCourseProntuario', HeaderMiddleware, UserController.setCourseProntuario);

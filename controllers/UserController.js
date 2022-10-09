@@ -23,25 +23,6 @@ class UserController {
     }
   }
 
-  async newUser(req, res) {
-    try {
-      const {
-        name, email, picture, token, sub,
-      } = req.body;
-      const data = {
-        nome: name, email: email, foto: picture, token: token, subBack: sub,
-      };
-      const val = Validate(data);
-      if (val !== true) return res.status(400).json(val);
-
-      const response = await User.new(name, email, picture, token, sub);
-
-      res.status(response.status).json(response.response);
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  }
-
   async setCourseProntuario(req, res) {
     try {
       const {
