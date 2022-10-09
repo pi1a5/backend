@@ -116,28 +116,6 @@ class Processo {
       const content = this.result;
       this.result = [];
 
-      // const resusult = [];
-
-      // for (const i in content) { // para cada elemento atualizavel
-      //   if (!resusult.some((item) => item.table === content[i].table)) { // caso tabela não esteja na lista
-      //     resusult.push({ table: content[i].table, ids: [content[i].id], updates: [content[i].update] }); // add tabela na lista
-      //   } else { // tabela já está na lista
-      //     for (const j in resusult) { // procurando a tabela na lista
-      //       if (resusult[j].table === content[i].table) { // achou a tabela na lista
-      //         resusult[j].ids.push(content[i].id);
-      //         resusult[j].updates.push(content[i].update);
-      //       }
-      //     }
-      //   }
-      // }
-
-      // console.log('resultados');
-
-      // for (const k in resusult) {
-      //   console.log(resusult[k]);
-      //   await knex(resusult[k].table).update(["nome", "prazo"], ["jorge", 10]).whereIn('id', resusult[k].ids);
-      // }
-
       await knex.transaction(async (trx) => {
         content.map(async (tuple) => knex(tuple.table)
           .where('id', tuple.id)

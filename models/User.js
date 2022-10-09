@@ -10,7 +10,7 @@
 const knex = require('../database/connection');
 
 class User {
-  async register(name, email, picture, token, sub) {
+  async new(name, email, picture, token, sub) {
     try {
       await knex.insert({
         idcurso: null, nome: name, email, foto: picture, token, sub,
@@ -35,22 +35,6 @@ class User {
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao atualizar base', status: 404 };
-    }
-  }
-
-  async saveIdToken(token, sub) {
-    try {
-      const user = await this.findBySub(sub);
-
-      if (user.status !== 200) return { response: user.response, status: user.status };
-
-      await knex.update({ token })
-        .table('usuario')
-        .where({ sub });
-      return { response: user.response, status: user.status };
-    } catch (error) {
-      console.log(error);
-      return { response: 'Erro ao realizar update', status: 400 };
     }
   }
 
@@ -84,14 +68,12 @@ class User {
     }
   }
 
-  async findBySub(sub) {
+  async login(name, email, picture, token, sub) {
     try {
       const user = await knex.select(['id', 'email', 'nome', 'foto', 'idcurso', 'prontuario'])
         .table('usuario')
         .where({ sub });
-
-      if (user.length === 0) return { response: 'Erro ao encontrar com sub', status: 404 };
-      if (user === undefined) return ({ response: 'Erro ao encontrar com sub', status: 400 });
+      if (user.length === 0) return await this.new(name, email, picture, token, sub);
 
       return { response: user[0], status: 200 };
     } catch (error) {

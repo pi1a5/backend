@@ -8,15 +8,15 @@ class UserController {
   async login(req, res) {
     try {
       const {
-        idToken, sub,
+        name, email, picture, token, sub,
       } = req.body;
       const data = {
-        idTokenBack: idToken, subBack: sub,
+        nome: name, email: email, foto: picture, token: token, sub: sub,
       };
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const response = await User.saveIdToken(idToken, sub);
+      const response = await User.login(name, email, picture, token, sub);
       res.status(response.status).json(response.response);
     } catch (error) {
       res.status(500).json(error);
@@ -34,7 +34,7 @@ class UserController {
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const response = await User.register(name, email, picture, token, sub);
+      const response = await User.new(name, email, picture, token, sub);
 
       res.status(response.status).json(response.response);
     } catch (error) {
