@@ -22,15 +22,12 @@ class User {
     }
   }
 
-  async saveIdCursoProntuario(idCurso, prontuario, sub) {
+  async findBySub(sub) {
     try {
-      const user = await this.findBySub(sub);
-      if (user.status !== 200) return { response: user.response, status: user.status };
-
-      const check = await this.checarProntuario(prontuario, sub);
-      if (check.status !== 200) return { response: check.response, status: check.status };
-
-      await knex.update({ idcurso: idCurso, prontuario: prontuario }).table('usuario').where({ sub });
+      const user = await knex('usuario').select('*')
+        .where({ sub: sub });
+      if (user.length === 0) return {response: 'Erro ao encontrar usuario', status: 404};
+      
       return { response: user.response, status: 200 };
     } catch (error) {
       console.log(error);
