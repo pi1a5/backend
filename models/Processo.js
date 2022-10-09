@@ -41,7 +41,8 @@ class Processo {
 
       if (idCurso[0].email.includes('@aluno.ifsp') !== true) {
         const tiposDocumento = await knex.select('*')
-          .table('tipodocumento');
+          .table('tipodocumento')
+          .orderBy('nome');
         result.documentos = tiposDocumento;
       }
 

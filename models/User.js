@@ -7,6 +7,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-console */
 /* eslint-disable class-methods-use-this */
+const { EC2MetadataCredentials } = require('aws-sdk');
 const knex = require('../database/connection');
 
 class User {
@@ -14,13 +15,20 @@ class User {
     try {
       let orientador = false;
 
-      
+      if (email.indexOf('@aluno.ifsp.edu.br') !== -1) {
+        orientador = false;
+      } else if (email.indexOf('@ifsp.edu.br') !== -1 || email === 'pl1a5.grupo5@gmail.com') {
+        orientador = true;
+      } else {
+        return { response: 'Email inválido', status: 400 };
+      }
 
 
-      await knex.insert({
-        idcurso: null, nome: name, email, foto: picture, token, sub,
+      const user = await knex.returning('*').insert({
+        idcurso: null, nome: name, email, foto: picture, token: token, sub: sub, orientador: orientador
       }).table('usuario');
-      return { response: 'Usuário cadastrado com sucesso', status: 200 };
+      console.log(user);
+      return { response: user[0], status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao cadastrar usuário', status: 404 };
@@ -67,6 +75,18 @@ class User {
     } catch (error) {
       console.log(error);
       return undefined;
+    }
+  }
+
+  async saveIdCursoProntuario(idCurso, prontuario, sub) {
+    try {
+      await knex('usuario').update({ idcurso: idCurso, prontuario: prontuario})
+        .where({ sub: sub });
+
+        return { response: 'Curso e prontuário registrados com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao atualizar idcurso prontuario', status: 404 };
     }
   }
 
