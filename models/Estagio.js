@@ -84,7 +84,8 @@ class Estagio {
         .from('estagio AS e')
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
         .where({ 'u.sub': sub });
-        return { response: result[0].fechado, status: 200 };
+      if (result.length === 0) return { response: null, status: 200 };
+      return { response: result[0].fechado, status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao criar estágio', status: 400 };

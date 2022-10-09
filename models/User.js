@@ -80,10 +80,13 @@ class User {
 
   async saveIdCursoProntuario(idCurso, prontuario, sub) {
     try {
+      const checar = await knex.select('*')
+        .table('usuario')
+        .where({prontuario: prontuario})
+      if (checar.length !== 0) return { response: 'Prontuário já existente', status: 400 }
       await knex('usuario').update({ idcurso: idCurso, prontuario: prontuario})
         .where({ sub: sub });
-
-        return { response: 'Curso e prontuário registrados com sucesso', status: 200 };
+      return { response: 'Curso e prontuário registrados com sucesso', status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao atualizar idcurso prontuario', status: 404 };

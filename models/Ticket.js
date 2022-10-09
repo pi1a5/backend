@@ -301,9 +301,8 @@ class Ticket {
             .from('curso AS c')
             .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
             .where({ 'u.id': estagio[0].idaluno });
-          if (carga[0].cargatotal >= cargaCurso[0].carga) {
-            for (const j in processoAtual[0].processo.etapas) {
-              console.log(processoAtual[0].processo.etapas)
+          if (carga[0].cargatotal >= cargaCurso[0].carga) { // se tiver finalizado
+            for (const j in processoAtual[0].processo.etapas) { 
               if (processoAtual[0].processo.etapas[j].atual === true) {
                 if (Number(j) === 0) {
                   const idorientador = await knex('usuario').select('id')
@@ -328,9 +327,7 @@ class Ticket {
           if (aceito === true) {
             for (const i in processoAtual[0].processo.etapas) {
               if (processoAtual[0].processo.etapas[i].atual === true) { // procurando etapa atual
-              console.log(i);
                 if (Number(i) === 0) { // se a etapa for a primeira
-                  console.log("aaaaaaaaaaaaaaaaa")
                   const idorientador = await knex('usuario').select('id')
                     .where({ sub: sub });
                   await knex('estagio').update({ idorientador: idorientador[0].id })
@@ -343,10 +340,8 @@ class Ticket {
                     .where({ id: estagio[0].id })
                   break;
                 } else { // se não for a ultima
-
                   processoAtual[0].processo.etapas[i].atual = false;
                   processoAtual[0].processo.etapas[Number(i) + 1].atual = true;
-                  console.log(processoAtual[0].processo.etapas)
                   break;
                 }
               }
