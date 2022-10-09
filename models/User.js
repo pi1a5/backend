@@ -252,6 +252,7 @@ class User {
         .where({ 'c.idarea': area[0].idarea })
         .where('u.email', 'like', '%@ifsp.edu.br%')
         .orderBy('u.id', 'asc');
+      if (result.length === 0) return { response: null, status: 200 };
       return { response: result, status: 200 };
     } catch (error) {
       console.log(error);
