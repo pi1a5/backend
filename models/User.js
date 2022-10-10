@@ -196,7 +196,7 @@ class User {
         .from('usuario AS u')
         .leftJoin('estagio AS e', 'e.idaluno', 'u.id')
         .where({ 'u.sub': sub});
-      if (idorientador.length === 0) return { response: 'Perfil não encontrado', status: 200 }
+      if (idorientador[0].idorientador === null) return { response: 'Perfil não encontrado', status: 200 }
 
       return { response: idorientador, status: 200 };
     } catch (error) {
