@@ -32,6 +32,7 @@ router.post('/api/setCourseProntuario', HeaderMiddleware, UserController.setCour
 router.post('/api/getAlunoProfile', HeaderMiddleware, UserController.getAlunoProfile);
 router.post('/api/getSupervisorsByArea', HeaderMiddleware, UserController.getSupervisorsByArea);
 router.get('/api/getSupervisors', HeaderMiddleware, UserController.getSupervisors);
+router.post('/api/deleteSupervisor', HeaderMiddleware, UserController.deleteSupervisor);
 
 
 

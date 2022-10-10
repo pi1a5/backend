@@ -146,7 +146,7 @@ class User {
       const colegas = await knex.distinct().select('u.id', 'u.nome')
         .from('usuario AS u')
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
-        .whereNot('u.email', 'like', '%@aluno.ifsp.edu.br%')
+        .where({ orientador: true})
         .where({ 'c.idarea': area[0].idarea });
       if (colegas.length === 0) return { response: 'Nenhum orientador encontrado', status: 404 };
 
@@ -265,10 +265,22 @@ class User {
       const result = await knex('usuario').select('*')
         .where({ orientador: true })
         .orderBy('nome', 'asc');
+      if (result.length === 0) return { response: null, status: 200 };
       return { response: result, status: 200 };
     } catch (error) {
       console.log(error);
-      return { response: 'Erro ao encontrar usuários', status: 400 };
+      return { response: 'Erro ao encontrar orientadores', status: 400 };
+    }
+  }
+
+  async deleteSupervisor(id) {
+    try {
+      await knex('usuario').del()
+        .where({ id: id });
+      return { response: 'Orientador deletado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao deletar orientador', status: 400 };
     }
   }
 }

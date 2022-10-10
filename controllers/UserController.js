@@ -130,6 +130,24 @@ class UserController {
       res.status(500).json(error);
     }
   }
+
+  async deleteSupervisor(req, res) {
+    try {
+      const {
+        id,
+      } = req.body;
+      const data = {
+        id: id,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const users = await User.deleteSupervisor(id);
+      res.status(users.status).json(users.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
 }
 
 module.exports = new UserController();
