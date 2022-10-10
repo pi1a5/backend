@@ -14,9 +14,27 @@ class EstagioController {
     }
   }
 
-  async limparBanco(req, res) {
+  async limparEstagios(req, res) {
     try {
       const limpar = await Estagio.limpar();
+      res.status(limpar.status).json(limpar.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async checkIfHasEstagio(req, res) {
+    try {
+      const { // pegar idcurso e nome do orientador com o sub
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const limpar = await Estagio.checkIfHas(sub);
       res.status(limpar.status).json(limpar.response);
     } catch (error) {
       res.status(500).json(error);
@@ -26,16 +44,74 @@ class EstagioController {
   async createNewEstagio(req, res) {
     try {
       const { // pegar idcurso e nome do orientador com o sub
-        idprocesso, sub,
+        idProcesso, cargaHoraria, sub,
       } = req.body;
       const data = {
         sub: sub,
-        idprocesso: idprocesso,
+        idProcesso: idProcesso,
+        cargaHoraria: cargaHoraria,
       };
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const result = await Estagio.newEstagio(idprocesso, sub);
+      const result = await Estagio.newEstagio(idProcesso, sub, cargaHoraria);
+      res.status(result.status).json(result.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async checkIfEnded(req, res) {
+    try {
+      const { // pegar idcurso e nome do orientador com o sub
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const result = await Estagio.ended(sub);
+      res.status(result.status).json(result.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async endInternship(req, res) {
+    try {
+      const { // pegar idcurso e nome do orientador com o sub
+        idestagio,
+      } = req.body;
+
+      const data = {
+        idestagio: idestagio,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const result = await Estagio.end(idestagio);
+      res.status(result.status).json(result.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async transferInternship(req, res) {
+    try {
+      const { 
+        idestagio, idorientador
+      } = req.body;
+
+      const data = {
+        idestagio: idestagio,
+        idorientador: idorientador,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const result = await Estagio.transfer(idestagio, idorientador);
       res.status(result.status).json(result.response);
     } catch (error) {
       res.status(500).json(error);

@@ -8,34 +8,15 @@ class UserController {
   async login(req, res) {
     try {
       const {
-        idToken, sub,
-      } = req.body;
-      const data = {
-        idTokenBack: idToken, subBack: sub,
-      };
-      const val = Validate(data);
-      if (val !== true) return res.status(400).json(val);
-
-      const response = await User.saveIdToken(idToken, sub);
-      res.status(response.status).json(response.response);
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  }
-
-  async newUser(req, res) {
-    try {
-      const {
         name, email, picture, token, sub,
       } = req.body;
       const data = {
-        nome: name, email: email, foto: picture, token: token, subBack: sub,
+        nome: name, email: email, foto: picture, token: token, sub: sub,
       };
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const response = await User.register(name, email, picture, token, sub);
-
+      const response = await User.login(name, email, picture, token, sub);
       res.status(response.status).json(response.response);
     } catch (error) {
       res.status(500).json(error);
@@ -99,13 +80,13 @@ class UserController {
       if (val !== true) return res.status(400).json(val);
 
       const users = await User.checkAmount(sub);
-      res.status(200).json(users);
+      res.status(users.status).json(users.response);
     } catch (error) {
       res.status(500).json(error);
     }
   }
 
-  async getAlunoProfile(req, res) {
+  async getUserProfile(req, res) {
     try {
       const {
         sub,
@@ -116,8 +97,89 @@ class UserController {
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const users = await User.getAlunoProfile(sub);
-      res.status(200).json(users);
+      const users = await User.getUserProfile(sub);
+      res.status(users.status).json(users.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async getUserSupervisor(req, res) {
+    try {
+      const {
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const users = await User.getUserSupervisor(sub);
+      res.status(users.status).json(users.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async getUserInternshipData(req, res) {
+    try {
+      const {
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const users = await User.getUserProfile(sub);
+      res.status(users.status).json(users.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async getSupervisorsByArea(req, res) {
+    try {
+      const {
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const users = await User.getSupervisorsByArea(sub);
+      res.status(users.status).json(users.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async getSupervisors(req, res) {
+    try {
+      const users = await User.getSupervisors();
+      res.status(users.status).json(users.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async deleteSupervisor(req, res) {
+    try {
+      const {
+        id,
+      } = req.body;
+      const data = {
+        id: id,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const users = await User.deleteSupervisor(id);
+      res.status(users.status).json(users.response);
     } catch (error) {
       res.status(500).json(error);
     }

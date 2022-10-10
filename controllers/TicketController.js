@@ -10,6 +10,30 @@ const Ticket = require('../models/Ticket');
 const Validate = require('../modules/validate');
 
 class TicketController {
+  async newTicket(req, res) {
+    try {
+      const {
+        corpoTexto, sub,
+      } = req.body;
+
+      const data = {
+        corpoTexto: corpoTexto,
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const files = req['files'];
+      console.log('a');
+
+      const result = await Ticket.new(corpoTexto, sub, files);
+      res.status(result.status).json(result.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+
   async tickets(req, res) {
     try {
       const ticket = await Ticket.getAll();
@@ -38,6 +62,44 @@ class TicketController {
     }
   }
 
+  async getPendingTicket(req, res) {
+    try {
+      const {
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const getAllTickets = await Ticket.getPending(sub);
+
+      res.status(getAllTickets.status).json(getAllTickets.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async getClosedTickets(req, res) {
+    try {
+      const {
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const getAllTickets = await Ticket.getClosed(sub);
+
+      res.status(getAllTickets.status).json(getAllTickets.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
   async getTicketsWithoutSupervisor(req, res) {
     try {
       const { sub } = req.body;
@@ -47,7 +109,7 @@ class TicketController {
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const ticket = await Ticket.getJoinWithoutSupervisor(sub);
+      const ticket = await Ticket.getWithoutSupervisor(sub);
       res.status(ticket.status).json(ticket.response);
     } catch (error) {
       res.status(500).json(error);
@@ -63,7 +125,7 @@ class TicketController {
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const ticket = await Ticket.getJoinWithSupervisorOpen(sub);
+      const ticket = await Ticket.getWithSupervisor(sub);
       res.status(ticket.status).json(ticket.response);
     } catch (error) {
       res.status(500).json(error);
@@ -79,7 +141,7 @@ class TicketController {
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const ticket = await Ticket.getJoinWithSupervisorClosed(sub);
+      const ticket = await Ticket.getWithSupervisor(sub);
       res.status(ticket.status).json(ticket.response);
     } catch (error) {
       res.status(500).json(error);
@@ -105,18 +167,17 @@ class TicketController {
   async createTicket(req, res) {
     try {
       const {
-        sub, mensagem, documentos, limite,
+        sub, mensagem, documentos,
       } = req.body;
       const data = {
         sub: sub,
         mensagem: mensagem,
         documentos: documentos,
-        limite: limite,
       };
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const ticket = await Ticket.create(sub, mensagem, documentos, limite);
+      const ticket = await Ticket.create(sub, mensagem, documentos);
       res.status(ticket.status).json(ticket.response);
     } catch (error) {
       res.status(500).json(error);
@@ -126,55 +187,21 @@ class TicketController {
   async feedbackTicket(req, res) {
     try {
       const {
-        sub, idTicket, feedback, eAceito,
+        sub, idTicket, feedback, aceito, etapa,
       } = req.body;
+      const data = {
+        sub: sub,
+        idTicket: idTicket,
+        feedback: feedback,
+        aceito: aceito,
+        etapa: etapa,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
 
-      if (sub === '' || sub === ' ' || sub === undefined) {
-        res.status(400).json('Sub inválido');
-        return;
-      }
+      const ticket = await Ticket.updateFeedback(sub, idTicket, feedback, aceito, etapa);
 
-      if (idTicket === '' || idTicket === ' ' || idTicket === undefined) {
-        res.status(400).json('id_ticket inválido');
-        return;
-      }
-
-      if (feedback === '' || feedback === ' ' || feedback === undefined) {
-        res.status(400).json('feedback inválido');
-        return;
-      }
-
-      if (eAceito === '' || eAceito === ' ' || eAceito === undefined) {
-        res.status(400).json('Sub inválido');
-        return;
-      }
-
-      const ticket = await Ticket.updateFeedback(sub, idTicket, feedback, eAceito);
-
-      if (ticket) {
-        res.status(200).json(ticket);
-      } else {
-        res.status(500).json('Erro ao encontrar tickets.');
-      }
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  }
-
-  async checkIfFinalizou(req, res) {
-    try {
-      const { sub } = req.body;
-
-      if (sub === '' || sub === ' ' || sub === undefined) {
-        res.status(400).json('Sub inválido');
-        return;
-      }
-
-      if (await Ticket.checkFinalizou(sub)) {
-        res.status(200).json(true);
-      } else {
-        res.status(200).json(false);
-      }
+      res.status(ticket.status).json(ticket.response);
     } catch (error) {
       res.status(500).json(error);
     }
@@ -193,6 +220,25 @@ class TicketController {
       if (val !== true) return res.status(400).json(val);
 
       const result = await Ticket.updateLatest(idTicket, ticket);
+      res.status(result.status).json(result.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async deletePendingTicket(req, res) {
+    try {
+      const {
+        idTicket, sub
+      } = req.body;
+      const data = {
+        idTicket: idTicket,
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const result = await Ticket.deletePending(idTicket, sub);
       res.status(result.status).json(result.response);
     } catch (error) {
       res.status(500).json(error);
