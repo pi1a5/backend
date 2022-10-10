@@ -262,9 +262,11 @@ class User {
 
   async getSupervisors() {
     try {
-      const result = await knex('usuario').select('*')
-        .where({ orientador: true })
-        .orderBy('nome', 'asc');
+      const result = await knex.select('u.nome', 'u.id', 'u.foto', 'u.prontuario', 'c.nome as curso')
+        .from('usuario AS u')
+        .leftJoin('curso AS c', 'c.id', 'u.idcurso')
+        .where({ 'u.orientador': true })
+        .orderBy('u.nome', 'asc');
       if (result.length === 0) return { response: null, status: 200 };
       return { response: result, status: 200 };
     } catch (error) {
