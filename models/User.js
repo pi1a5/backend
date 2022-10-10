@@ -175,6 +175,36 @@ class User {
     }
   }
 
+  async getUserProfile(sub) {
+    try {
+      const profile = await knex.select('u.*', 'c.nome AS curso')
+        .from('usuario AS u')
+        .leftJoin('curso AS c', 'c.id', 'u.idcurso')
+        .where({ sub: sub })
+      if (profile.length === 0) return { response: 'Perfil não encontrado', status: 200 }
+
+      return { response: profile, status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao encontrar dados do usuário', status: 400 };
+    }
+  }
+
+  async getUserSupervisor(sub) {
+    try {
+      const idorientador = await knex.select('e.idorientador')
+        .from('usuario AS u')
+        .leftJoin('estagio AS e', 'e.idaluno', 'u.id')
+        .where({ 'u.sub': sub});
+      if (idorientador.length === 0) return { response: 'Perfil não encontrado', status: 200 }
+
+      return { response: idorientador, status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao encontrar dados do usuário', status: 400 };
+    }
+  }
+
   async getAlunoProfile(sub) {
     try {
       const result = {};

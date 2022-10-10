@@ -86,7 +86,7 @@ class UserController {
     }
   }
 
-  async getAlunoProfile(req, res) {
+  async getUserProfile(req, res) {
     try {
       const {
         sub,
@@ -97,7 +97,43 @@ class UserController {
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const users = await User.getAlunoProfile(sub);
+      const users = await User.getUserProfile(sub);
+      res.status(users.status).json(users.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async getUserSupervisor(req, res) {
+    try {
+      const {
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const users = await User.getUserSupervisor(sub);
+      res.status(users.status).json(users.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async getUserInternshipData(req, res) {
+    try {
+      const {
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const users = await User.getUserProfile(sub);
       res.status(users.status).json(users.response);
     } catch (error) {
       res.status(500).json(error);
