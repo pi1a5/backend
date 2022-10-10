@@ -263,8 +263,8 @@ class User {
   async getSupervisors() {
     try {
       const result = await knex('usuario').select('*')
-        .where('email', 'like', '%@ifsp.edu.br%')
-        .orderBy('id', 'asc');
+        .where({ orientador: true })
+        .orderBy('nome', 'asc');
       return { response: result, status: 200 };
     } catch (error) {
       console.log(error);
