@@ -133,7 +133,7 @@ class UserController {
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const users = await User.getUserProfile(sub);
+      const users = await User.getUserInternshipData(sub);
       res.status(users.status).json(users.response);
     } catch (error) {
       res.status(500).json(error);

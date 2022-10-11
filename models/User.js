@@ -25,7 +25,7 @@ class User {
 
 
       const user = await knex.returning('*').insert({
-        idcurso: null, nome: name, email, foto: picture, token: token, sub: sub, orientador: orientador
+        idcurso: null, nome: name, email, foto: picture, token: token, sub: sub, orientador: orientador, cargatotal: 0,
       }).table('usuario');
       console.log(user);
       return { response: user[0], status: 200 };
@@ -196,9 +196,49 @@ class User {
         .from('usuario AS u')
         .leftJoin('estagio AS e', 'e.idaluno', 'u.id')
         .where({ 'u.sub': sub});
+
       if (idorientador[0].idorientador === null) return { response: 'Perfil não encontrado', status: 200 }
 
-      return { response: idorientador, status: 200 };
+      const supervisor = await knex('usuario').select('*')
+        .where({ id: idorientador[0].idorientador});
+
+      return { response: supervisor, status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao encontrar dados do usuário', status: 400 };
+    }
+  }
+
+  async getUserInternshipData(sub) {
+    try {
+      const estagio = await knex.select('e.id',  knex.raw("TO_CHAR(e.criado, 'DD/MM/YYYY') as criado"), 'c.carga AS necessario', 'u.cargatotal AS cumprido')
+        .from('estagio AS e')
+        .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
+        .leftJoin('curso AS c', 'c.id', 'u.idcurso')
+        .where({ 'u.sub': sub })
+
+      if (estagio.length === 0) return { response: 'Estágio não encontrado', status: 200 }
+
+      estagio[0]['faltante'] = estagio[0].necessario - estagio[0].cumprido;
+
+      const tickets = await knex('ticket').select('*')
+        .where({ idestagio: estagio[0].id });
+      
+      let countAceito = 0
+      let countRecusado = 0
+      for (const i in tickets) {
+        if (tickets[i].aceito === true) {
+          countAceito += 1;
+        } else if (tickets[i].aceito === false) {
+          countRecusado += 1;
+        }
+      }
+
+      estagio[0]['tickets'] = tickets.length;
+      estagio[0]['aceito'] = countAceito;
+      estagio[0]['recusado'] = countRecusado;
+
+      return { response: estagio, status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao encontrar dados do usuário', status: 400 };
