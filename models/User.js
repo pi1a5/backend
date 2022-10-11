@@ -181,7 +181,7 @@ class User {
         .from('usuario AS u')
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
         .where({ sub: sub })
-      if (profile.length === 0) return { response: 'Perfil não encontrado', status: 200 }
+      if (profile.length === 0) return { response: null, status: 200 }
 
       return { response: profile, status: 200 };
     } catch (error) {
@@ -197,7 +197,7 @@ class User {
         .leftJoin('estagio AS e', 'e.idaluno', 'u.id')
         .where({ 'u.sub': sub});
 
-      if (idorientador[0].idorientador === null) return { response: 'Perfil não encontrado', status: 200 }
+      if (idorientador[0].idorientador === null) return { response: null, status: 200 }
 
       const supervisor = await knex('usuario').select('*')
         .where({ id: idorientador[0].idorientador});
@@ -217,13 +217,13 @@ class User {
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
         .where({ 'u.sub': sub })
 
-      if (estagio.length === 0) return { response: 'Estágio não encontrado', status: 200 }
+      if (estagio.length === 0) return { response: null, status: 200 }
 
       estagio[0]['faltante'] = estagio[0].necessario - estagio[0].cumprido;
 
       const tickets = await knex('ticket').select('*')
         .where({ idestagio: estagio[0].id });
-      
+      if (tickets.length === 0) return { response: null, status: 200 }
       let countAceito = 0
       let countRecusado = 0
       for (const i in tickets) {
