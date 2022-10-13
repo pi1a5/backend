@@ -8,6 +8,7 @@ const EstagioController = require('../controllers/EstagioController');
 const HomeController = require('../controllers/HomeController');
 const TicketController = require('../controllers/TicketController');
 const ProcessoController = require('../controllers/ProcessoController');
+const SessionController = require('../controllers/SessionsController');
 const UserController = require('../controllers/UserController');
 const HeaderMiddleware = require('../middleware/httpHeaders');
 
@@ -23,6 +24,10 @@ router.use('/api-docs', swaggerUi.serve);
 router.get('/api-docs', swaggerUi.setup(swaggerDocument, false, options));
 
 router.get('/', HeaderMiddleware, HomeController.index);
+
+// Para google
+
+router.get('/api/oauth/google', SessionController.googleOauthHandler);
 
 // Para Usuario
 router.post('/api/login', HeaderMiddleware, UserController.login);
