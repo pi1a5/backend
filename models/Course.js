@@ -55,17 +55,19 @@ class Course {
     try {
       const areanova = {};
       const cursosnovos = [{}];
+
       
       await knex.transaction(async function (t) {
         const areacriada = await knex('area').returning('id').insert({ nome: area.nome });
         areanova.area = areacriada[0];
-        for (const i in area.cursos) {
-          cursosnovos[i] = { nome: area.cursos[i].nome, carga: area.cursos[i].cargaHoraria, idmodalidade: area.cursos[i].modalidade.id, idarea: areacriada[0].id }
+        for (const i in area.curso) {
+          cursosnovos[i] = { nome: area.curso[i].nome, carga: area.curso[i].carga, idmodalidade: area.curso[i].modalidade.id, idarea: areacriada[0].id }
         }
         const cursos = await knex('curso').returning('*').insert(cursosnovos);
         areanova.area.cursos = cursos;
         await t.commit;
       });
+
       return { response: areanova, status: 200 };
     } catch (error) {
       console.log(error);
