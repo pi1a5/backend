@@ -118,34 +118,6 @@ class Ticket {
     }
   }
 
-  async getAllbyUserId(sub) {
-    try {
-      const id = await knex.select(['id'])
-        .table('usuario')
-        .where({ sub });
-      if (id.length === 0) return { response: 'Usuário não encontrado', status: 404 };
-      const estagio = await knex.select(['id'])
-        .table('estagio')
-        .where({ idaluno: id[0].id });
-      if (estagio.length === 0) return { response: 'Usuário não tem estágio', status: 404 };
-      const result = await knex.select(['id', 'mensagem', 'resposta', 'datacriado', 'datafechado', 'aceito'])
-        .table('ticket')
-        .where({ idestagio: estagio[0].id })
-        .orderBy('id', 'desc');
-      if (result.length === 0) return { response: 'Usuário não tem ticket', status: 404 };
-
-      for (const i in result) {
-        const arquivos = await this.getPdfUrl(result[i].id);
-        if (arquivos.status !== 200) return { response: arquivos.status, status: arquivos.status };
-        result[i].arquivos = arquivos.response;
-      }
-      return { response: result, status: 200 };
-    } catch (error) {
-      console.log(error);
-      return { response: 'Erro ao resgatar tickets', status: 404 };
-    }
-  }
-
   async getWithoutSupervisor(sub) {
     try {
       const area = await knex.select('c.idarea')
@@ -159,7 +131,7 @@ class Ticket {
         .leftJoin('documento AS d', 'd.idticket', 't.id')
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
-        .where({'e.idorientador': null, 't.resposta': null, 'c.idarea': area[0].idarea})
+        .where({'e.idstatus': 1, 't.resposta': null, 'c.idarea': area[0].idarea})
         .orderBy('t.id', 'asc')
         .groupBy('t.id');
       if (tickets.length === 0) return { response: null, status: 200 };
@@ -189,34 +161,7 @@ class Ticket {
       return { response: tickets, status: 200 };
     } catch (error) {
       console.log(error);
-      return { response: 'Erro ao resgatar tickets', status: 404 };
-    }
-  }
-
-  async getJoinWithSupervisorClosed(sub) {
-    try {
-      const id = await knex.select(['id'])
-        .table('usuario')
-        .where({ sub });
-      if (id.length === 0) return { response: 'Usuário não encontrado', status: 404 };
-      const result = await knex.select(['t.id', 't.mensagem', 't.resposta', 't.datacriado', 't.datafechado', 't.aceito'])
-        .from('ticket AS t')
-        .leftJoin('estagio AS e', 'e.id', 't.idestagio')
-        .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
-        .where({ 'e.idorientador': id.id })
-        .whereNotNull('t.resposta')
-        .orderBy('t.id', 'desc');
-      if (result.length === 0) return { response: 'Usuário não tem ticket', status: 200 };
-
-      for (const i in result) {
-        const arquivos = await this.getPdfUrl(result[i].id);
-        if (arquivos.status !== 200) return { response: arquivos.status, status: arquivos.status };
-        result[i].arquivos = arquivos.response;
-      }
-      return { response: result, status: 200 };
-    } catch (error) {
-      console.log(error);
-      return false;
+      return { response: 'Erro ao resgatar tickets abertos com orientador', status: 404 };
     }
   }
 

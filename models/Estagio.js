@@ -16,7 +16,7 @@ class Estagio {
       return { response: result, status: 200 };
     } catch (error) {
       console.log(error);
-      return { response: 'Erro ao procurar estágio', status: 400 };
+      return { response: 'Erro ao procurar estágios', status: 400 };
     }
   }
 
@@ -26,7 +26,7 @@ class Estagio {
       return { response: 'Estágios deletados com sucesso', status: 200 };
     } catch (error) {
       console.log(error);
-      return { response: 'Erro ao procurar estágio', status: 400 };
+      return { response: 'Erro ao limpar estágios', status: 400 };
     }
   }
 
@@ -36,15 +36,12 @@ class Estagio {
         .from('estagio AS e')
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
         .where({ 'u.sub': sub })
-      let response = {};
 
       if (result.length === 0) {
-        response = null;
+        return { response: null, status: 200 };
       } else {
-        response = result[0].processo;
+        return { response: result[0].processo, status: 200 };
       }
-
-      return { response: response, status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao procurar estágio', status: 400 };
@@ -53,7 +50,6 @@ class Estagio {
 
   async newEstagio(idProcesso, sub, cargaHoraria) {
     try {
-      console.log("aaaaaaaa");
       const dataCriado = new Date();
       const id = await knex.select(['id'])
         .table('usuario')
@@ -69,7 +65,7 @@ class Estagio {
         }
       }
       console.log(processo.rows[0].processos[0]);
-      await knex.insert({ idaluno: id[0].id, criado: dataCriado, processo: processo.rows[0].processos[0], cargahoraria: cargaHoraria }).table('estagio');
+      await knex.insert({ idaluno: id[0].id, criado: dataCriado, processo: processo.rows[0].processos[0], cargahoraria: cargaHoraria, idstatus: 1 }).table('estagio');
 
       return { response: 'Estágio Criado com Sucesso', status: 200 };
     } catch (error) {
@@ -83,26 +79,13 @@ class Estagio {
       const result = await knex.select('e.fechado')
         .from('estagio AS e')
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
-        .where({ 'u.sub': sub });
+        .where({ 'u.sub': sub })
+        .where({ 'idstatus': 2 });
       if (result.length === 0) return { response: null, status: 200 };
       return { response: result[0].fechado, status: 200 };
     } catch (error) {
       console.log(error);
-      return { response: 'Erro ao criar estágio', status: 400 };
-    }
-  }
-
-  
-  async end(idestagio) {
-    try {
-      const datafechado = new Date();
-      await knex('estagio').update({ fechado: datafechado, encerrado: true })
-        .where({ id: idestagio })
-      
-      return { response: 'Estágio encerrado com sucesso', status: 200 };
-    } catch (error) {
-      console.log(error);
-      return { response: 'Erro ao encerrar estágio', status: 400 };
+      return { response: 'Erro ao checar se estágio foi finalizado', status: 400 };
     }
   }
 

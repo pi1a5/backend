@@ -127,13 +127,6 @@ class Course {
       this.result = [];
       this.adicionar = [];
 
-      console.log("Atualizar: ")
-      console.log(content);
-      console.log("Remover: ")
-      console.log(removeContent);
-      console.log("Adicionar: ")
-      console.log(addContent)
-
       await knex.transaction(async (trx) => {
         if (content.length !== 0 ) {
           content.map(async (tuple) => knex(tuple.table)
