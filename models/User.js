@@ -290,6 +290,31 @@ class User {
       return { response: 'Erro ao deletar orientador', status: 400 };
     }
   }
+
+  async teste() {
+    try {
+      const estagios = await knex.select('e.id', knex.raw('json_agg(t.datacriado) as tickets'))
+        .from('estagio AS e')
+        .leftJoin('ticket AS t', 't.idestagio', 'e.id')
+        .leftJoin('status AS s', 's.id', 'e.idstatus')
+        .where('s.nome', 'Aberto')
+        .where('e.etapaunica', false)
+        .groupBy('e.id');
+      if (estagios.length === 0) return { response: null, status: 200 };
+      
+      const dataAtual = new Date();
+      const dataticket = new Date(estagios[0].tickets[0]);
+
+      console.log(dataAtual)
+      console.log(dataticket)
+      
+      
+      return { response: estagios, status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao deletar orientador', status: 400 };
+    }
+  }
 }
 
 module.exports = new User();
