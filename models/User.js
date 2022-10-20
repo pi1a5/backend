@@ -256,6 +256,7 @@ class User {
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
         .where({ 'c.idarea': area[0].idarea })
         .where('idtipousuario', 2)
+        .whereNot('u.sub', sub)
         .orderBy('u.id', 'asc');
       if (result.length === 0) return { response: null, status: 200 };
       return { response: result, status: 200 };
