@@ -164,27 +164,6 @@ class TicketController {
     }
   }
 
-  async createTicket(req, res) {
-    try {
-      const {
-        sub, mensagem, documentos, diastrabalhados,
-      } = req.body;
-      const data = {
-        sub: sub,
-        mensagem: mensagem,
-        documentos: documentos,
-        diastrabalhados: diastrabalhados,
-      };
-      const val = Validate(data);
-      if (val !== true) return res.status(400).json(val);
-
-      const ticket = await Ticket.create(sub, mensagem, documentos, diastrabalhados);
-      res.status(ticket.status).json(ticket.response);
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  }
-
   async feedbackTicket(req, res) {
     try {
       const {

@@ -63,7 +63,6 @@ router.post('/api/transferInternship', HeaderMiddleware, EstagioController.trans
 
 
 // Para Ticket Aluno
-router.post('/api/createTicket', HeaderMiddleware, TicketController.createTicket);
 router.post('/api/getTicketsUser', HeaderMiddleware, TicketController.getTicketsUser);
 router.post('/api/getTicketForm', HeaderMiddleware, TicketController.getTicketForm);
 router.post('/api/updateLatestTicket', HeaderMiddleware, TicketController.updateLatestTicket);
