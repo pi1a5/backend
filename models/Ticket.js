@@ -231,7 +231,7 @@ class Ticket {
     }
   }
 
-  async updateFeedback(sub, idTicket, feedback, aceito, etapa) {
+  async updateFeedback(sub, idTicket, feedback, aceito, etapa, idfrequencia, status, etapaunica) {
     try {
       const datafechado = new Date();
       const estagio = await knex.select('e.cargahoraria', 'e.id', 'e.idaluno')

@@ -40,7 +40,7 @@ class Estagio {
       if (result.length === 0) {
         return { response: null, status: 200 };
       } else {
-        return { response: result[0].processo, status: 200 };
+        return { response: result[0].prsocesso, status: 200 };
       }
     } catch (error) {
       console.log(error);

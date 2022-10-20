@@ -297,7 +297,7 @@ class User {
         .from('estagio AS e')
         .leftJoin('ticket AS t', 't.idestagio', 'e.id')
         .leftJoin('status AS s', 's.id', 'e.idstatus')
-        .where('s.nome', 'Aberto')
+        .where('s.nome', 'Em Dia')
         .where('e.etapaunica', false)
         .groupBy('e.id');
       if (estagios.length === 0) return { response: null, status: 200 };

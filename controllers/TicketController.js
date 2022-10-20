@@ -187,7 +187,7 @@ class TicketController {
   async feedbackTicket(req, res) {
     try {
       const {
-        sub, idTicket, feedback, aceito, etapa, idfrequencia, status,
+        sub, idTicket, feedback, aceito, etapa, idfrequencia, status, etapaunica,
       } = req.body;
       const data = {
         sub: sub,
@@ -197,11 +197,12 @@ class TicketController {
         etapa: etapa,
         idfrequencia: idfrequencia,
         status: status,
+        etapaunica: etapaunica,
       };
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const ticket = await Ticket.updateFeedback(sub, idTicket, feedback, aceito, etapa, idfrequencia, status);
+      const ticket = await Ticket.updateFeedback(sub, idTicket, feedback, aceito, etapa, idfrequencia, status, etapaunica);
 
       res.status(ticket.status).json(ticket.response);
     } catch (error) {
