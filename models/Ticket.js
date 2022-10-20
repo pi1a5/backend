@@ -17,7 +17,7 @@ const Aws = require('./Aws');
 const Documento = require('./Document');
 
 class Ticket {
-  async new(corpoTexto, sub, files) {
+  async new(corpoTexto, sub, files, diastrabalhados) {
     try {
       const dataCriado = new Date();
       const estagioid = await knex.select(['e.id', 'e.idaluno', 'e.idorientador', 's.nome'])
@@ -53,7 +53,7 @@ class Ticket {
       envolvidos['aluno'] = await knex('usuario').select('*')
         .where({ id: estagioid[0].idaluno });
 
-      const ticketid = await knex('ticket').returning('id').insert({ mensagem: corpoTexto, idestagio: estagioid[0].id , datacriado: dataCriado , etapa: etapaAtual, envolvidos: envolvidos });
+      const ticketid = await knex('ticket').returning('id').insert({ mensagem: corpoTexto, idestagio: estagioid[0].id , datacriado: dataCriado , etapa: etapaAtual, envolvidos: envolvidos, diastrabalhados: diastrabalhados });
       const documentos = [];
 
       for (const file in files) {
