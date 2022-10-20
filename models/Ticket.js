@@ -19,6 +19,7 @@ const Documento = require('./Document');
 class Ticket {
   async new(corpoTexto, sub, files, diastrabalhados) {
     try {
+      console.log(diastrabalhados)
       const dataCriado = new Date();
       const estagioid = await knex.select(['e.id', 'e.idaluno', 'e.idorientador', 's.nome'])
         .from('estagio AS e')
