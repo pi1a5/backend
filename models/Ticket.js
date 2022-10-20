@@ -200,8 +200,9 @@ class Ticket {
         .table('usuario')
         .where({ sub });
       if (id.length === 0) return { response: 'Usuário não encontrado', status: 404 };
-      const idEstagio = await knex.select(['id'])
-        .table('estagio')
+      const idEstagio = await knex.select('e.id', 's.nome')
+        .from('estagio AS e')
+        .leftJoin('status AS s', 's.id', 'e.idstatus')
         .where({ idaluno: id[0].id });
       if (idEstagio.length === 0) return { response: 'Usuário não encontrado', status: 404 };
       const idTicket = await knex.returning('id')
@@ -212,6 +213,10 @@ class Ticket {
       for (const i in documentos) {
         await knex.insert({ idticket: idTicket[0].id, arquivo: documentos[i].arquivo, nome: documentos[i].nome })
           .table('documento');
+      }
+
+      if (idEstagio[0].nome === "Sem Ticket") {
+        await knex('estagio').update({ idstatus: 4 }).where({ id: idEstagio[0].id });
       }
       return { response: 'Ticket criado com sucesso', status: 200 };
     } catch (error) {
@@ -231,10 +236,10 @@ class Ticket {
     }
   }
 
-  async updateFeedback(sub, idTicket, feedback, aceito, etapa, idfrequencia, status, etapaunica, diastrabalhados) {
+  async updateFeedback(sub, idTicket, feedback, aceito, idfrequencia) {
     try {
       const datafechado = new Date();
-      const estagio = await knex.select('e.cargahoraria', 'e.id', 'e.idaluno', 'f.valor AS frequencia')
+      const estagio = await knex.select('e.cargahoraria', 'e.id', 'e.idaluno', 'f.valor AS frequencia', 'e.idfrequencia', 'e.status', 'e.etapaunica')
         .from('estagio AS e')
         .leftJoin('ticket AS t', 't.idestagio', 'e.id')
         .leftJoin('frequencia AS f', 'f.id', 'e.idfrequencia')
@@ -242,9 +247,9 @@ class Ticket {
         .groupBy('f.valor');
 
       await knex.transaction(async (trx) => {
-        switch (status) {
+        switch (estagio[0].status) {
           case 'Aberto':
-            if (etapaunica) {
+            if (estagio[0].etapaunica) {
               if (aceito === true) {
                 const cargaCurso = await knex.select('c.carga')
                   .from('curso AS c')
@@ -265,7 +270,7 @@ class Ticket {
                   .where({ sub: sub });
                 processoAtual[0].processo.etapas[0].atual = false;
                 processoAtual[0].processo.etapas[1].atual = true;
-                await knex('estagio').update({ idorientador: idorientador[0].id, idstatus: 7, processo: processoAtual[0].processo})
+                await knex('estagio').update({ idorientador: idorientador[0].id, idstatus: 7, processo: processoAtual[0].processo, idfrequencia: idfrequencia })
                   .where({ id: estagio[0].id })
               }
             }
@@ -278,7 +283,9 @@ class Ticket {
                 .where({ id: estagio[0].id });
               const indexAtual = processoAtual[0].processo.etapas.findIndex(x => x.atual === true);
               if (processoAtual[0].processo.etapas[indexAtual].loop === true) { // se etapa for loop
-                const carga = await knex('usuario').returning('cargatotal').increment('cargatotal', estagio[0].cargahoraria * diastrabalhados)
+                const diastrabalhados = await knex('ticket').select('diastrabalhados')
+                  .where({ id: idTicket });
+                const carga = await knex('usuario').returning('cargatotal').increment('cargatotal', estagio[0].cargahoraria * diastrabalhados[0].diastrabalhados)
                   .where({ 'id': estagio[0].idaluno });
                 const cargaCurso = await knex.select('c.carga')
                   .from('curso AS c')

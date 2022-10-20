@@ -70,6 +70,8 @@ class Estagio {
         etapaUnica = true;
       }
 
+      console.log(processo.rows[0].processos[0].etapas[0]);
+
       await knex.insert({ idaluno: id[0].id, criado: dataCriado, processo: processo.rows[0].processos[0], cargahoraria: cargaHoraria, idstatus: 1 , etapaunica: etapaUnica}).table('estagio');
 
       return { response: 'Estágio Criado com Sucesso', status: 200 };
