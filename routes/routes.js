@@ -11,6 +11,7 @@ const ProcessoController = require('../controllers/ProcessoController');
 const SessionController = require('../controllers/SessionsController');
 const UserController = require('../controllers/UserController');
 const HeaderMiddleware = require('../middleware/httpHeaders');
+const ChartController = require('../controllers/ChartController');
 
 const router = express.Router();
 
@@ -32,7 +33,6 @@ router.get('/api/oauth/google', SessionController.googleOauthHandler);
 // Para Usuario
 router.post('/api/login', HeaderMiddleware, UserController.login);
 router.post('/api/user', HeaderMiddleware, UserController.user);
-router.post('/api/checkOrientadoresAmount', HeaderMiddleware, UserController.checkOrientadoresAmount);
 router.post('/api/setCourseProntuario', HeaderMiddleware, UserController.setCourseProntuario);
 router.post('/api/getUserProfile', HeaderMiddleware, UserController.getUserProfile);
 router.post('/api/getUserSupervisor', HeaderMiddleware, UserController.getUserSupervisor);
@@ -98,6 +98,9 @@ router.get('/api/createExample', HeaderMiddleware, ProcessoController.createExam
 router.post('/api/test', HeaderMiddleware, ProcessoController.test);
 router.post('/api/deletar', HeaderMiddleware, DocumentController.delete);
 router.get('/api/testeRotas', HeaderMiddleware, UserController.teste)
+
+// Para Gráficos
+router.post('/api/checkOrientadoresAmount', HeaderMiddleware, ChartController.checkOrientadoresAmount);
 
 
 // Limpar BD

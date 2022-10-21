@@ -19,7 +19,6 @@ const Documento = require('./Document');
 class Ticket {
   async new(corpoTexto, sub, files, diastrabalhados) {
     try {
-      console.log(diastrabalhados)
       const dataCriado = new Date();
       const estagioid = await knex.select(['e.id', 'e.idaluno', 'e.idorientador', 's.nome'])
         .from('estagio AS e')
@@ -37,7 +36,6 @@ class Ticket {
           break;
         }
       }
-      console.log(estagioid[0])
       if (estagioid[0].nome === "Sem Ticket") {
         await knex('estagio').update({ idstatus: 4 }).where({ id: estagioid[0].id });
       }
@@ -223,6 +221,8 @@ class Ticket {
         .groupBy('s.nome')
         .groupBy('e.id');
 
+      console.log(estagio[0].status)
+
       await knex.transaction(async (trx) => {
         switch (estagio[0].status) {
           case 'Aberto':
@@ -254,16 +254,24 @@ class Ticket {
             await knex('ticket').update({ resposta: feedback, datafechado: datafechado, aceito: aceito })
               .where({ 'id': idTicket});
             break;
-          case 'Atrasado' || 'Sem Resposta':
+          case 'Atrasado':
+          case 'Sem Resposta':
+            console.log('asdasd');
             if (aceito === true) {
+              console.log('Aceito!')
               const processoAtual = await knex('estagio').select('processo')
                 .where({ id: estagio[0].id });
               const indexAtual = processoAtual[0].processo.etapas.findIndex(x => x.atual === true);
+              console.log(indexAtual)
+              console.log(processoAtual[0].processo.etapas[indexAtual])
               if (processoAtual[0].processo.etapas[indexAtual].loop === true) { // se etapa for loop
+                console.log('b')
                 const diastrabalhados = await knex('ticket').select('diastrabalhados')
                   .where({ id: idTicket });
+                console.log(diastrabalhados);
                 const carga = await knex('usuario').returning('cargatotal').increment('cargatotal', estagio[0].cargahoraria * diastrabalhados[0].diastrabalhados)
                   .where({ 'id': estagio[0].idaluno });
+                console.log(carga);
                 const cargaCurso = await knex.select('c.carga')
                   .from('curso AS c')
                   .leftJoin('usuario AS u', 'u.idcurso', 'c.id')

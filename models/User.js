@@ -294,21 +294,41 @@ class User {
 
   async teste() {
     try {
-      const estagios = await knex.select('e.id', knex.raw('json_agg(t.datacriado) as tickets'))
+      const estagios = await knex.select('e.id', 'f.valor', 's.nome', knex.raw('json_agg(t.datacriado) as tickets'))
         .from('estagio AS e')
         .leftJoin('ticket AS t', 't.idestagio', 'e.id')
         .leftJoin('status AS s', 's.id', 'e.idstatus')
+        .leftJoin('frequencia AS f', 'f.id', 'e.idfrequencia')
         .where('s.nome', 'Em Dia')
+        .where('s.nome', 'Atrasado')
         .where('e.etapaunica', false)
-        .groupBy('e.id');
+        .groupBy('e.id')
+        .groupBy('s.nome')
+        .groupBy('f.valor');
       if (estagios.length === 0) return { response: null, status: 200 };
-      
       const dataAtual = new Date();
-      const dataticket = new Date(estagios[0].tickets[0]);
+
+      for (const i in estagios) {
+        if (estagios[i].nome === 'Em Dia') {
+          const datavencimentoticket = new Date(estagios[0].tickets[0]);
+          datavencimentoticket.setMonth(datavencimentoticket.getMonth() + estagios[0].valor)
+          if (dataAtual > datavencimentoticket) {
+            await knex('estagio').update({ idstatus: 5 }).where({ id: estagios[0].id })
+          }
+        } else {
+          const datavencimentoticket = new Date(estagios[0].tickets[0]);
+          datavencimentoticket.setMonth(datavencimentoticket.getMonth() + estagios[0].valor)
+          datavencimentoticket.setDate(datavencimentoticket.getDate() + 15)
+          if (dataAtual > datavencimentoticket) {
+            a
+          }
+        }
+      }
 
       console.log(dataAtual)
-      console.log(dataticket)
+      console.log(datavencimentoticket)
       
+      console.log(dataAtual > datavencimentoticket);
       
       return { response: estagios, status: 200 };
     } catch (error) {
