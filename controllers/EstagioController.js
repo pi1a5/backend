@@ -14,6 +14,24 @@ class EstagioController {
     }
   }
 
+  async getStatus(req, res) {
+    try {
+      const { 
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const status = await Estagio.getStatus(sub);
+      res.status(status.status).json(status.response);
+    } catch (error) {
+
+    }
+  }
+
   async limparEstagios(req, res) {
     try {
       const limpar = await Estagio.limpar();

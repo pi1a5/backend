@@ -20,6 +20,20 @@ class Estagio {
     }
   }
 
+  async getStatus(sub) {
+    try {
+      const status = await knex.select('s.nome')
+        .from('status AS s')
+        .leftJoin('estagio AS e', 'e.idstatus', 's.id')
+        .leftJoin('usuario AS u', 'u.idestagio', 'e.id')
+        .where({ 'u.sub': sub })
+      return { response: result[0].nome, status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao procurar estágios', status: 400 };
+    }
+  }
+
   async limpar() {
     try {
       await knex.del().table('estagio');

@@ -53,7 +53,19 @@ class Chart {
 
     async getInternshipsAmountByStatus(sub) {
         try {
-            console.log('test');
+            const total = {};
+            const estagios = await knex.select('s.nome')
+                .from('status AS s')
+                .leftJoin('estagio AS e', 'e.idstatus', 's.id')
+                .leftJoin('usuario AS u', 'u.id', 'e.idorientador')
+                .where({ 'u.sub': sub });
+            const status = await knex.select('nome')
+                .from('status');
+            
+            for (const i in status) {
+                total[status[i].nome] = estagios.filter((obj) => obj.nome === status[i].nome).length;
+            }
+            return { response: total, status: 200 };
         } catch (error) {
             return { response: 'Erro ao encontrar os processos por status', status: 400 };
         }
