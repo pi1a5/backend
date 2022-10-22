@@ -63,11 +63,55 @@ class Chart {
                 .from('status');
             
             for (const i in status) {
+                if (status[i].nome === "Aberto") {
+                    continue;
+                }
                 total[status[i].nome] = estagios.filter((obj) => obj.nome === status[i].nome).length;
             }
             return { response: total, status: 200 };
         } catch (error) {
             return { response: 'Erro ao encontrar os processos por status', status: 400 };
+        }
+    }
+
+    async getTicketsStatusByDate(sub) {
+        try {
+            const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+            ];
+            const total = {};
+            const tickets = await knex.select('t.aceito', 't.datafechado')
+                .from('ticket AS t')
+                .leftJoin('estagio AS e', 'e.id', 't.idestagio')
+                .leftJoin('usuario AS u', 'u.id', 'e.idorientador')
+                .where({ 'u.sub': sub });
+            if (tickets.length === 0) return { response: null, status: 200 };
+            for (const i in tickets) {
+                let data = new Date(tickets[i].datafechado);
+                let ano = data.getFullYear();
+                if (total.hasOwnProperty(ano)) {
+                    data = meses[data.getMonth()];
+                    if (total[ano].hasOwnProperty(data)) {
+                        if (tickets[i].aceito === true) {
+                            total[ano][data].aceito = total[ano][data].aceito + 1;
+                        } else {
+                            total[ano][data].recusado = total[ano][data].recusado + 1;
+                        }
+                    } else {
+                        if (tickets[i].aceito === true) {
+                            total[ano][data] = { aceito: 1, recusado: 0 };
+                        } else {
+                            total[ano][data] = { recusado: 1, aceito: 0 };
+                        }
+                    }
+                } else {
+                    total[ano] = {};
+                }
+                
+            }
+            return { response: total, status: 200 };
+        } catch (error) {
+            return { response: 'Erro ao encontrar os tickets por data', status: 400 };
         }
     }
 }

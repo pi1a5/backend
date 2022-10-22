@@ -102,6 +102,7 @@ router.get('/api/testeRotas', HeaderMiddleware, UserController.teste)
 // Para Gráficos
 router.post('/api/checkOrientadoresAmount', HeaderMiddleware, ChartController.checkOrientadoresAmount);
 router.post('/api/getInternshipsAmountByStatus', HeaderMiddleware, ChartController.getInternshipsAmountByStatus);
+router.post('/api/getTicketsStatusByDate', HeaderMiddleware, ChartController.getTicketsStatusByDate);
 
 
 // Limpar BD
