@@ -40,7 +40,7 @@ router.post('/api/getUserInternshipData', HeaderMiddleware, UserController.getUs
 router.post('/api/getSupervisorsByArea', HeaderMiddleware, UserController.getSupervisorsByArea);
 router.get('/api/getSupervisors', HeaderMiddleware, UserController.getSupervisors);
 router.post('/api/deleteSupervisor', HeaderMiddleware, UserController.deleteSupervisor);
-router.post('/api/checkIfLate', HeaderMiddleware, UserController.checkIfLate);
+router.post('/api/getStatus', HeaderMiddleware, UserController.getStatus);
 
 
 

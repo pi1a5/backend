@@ -292,7 +292,7 @@ class User {
     }
   }
 
-  async checkIfLate(sub) {
+  async getStatus(sub) {
     try {
       const status = await knex.select('s.nome')
         .from('status AS s')
