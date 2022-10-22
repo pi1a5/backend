@@ -303,7 +303,7 @@ class User {
 
       if (status[0].nome === "Atrasado") {
         const dataAtual = new Date();
-        const prazoEtapa = await knex.select(knex.raw("etapa->'etapa'->'prazo' as prazo"))
+        const prazoEtapa = await knex.select('t.datafechado', knex.raw("etapa->'etapa'->'prazo' as prazo"))
           .from('ticket AS t')
           .leftJoin('estagio AS e', 'e.id', 't.idestagio')
           .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
