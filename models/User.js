@@ -292,6 +292,21 @@ class User {
     }
   }
 
+  async checkIfLate(sub) {
+    try {
+      const status = await knex.select('s.nome')
+        .from('status AS s')
+        .leftJoin('estagio AS e', 'e.idstatus', 's.id')
+        .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
+        .where({ 'u.sub': sub });
+      if (status.length === 0) return { response: null, status: 200 };
+      return { response: status[0].nome, status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao deletar orientador', status: 400 };
+    }
+  }
+
   async teste() {
     try {
       const estagios = await knex.select('e.id', 'f.valor', 's.nome', knex.raw('json_agg(t.datacriado) as tickets'))

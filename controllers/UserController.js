@@ -167,6 +167,24 @@ class UserController {
     }
   }
 
+  async checkIfLate(req, res) {
+    try {
+      const {
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const users = await User.checkIfLate(sub);
+      res.status(users.status).json(users.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
   async teste(req, res) {
     try {
       const response = await User.teste();
