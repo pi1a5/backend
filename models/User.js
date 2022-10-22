@@ -300,7 +300,18 @@ class User {
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
         .where({ 'u.sub': sub });
       if (status.length === 0) return { response: null, status: 200 };
-      return { response: status[0].nome, status: 200 };
+
+      if (status[0].nome === "Atrasado") {
+        const dataAtual = new Date();
+        const prazoEtapa = await knex.select(knex.raw("etapa->'etapa'->'prazo' as prazo"))
+          .from('ticket AS t')
+          .leftJoin('estagio AS e', 'e.id', 't.idestagio')
+          .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
+          .where({ 'u.sub': sub }).first();
+        const dia = dataAtual.getDate();
+        status[0]['dias'] = dia - prazoEtapa.prazo;
+      }
+      return { response: status[0], status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao deletar orientador', status: 400 };

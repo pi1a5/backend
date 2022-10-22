@@ -195,7 +195,7 @@ class Processo {
       return { response: estagios.rows[0], status: 200 };
     } catch (error) {
       console.log(error);
-      return { response: 'Erro ao limpar banco', status: 400 };
+      return { response: 'Erro ao pegar processos por supervisor', status: 400 };
     }
   }
 

@@ -70,7 +70,8 @@ class Chart {
             }
             return { response: total, status: 200 };
         } catch (error) {
-            return { response: 'Erro ao encontrar os processos por status', status: 400 };
+            console.log(error);
+            return { response: 'Erro ao encontrar os processos dos outros orientadores', status: 400 };
         }
     }
 
@@ -114,7 +115,6 @@ class Chart {
                 let ano = data.getFullYear();
                 if (total.hasOwnProperty(ano)) {
                     data = meses[data.getMonth()];
-                    console.log(tickets[i].aceito)
                     if (tickets[i].aceito === true) {
                         total[ano][data].aceito = total[ano][data].aceito + 1;
                     } else {
@@ -134,12 +134,11 @@ class Chart {
                             total[ano][meses[j]] = { aceito: 0, recusado: 0 }; 
                         }
                     }
-                    console.log(total);
                 }
-                
             }
             return { response: total, status: 200 };
         } catch (error) {
+            console.log(error);
             return { response: 'Erro ao encontrar os tickets por data', status: 400 };
         }
     }
