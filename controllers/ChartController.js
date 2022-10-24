@@ -41,6 +41,24 @@ class ChartController {
         }
     }
 
+    async getInternshipsAmountByCourse(req, res) {
+        try {
+            const {
+                sub,
+            } = req.body;
+            const data = {
+                sub: sub,
+            };
+            const val = Validate(data);
+            if (val !== true) return res.status(400).json(val);
+    
+            const status = await Chart.getInternshipsAmountByCourse(sub);
+            res.status(status.status).json(status.response);
+        } catch (error) {
+            res.status(500).json(error);
+        }
+    }
+
     async getTicketsStatusByDate(req, res) {
         try {
             const {

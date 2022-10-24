@@ -75,6 +75,31 @@ class Chart {
         }
     }
 
+    async getInternshipsAmountByCourse(sub) {
+        try {
+            const total = {};
+            const idarea = await knex.select('c.idarea')
+                .from('curso AS c')    
+                .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
+                .where({ 'u.sub': sub });
+
+            const estagios = await knex.select('c.nome', knex.raw('json_agg(e.id) as ids'))
+                .from('estagio AS e')
+                .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
+                .leftJoin('curso AS c', 'c.id', 'u.idcurso')
+                .where({ 'c.idarea': idarea[0].idarea })
+                .groupBy('c.nome');
+                
+            for (const i in estagios) {
+                total[estagios[i].nome] = estagios[i].ids.length;
+            }
+            return { response: total, status: 200 };
+        } catch (error) {
+            console.log(error);
+            return { response: 'Erro ao encontrar os processos dos outros orientadores', status: 400 };
+        }
+    }
+
     async getTicketsStatusByDate(sub) {
         try {
             const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",

@@ -215,7 +215,9 @@ class User {
         .from('estagio AS e')
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
+        .leftJoin('status AS s', 's.id', 'e.idstatus')
         .where({ 'u.sub': sub })
+        .whereNot({ 's.nome': 'Aberto' });
 
       if (estagio.length === 0) return { response: null, status: 200 }
 
