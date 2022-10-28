@@ -1,4 +1,5 @@
 /* eslint-disable linebreak-style */
+/* eslint-disable no-plusplus */
 /* eslint-disable eol-last */
 module.exports = function validate(data) {
   for (let index = 0; index < Object.entries(data).length; index++) {

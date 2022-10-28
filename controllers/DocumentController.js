@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable object-shorthand */
 /* eslint-disable consistent-return */
 /* eslint-disable class-methods-use-this */
@@ -37,7 +38,7 @@ class DocumentController {
   async delete(req, res) {
     try {
       const {
-        file, sub
+        file, sub,
       } = req.body;
       const data = {
         file: file,
@@ -46,7 +47,7 @@ class DocumentController {
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const document = await Document.delete(file, sub)
+      const document = await Document.delete(file, sub);
       res.status(document.status).json(document.response);
     } catch (error) {
       res.status(500).json(error);

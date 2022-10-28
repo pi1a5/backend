@@ -1,6 +1,8 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable consistent-return */
 /* eslint-disable no-console */
 /* eslint-disable class-methods-use-this */
+// eslint-disable-next-line linebreak-style
 const knex = require('../database/connection');
 const Aws = require('./Aws');
 
@@ -13,22 +15,6 @@ class Document {
       console.log(error);
       return { response: 'Erro ao encontrar documentos', status: 400 };
     }
-  }
-
-  async newDocument(arquivo, tipo, eProfessor, idTicket) {
-    const {
-      nome, sigla, template,
-    } = req.body;
-    const data = {
-      nome: nome,
-      sigla: sigla,
-      template: template,
-    };
-    const val = Validate(data);
-    if (val !== true) return res.status(400).json(val);
-
-    const document = await Document.newDocumentType(nome, sigla, template);
-    res.status(document.status).json(document.response);
   }
 
   async newDocumentType(nome, sigla, template) {

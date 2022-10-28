@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable object-shorthand */
 /* eslint-disable consistent-return */
 /* eslint-disable class-methods-use-this */
@@ -26,7 +27,7 @@ class CouserController {
   async createArea(req, res) {
     try {
       const {
-        area, 
+        area,
       } = req.body;
       const data = {
         area: area,
@@ -44,7 +45,7 @@ class CouserController {
   async deleteArea(req, res) {
     try {
       const {
-        idarea, 
+        idarea,
       } = req.body;
       const data = {
         idarea: idarea,
@@ -59,7 +60,6 @@ class CouserController {
     }
   }
 
-
   async createCourse(req, res) {
     try {
       const {
@@ -68,7 +68,7 @@ class CouserController {
       const data = {
         nome: nome,
         cargatotal: cargatotal,
-        idmodalidade: idmodalidade
+        idmodalidade: idmodalidade,
       };
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
@@ -83,7 +83,7 @@ class CouserController {
   async deleteCourse(req, res) {
     try {
       const {
-        idcurso, 
+        idcurso,
       } = req.body;
       const data = {
         idcurso: idcurso,

@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable object-shorthand */
 /* eslint-disable consistent-return */
 /* eslint-disable class-methods-use-this */
@@ -62,24 +63,6 @@ class UserController {
   async users(req, res) {
     try {
       const users = await User.findAll();
-      res.status(users.status).json(users.response);
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  }
-
-  async checkOrientadoresAmount(req, res) {
-    try {
-      const {
-        sub,
-      } = req.body;
-      const data = {
-        sub: sub,
-      };
-      const val = Validate(data);
-      if (val !== true) return res.status(400).json(val);
-
-      const users = await User.checkAmount(sub);
       res.status(users.status).json(users.response);
     } catch (error) {
       res.status(500).json(error);
@@ -180,6 +163,33 @@ class UserController {
 
       const users = await User.deleteSupervisor(id);
       res.status(users.status).json(users.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async getStatus(req, res) {
+    try {
+      const {
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const users = await User.getStatus(sub);
+      res.status(users.status).json(users.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async teste(req, res) {
+    try {
+      const response = await User.teste();
+      res.status(response.status).json(response.response);
     } catch (error) {
       res.status(500).json(error);
     }

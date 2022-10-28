@@ -11,6 +11,7 @@ const ProcessoController = require('../controllers/ProcessoController');
 const SessionController = require('../controllers/SessionsController');
 const UserController = require('../controllers/UserController');
 const HeaderMiddleware = require('../middleware/httpHeaders');
+const ChartController = require('../controllers/ChartController');
 
 const router = express.Router();
 
@@ -32,7 +33,6 @@ router.get('/api/oauth/google', SessionController.googleOauthHandler);
 // Para Usuario
 router.post('/api/login', HeaderMiddleware, UserController.login);
 router.post('/api/user', HeaderMiddleware, UserController.user);
-router.post('/api/checkOrientadoresAmount', HeaderMiddleware, UserController.checkOrientadoresAmount);
 router.post('/api/setCourseProntuario', HeaderMiddleware, UserController.setCourseProntuario);
 router.post('/api/getUserProfile', HeaderMiddleware, UserController.getUserProfile);
 router.post('/api/getUserSupervisor', HeaderMiddleware, UserController.getUserSupervisor);
@@ -40,13 +40,11 @@ router.post('/api/getUserInternshipData', HeaderMiddleware, UserController.getUs
 router.post('/api/getSupervisorsByArea', HeaderMiddleware, UserController.getSupervisorsByArea);
 router.get('/api/getSupervisors', HeaderMiddleware, UserController.getSupervisors);
 router.post('/api/deleteSupervisor', HeaderMiddleware, UserController.deleteSupervisor);
-
-
+router.post('/api/getStatus', HeaderMiddleware, UserController.getStatus);
 
 // Para Processos
 
 router.post('/api/findAllByCourse', HeaderMiddleware, ProcessoController.findAllByCourse);
-router.post('/api/updateEtapa', HeaderMiddleware, ProcessoController.updateEtapa);
 router.post('/api/deleteProcesso', HeaderMiddleware, ProcessoController.deleteProcesso);
 router.post('/api/createNewProcesso', HeaderMiddleware, ProcessoController.createNewProcesso);
 router.post('/api/updateProcesso', HeaderMiddleware, ProcessoController.updateProcesso);
@@ -61,9 +59,7 @@ router.post('/api/checkIfEnded', HeaderMiddleware, EstagioController.checkIfEnde
 router.post('/api/endInternship', HeaderMiddleware, EstagioController.endInternship);
 router.post('/api/transferInternship', HeaderMiddleware, EstagioController.transferInternship);
 
-
 // Para Ticket Aluno
-router.post('/api/createTicket', HeaderMiddleware, TicketController.createTicket);
 router.post('/api/getTicketsUser', HeaderMiddleware, TicketController.getTicketsUser);
 router.post('/api/getTicketForm', HeaderMiddleware, TicketController.getTicketForm);
 router.post('/api/updateLatestTicket', HeaderMiddleware, TicketController.updateLatestTicket);
@@ -88,7 +84,6 @@ router.post('/api/deleteArea', HeaderMiddleware, CourseController.deleteArea);
 router.post('/api/updateArea', HeaderMiddleware, CourseController.updateArea);
 router.get('/api/getModalities', HeaderMiddleware, CourseController.getModalities);
 
-
 // Para teste
 router.get('/api/users', HeaderMiddleware, UserController.users);
 router.get('/api/courses', HeaderMiddleware, CourseController.courses);
@@ -97,8 +92,14 @@ router.get('/api/estagios', HeaderMiddleware, EstagioController.estagios);
 router.get('/api/processos', HeaderMiddleware, ProcessoController.processos);
 router.get('/api/createExample', HeaderMiddleware, ProcessoController.createExample);
 router.post('/api/test', HeaderMiddleware, ProcessoController.test);
-router.post('/api/deletar', HeaderMiddleware, DocumentController.delete)
+router.post('/api/deletar', HeaderMiddleware, DocumentController.delete);
+router.get('/api/testeRotas', HeaderMiddleware, UserController.teste);
 
+// Para Gráficos
+router.post('/api/checkOrientadoresAmount', HeaderMiddleware, ChartController.checkOrientadoresAmount);
+router.post('/api/getInternshipsAmountByStatus', HeaderMiddleware, ChartController.getInternshipsAmountByStatus);
+router.post('/api/getInternshipsAmountByCourse', HeaderMiddleware, ChartController.getInternshipsAmountByCourse);
+router.post('/api/getTicketsStatusByDate', HeaderMiddleware, ChartController.getTicketsStatusByDate);
 
 // Limpar BD
 router.get('/api/limparBanco', HeaderMiddleware, ProcessoController.limparBanco);

@@ -1,11 +1,11 @@
 /* eslint-disable linebreak-style */
+/* eslint-disable no-console */
 /* eslint-disable consistent-return */
 /* eslint-disable object-shorthand */
 /* eslint-disable dot-notation */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable linebreak-style */
 /* eslint-disable class-methods-use-this */
-const { getAll } = require('../models/Ticket');
 const Ticket = require('../models/Ticket');
 const Validate = require('../modules/validate');
 
@@ -13,12 +13,13 @@ class TicketController {
   async newTicket(req, res) {
     try {
       const {
-        corpoTexto, sub,
+        corpoTexto, sub, diastrabalhados,
       } = req.body;
 
       const data = {
         corpoTexto: corpoTexto,
         sub: sub,
+        diastrabalhados: diastrabalhados,
       };
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
@@ -26,13 +27,12 @@ class TicketController {
       const files = req['files'];
       console.log('a');
 
-      const result = await Ticket.new(corpoTexto, sub, files);
+      const result = await Ticket.new(corpoTexto, sub, files, diastrabalhados);
       res.status(result.status).json(result.response);
     } catch (error) {
       res.status(500).json(error);
     }
   }
-
 
   async tickets(req, res) {
     try {
@@ -164,42 +164,22 @@ class TicketController {
     }
   }
 
-  async createTicket(req, res) {
-    try {
-      const {
-        sub, mensagem, documentos,
-      } = req.body;
-      const data = {
-        sub: sub,
-        mensagem: mensagem,
-        documentos: documentos,
-      };
-      const val = Validate(data);
-      if (val !== true) return res.status(400).json(val);
-
-      const ticket = await Ticket.create(sub, mensagem, documentos);
-      res.status(ticket.status).json(ticket.response);
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  }
-
   async feedbackTicket(req, res) {
     try {
       const {
-        sub, idTicket, feedback, aceito, etapa,
+        sub, idTicket, feedback, aceito, idfrequencia,
       } = req.body;
       const data = {
         sub: sub,
         idTicket: idTicket,
         feedback: feedback,
         aceito: aceito,
-        etapa: etapa,
+        idfrequencia: idfrequencia,
       };
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const ticket = await Ticket.updateFeedback(sub, idTicket, feedback, aceito, etapa);
+      const ticket = await Ticket.updateFeedback(sub, idTicket, feedback, aceito, idfrequencia);
 
       res.status(ticket.status).json(ticket.response);
     } catch (error) {
@@ -229,7 +209,7 @@ class TicketController {
   async deletePendingTicket(req, res) {
     try {
       const {
-        idTicket, sub
+        idTicket, sub,
       } = req.body;
       const data = {
         idTicket: idTicket,

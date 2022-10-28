@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-console */
 const AWS = require('aws-sdk');
@@ -27,9 +28,8 @@ class Aws {
     }
   }
 
-  async deleteFile(file, sub) {
+  async deleteFile(file) {
     try {
-      console.log("arquiv", file)
       const params = {
         Bucket: process.env.AWS_BUCKET,
         Key: file,
@@ -40,9 +40,8 @@ class Aws {
       if (bucket) {
         await bucket.deleteObject(params).promise();
         return { response: 'Arquivo deleteado com sucesso!', status: 200 };
-      } else {
-        return { response: 'Erro ao deletar arquivo', status: 400 };
       }
+      return { response: 'Erro ao deletar arquivo', status: 400 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao deletar arquivo', status: 400 };
