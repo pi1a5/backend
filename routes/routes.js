@@ -42,12 +42,9 @@ router.get('/api/getSupervisors', HeaderMiddleware, UserController.getSupervisor
 router.post('/api/deleteSupervisor', HeaderMiddleware, UserController.deleteSupervisor);
 router.post('/api/getStatus', HeaderMiddleware, UserController.getStatus);
 
-
-
 // Para Processos
 
 router.post('/api/findAllByCourse', HeaderMiddleware, ProcessoController.findAllByCourse);
-router.post('/api/updateEtapa', HeaderMiddleware, ProcessoController.updateEtapa);
 router.post('/api/deleteProcesso', HeaderMiddleware, ProcessoController.deleteProcesso);
 router.post('/api/createNewProcesso', HeaderMiddleware, ProcessoController.createNewProcesso);
 router.post('/api/updateProcesso', HeaderMiddleware, ProcessoController.updateProcesso);
@@ -61,7 +58,6 @@ router.get('/api/limparEstagios', HeaderMiddleware, EstagioController.limparEsta
 router.post('/api/checkIfEnded', HeaderMiddleware, EstagioController.checkIfEnded);
 router.post('/api/endInternship', HeaderMiddleware, EstagioController.endInternship);
 router.post('/api/transferInternship', HeaderMiddleware, EstagioController.transferInternship);
-
 
 // Para Ticket Aluno
 router.post('/api/getTicketsUser', HeaderMiddleware, TicketController.getTicketsUser);
@@ -88,7 +84,6 @@ router.post('/api/deleteArea', HeaderMiddleware, CourseController.deleteArea);
 router.post('/api/updateArea', HeaderMiddleware, CourseController.updateArea);
 router.get('/api/getModalities', HeaderMiddleware, CourseController.getModalities);
 
-
 // Para teste
 router.get('/api/users', HeaderMiddleware, UserController.users);
 router.get('/api/courses', HeaderMiddleware, CourseController.courses);
@@ -98,14 +93,13 @@ router.get('/api/processos', HeaderMiddleware, ProcessoController.processos);
 router.get('/api/createExample', HeaderMiddleware, ProcessoController.createExample);
 router.post('/api/test', HeaderMiddleware, ProcessoController.test);
 router.post('/api/deletar', HeaderMiddleware, DocumentController.delete);
-router.get('/api/testeRotas', HeaderMiddleware, UserController.teste)
+router.get('/api/testeRotas', HeaderMiddleware, UserController.teste);
 
 // Para Gráficos
 router.post('/api/checkOrientadoresAmount', HeaderMiddleware, ChartController.checkOrientadoresAmount);
 router.post('/api/getInternshipsAmountByStatus', HeaderMiddleware, ChartController.getInternshipsAmountByStatus);
 router.post('/api/getInternshipsAmountByCourse', HeaderMiddleware, ChartController.getInternshipsAmountByCourse);
 router.post('/api/getTicketsStatusByDate', HeaderMiddleware, ChartController.getTicketsStatusByDate);
-
 
 // Limpar BD
 router.get('/api/limparBanco', HeaderMiddleware, ProcessoController.limparBanco);

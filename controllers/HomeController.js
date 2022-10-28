@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable class-methods-use-this */
 class HomeController {
   async index(req, res) {

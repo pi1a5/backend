@@ -1,9 +1,11 @@
 /* eslint-disable linebreak-style */
+/* eslint-disable no-console */
+/* eslint-disable quote-props */
+/* eslint-disable quotes */
 /* eslint-disable consistent-return */
 /* eslint-disable object-shorthand */
 /* eslint-disable class-methods-use-this */
 const Processo = require('../models/Processo');
-const Etapa = require('../models/Etapa');
 const Validate = require('../modules/validate');
 
 class ProcessoController {
@@ -48,26 +50,6 @@ class ProcessoController {
 
       const estagio = await Processo.newProcesso(sub, processo);
       res.status(estagio.status).json(estagio.response);
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  }
-
-  async updateEtapa(req, res) {
-    try {
-      const { // pegar idcurso e nome do orientador com o sub
-        sub, preco, etapa,
-      } = req.body;
-      const data = {
-        sub: sub,
-        idetapa: idetapa,
-        etapa: etapa,
-      };
-      const val = Validate(data);
-      if (val !== true) return res.status(400).json(val);
-
-      const result = await Etapa.update(sub, idetapa, etapa);
-      res.status(result.status).json(result.response);
     } catch (error) {
       res.status(500).json(error);
     }
@@ -127,63 +109,63 @@ class ProcessoController {
       const processo = {
         "sub": "teste",
         "processo": {
-        "id": 0,
-        "nome": "Padrão",
-        "etapas": [
+          "id": 0,
+          "nome": "Padrão",
+          "etapas": [
             {
-                "id": 0,
-                "nome": "Início",
-                "prazo": 10,
-                "documentos": [
-                    {
-                        "id": 0,
-                        "nome": "docteste1",
-                        "sigla": "dc1",
-                        "template": "aoba"
-                    },
-                    {
-                        "id": 1,
-                        "nome": "docteste2",
-                        "sigla": "dc2",
-                        "template": "aoba2"
-                    }
-                ]
+              "id": 0,
+              "nome": "Início",
+              "prazo": 10,
+              "documentos": [
+                {
+                  "id": 0,
+                  "nome": "docteste1",
+                  "sigla": "dc1",
+                  "template": "aoba",
+                },
+                {
+                  "id": 1,
+                  "nome": "docteste2",
+                  "sigla": "dc2",
+                  "template": "aoba2",
+                },
+              ],
             },
             {
-                "id": 1,
-                "nome": "Acompanhamento",
-                "prazo": 15,
-                "documentos": [
-                    {
-                        "id": 0,
-                        "nome": "docteste1",
-                        "sigla": "dc1",
-                        "template": "aoba"
-                    }
-                ]
+              "id": 1,
+              "nome": "Acompanhamento",
+              "prazo": 15,
+              "documentos": [
+                {
+                  "id": 0,
+                  "nome": "docteste1",
+                  "sigla": "dc1",
+                  "template": "aoba",
+                },
+              ],
             },
             {
-                "id": 2,
-                "nome": "Finalização",
-                "prazo": 5,
-                "documentos": [
-                    {
-                        "id": 0,
-                        "nome": "docteste1",
-                        "sigla": "dc1",
-                        "template": "aoba"
-                    },
-                    {
-                        "id": 1,
-                        "nome": "docteste2",
-                        "sigla": "dc2",
-                        "template": "aoba2"
-                    }
-                ]
-            }
-        ]
-    }
-    }
+              "id": 2,
+              "nome": "Finalização",
+              "prazo": 5,
+              "documentos": [
+                {
+                  "id": 0,
+                  "nome": "docteste1",
+                  "sigla": "dc1",
+                  "template": "aoba",
+                },
+                {
+                  "id": 1,
+                  "nome": "docteste2",
+                  "sigla": "dc2",
+                  "template": "aoba2",
+                },
+              ],
+            },
+          ],
+        },
+      };
       const criar = await Processo.newProcesso(processo.sub, processo.processo);
       res.status(criar.status).json(criar.response);
     } catch (error) {
@@ -191,25 +173,7 @@ class ProcessoController {
     }
   }
 
-  async test(req, res){
-    try {
-      const { // pegar idcurso e nome do orientador com o sub
-        documentos,
-      } = req.body;
-      const data = {
-        documentos: documentos,
-      };
-      const val = Validate  (data);
-      if (val !== true) return res.status(400).json(val);
-
-      const response = await Processo.test(documentos);
-      res.status(response.status).json(response.response);
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  }
-
-  async getAllBySupervisor(req, res){
+  async getAllBySupervisor(req, res) {
     try {
       const { // pegar idcurso e nome do orientador com o sub
         sub,
@@ -217,7 +181,7 @@ class ProcessoController {
       const data = {
         sub: sub,
       };
-      const val = Validate  (data);
+      const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
       const response = await Processo.getAllBySupervisor(sub);

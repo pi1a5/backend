@@ -1,5 +1,7 @@
-/* eslint-disable no-console */
 /* eslint-disable linebreak-style */
+/* eslint-disable func-names */
+/* eslint-disable no-console */
+
 const User = require('../models/socket/User');
 const Users = require('../models/socket/Users');
 

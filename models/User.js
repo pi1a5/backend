@@ -1,4 +1,9 @@
 /* eslint-disable linebreak-style */
+/* eslint-disable no-unused-vars */
+/* eslint-disable dot-notation */
+/* eslint-disable func-names */
+/* eslint-disable prefer-arrow-callback */
+/* eslint-disable max-len */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable object-shorthand */
 /* eslint-disable prefer-const */
@@ -39,7 +44,7 @@ class User {
     try {
       const user = await knex('usuario').select('*')
         .where({ sub: sub });
-      if (user.length === 0) return {response: 'Erro ao encontrar usuario', status: 404};
+      if (user.length === 0) return { response: 'Erro ao encontrar usuario', status: 404 };
 
       return { response: user[0], status: 200 };
     } catch (error) {
@@ -82,9 +87,9 @@ class User {
     try {
       const checar = await knex.select('*')
         .table('usuario')
-        .where({prontuario: prontuario})
-      if (checar.length !== 0) return { response: 'Prontuário já existente', status: 400 }
-      await knex('usuario').update({ idcurso: idCurso, prontuario: prontuario})
+        .where({ prontuario: prontuario });
+      if (checar.length !== 0) return { response: 'Prontuário já existente', status: 400 };
+      await knex('usuario').update({ idcurso: idCurso, prontuario: prontuario })
         .where({ sub: sub });
       return { response: 'Curso e prontuário registrados com sucesso', status: 200 };
     } catch (error) {
@@ -141,12 +146,12 @@ class User {
       const area = await knex.select(['idarea'])
         .from('curso AS c')
         .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
-        .where({ sub: sub} );
+        .where({ sub: sub });
       if (area.length === 0) return { response: 'Curso do usuário não encontrado', status: 404 };
       const colegas = await knex.distinct().select('u.id', 'u.nome')
         .from('usuario AS u')
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
-        .where({ idtipousuario: 2})
+        .where({ idtipousuario: 2 })
         .where({ 'c.idarea': area[0].idarea });
       if (colegas.length === 0) return { response: 'Nenhum orientador encontrado', status: 404 };
 
@@ -156,14 +161,13 @@ class User {
         colegasids.push(colegas[i].id);
       }
 
-
       const data = await knex.distinct().select('idaluno', 'idorientador')
         .table('estagio')
         .whereIn('idorientador', colegasids)
         .where('idstatus', 2);
 
       for (const i in colegas) {
-        total.push({ quantidade: data.filter(function(d) { return d.idorientador === colegas[i].id;}).length, nome: colegas[i].nome  })
+        total.push({ quantidade: data.filter(function (d) { return d.idorientador === colegas[i].id; }).length, nome: colegas[i].nome });
       }
       console.log(total);
       console.log(data);
@@ -180,8 +184,8 @@ class User {
       const profile = await knex.select('u.*', 'c.nome AS curso')
         .from('usuario AS u')
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
-        .where({ sub: sub })
-      if (profile.length === 0) return { response: null, status: 200 }
+        .where({ sub: sub });
+      if (profile.length === 0) return { response: null, status: 200 };
 
       return { response: profile, status: 200 };
     } catch (error) {
@@ -195,12 +199,11 @@ class User {
       const idorientador = await knex.select('e.idorientador')
         .from('usuario AS u')
         .leftJoin('estagio AS e', 'e.idaluno', 'u.id')
-        .where({ 'u.sub': sub});
+        .where({ 'u.sub': sub });
 
-      if (idorientador[0].idorientador === null) return { response: null, status: 200 }
-
+      if (idorientador[0].idorientador === null) return { response: null, status: 200 };
       const supervisor = await knex('usuario').select('*')
-        .where({ id: idorientador[0].idorientador});
+        .where({ id: idorientador[0].idorientador });
 
       return { response: supervisor, status: 200 };
     } catch (error) {
@@ -211,7 +214,7 @@ class User {
 
   async getUserInternshipData(sub) {
     try {
-      const estagio = await knex.select('e.id',  knex.raw("TO_CHAR(e.criado, 'DD/MM/YYYY') as criado"), 'c.carga AS necessario', 'u.cargatotal AS cumprido')
+      const estagio = await knex.select('e.id', knex.raw("TO_CHAR(e.criado, 'DD/MM/YYYY') as criado"), 'c.carga AS necessario', 'u.cargatotal AS cumprido')
         .from('estagio AS e')
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
@@ -219,15 +222,15 @@ class User {
         .where({ 'u.sub': sub })
         .whereNot({ 's.nome': 'Aberto' });
 
-      if (estagio.length === 0) return { response: null, status: 200 }
+      if (estagio.length === 0) return { response: null, status: 200 };
 
       estagio[0]['faltante'] = estagio[0].necessario - estagio[0].cumprido;
 
       const tickets = await knex('ticket').select('*')
         .where({ idestagio: estagio[0].id });
-      if (tickets.length === 0) return { response: null, status: 200 }
-      let countAceito = 0
-      let countRecusado = 0
+      if (tickets.length === 0) return { response: null, status: 200 };
+      let countAceito = 0;
+      let countRecusado = 0;
       for (const i in tickets) {
         if (tickets[i].aceito === true) {
           countAceito += 1;
@@ -250,9 +253,9 @@ class User {
   async getSupervisorsByArea(sub) {
     try {
       const area = await knex.select('c.idarea')
-      .from('curso AS c')
-      .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
-      .where({ 'u.sub': sub })
+        .from('curso AS c')
+        .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
+        .where({ 'u.sub': sub });
       const result = await knex.select('u.*', 'c.nome AS curso')
         .from('usuario AS u')
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
@@ -303,13 +306,14 @@ class User {
         .where({ 'u.sub': sub });
       if (status.length === 0) return { response: null, status: 200 };
 
-      if (status[0].nome === "Atrasado") {
+      if (status[0].nome === 'Atrasado') {
         const dataAtual = new Date();
         const prazoEtapa = await knex.select('t.datafechado', knex.raw("etapa->'etapa'->'prazo' as prazo"))
           .from('ticket AS t')
           .leftJoin('estagio AS e', 'e.id', 't.idestagio')
           .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
-          .where({ 'u.sub': sub }).first();
+          .where({ 'u.sub': sub })
+          .first();
         const dia = dataAtual.getDate();
         status[0]['dias'] = dia - prazoEtapa.prazo;
       }
@@ -339,25 +343,20 @@ class User {
       for (const i in estagios) {
         if (estagios[i].nome === 'Em Dia') {
           const datavencimentoticket = new Date(estagios[0].tickets[0]);
-          datavencimentoticket.setMonth(datavencimentoticket.getMonth() + estagios[0].valor)
+          datavencimentoticket.setMonth(datavencimentoticket.getMonth() + estagios[0].valor);
           if (dataAtual > datavencimentoticket) {
-            await knex('estagio').update({ idstatus: 5 }).where({ id: estagios[0].id })
+            await knex('estagio').update({ idstatus: 5 }).where({ id: estagios[0].id });
           }
         } else {
           const datavencimentoticket = new Date(estagios[0].tickets[0]);
-          datavencimentoticket.setMonth(datavencimentoticket.getMonth() + estagios[0].valor)
-          datavencimentoticket.setDate(datavencimentoticket.getDate() + 15)
+          datavencimentoticket.setMonth(datavencimentoticket.getMonth() + estagios[0].valor);
+          datavencimentoticket.setDate(datavencimentoticket.getDate() + 15);
           if (dataAtual > datavencimentoticket) {
-            a
+            console.log('a');
           }
         }
       }
 
-      console.log(dataAtual)
-      console.log(datavencimentoticket)
-      
-      console.log(dataAtual > datavencimentoticket);
-      
       return { response: estagios, status: 200 };
     } catch (error) {
       console.log(error);

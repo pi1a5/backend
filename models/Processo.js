@@ -1,3 +1,7 @@
+/* eslint-disable linebreak-style */
+/* eslint-disable no-prototype-builtins */
+/* eslint-disable no-restricted-globals */
+/* eslint-disable no-continue */
 /* eslint-disable consistent-return */
 /* eslint-disable prefer-arrow-callback */
 /* eslint-disable func-names */
@@ -10,14 +14,13 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable guard-for-in */
 /* eslint-disable object-shorthand */
-/* eslint-disable linebreak-style */
 /* eslint-disable no-console */
 /* eslint-disable class-methods-use-this */
 const knex = require('../database/connection');
-const Etapa = require('./Etapa');
 
 class Processo {
   result = [];
+
   async findAll() {
     try {
       const result = await knex.select('*').table('processo');
@@ -36,7 +39,7 @@ class Processo {
         .where({ sub: sub });
       if (idCurso.length === 0) return { response: 'Curso do usuário não encontrado', status: 404 };
 
-      const processos = await knex.raw("SELECT json_agg( json_build_object('nome', p.nome, 'id', p.id, 'etapas', etapas) ORDER BY p.id ASC ) processos FROM processo p LEFT JOIN ( SELECT idprocesso, json_agg( json_build_object( 'id', e.id, 'loop', e.loop, 'nome', e.nome, 'prazo', e.prazo, 'documentos', etapatipodocumento ) ORDER BY e.id ASC ) etapas FROM etapa e LEFT JOIN ( SELECT idetapa, json_agg(tipodocumento) etapatipodocumento FROM etapa_tipodocumento et LEFT JOIN ( SELECT id, json_build_object( 'id', td.id, 'nome', td.nome, 'template', td.template, 'sigla', td.sigla ) tipodocumento FROM tipodocumento td group by id ) td on et.idtipodocumento = td.id group by idetapa ) et on e.id = et.idetapa group by idprocesso ) e on p.id = e.idprocesso WHERE p.idcurso = " + idCurso[0].idcurso + "; ");
+      const processos = await knex.raw("SELECT json_agg( json_build_object('nome', p.nome, 'id', p.id, 'etapas', etapas) ORDER BY p.id ASC ) processos FROM processo p LEFT JOIN ( SELECT idprocesso, json_agg( json_build_object( 'id', e.id, 'loop', e.loop, 'nome', e.nome, 'prazo', e.prazo, 'documentos', etapatipodocumento ) ORDER BY e.id ASC ) etapas FROM etapa e LEFT JOIN ( SELECT idetapa, json_agg(tipodocumento) etapatipodocumento FROM etapa_tipodocumento et LEFT JOIN ( SELECT id, json_build_object( 'id', td.id, 'nome', td.nome, 'template', td.template, 'sigla', td.sigla ) tipodocumento FROM tipodocumento td group by id ) td on et.idtipodocumento = td.id group by idetapa ) et on e.id = et.idetapa group by idprocesso ) e on p.id = e.idprocesso WHERE p.idcurso = " + idCurso[0].idcurso + ';');
       result.processos = processos.rows[0].processos;
 
       if (idCurso[0].email.includes('@aluno.ifsp') !== true) {
@@ -71,7 +74,7 @@ class Processo {
         processoCriado.processo = idProcesso[0];
         for (const k in processo.etapas) {
           etapas[k] = {
-            nome: processo.etapas[k].nome, prazo: processo.etapas[k].prazo, idprocesso: idProcesso[0].id, loop: processo.etapas[k].loop
+            nome: processo.etapas[k].nome, prazo: processo.etapas[k].prazo, idprocesso: idProcesso[0].id, loop: processo.etapas[k].loop,
           };
         }
 
@@ -111,7 +114,6 @@ class Processo {
   async update(sub, processoAntigo, processoNovo) {
     try {
       this.compareObjects(processoAntigo, processoNovo, 'processo');
-      console.timeEnd("jorge");
       const content = this.result;
       this.result = [];
 
@@ -119,8 +121,7 @@ class Processo {
         content.map(async (tuple) => knex(tuple.table)
           .where('id', tuple.id)
           .update(tuple.update)
-          .transacting(trx),
-        );
+          .transacting(trx));
         await trx.commit;
       });
 
@@ -128,20 +129,20 @@ class Processo {
       const docAntigos = [];
 
       for (const l in processoNovo.etapas) {
-        for (const m in processoNovo.etapas[l].documentos){
-          docNovos.push(processoNovo.etapas[l].documentos[m])
+        for (const m in processoNovo.etapas[l].documentos) {
+          docNovos.push(processoNovo.etapas[l].documentos[m]);
         }
-        for (const n in processoAntigo.etapas[l].documentos){
-          docAntigos.push(processoAntigo.etapas[l].documentos[n])
+        for (const n in processoAntigo.etapas[l].documentos) {
+          docAntigos.push(processoAntigo.etapas[l].documentos[n]);
         }
       }
 
-      if (JSON.stringify(docNovos) !== JSON.stringify(docAntigos)) { // caso tenha diferença nos documentos 
+      if (JSON.stringify(docNovos) !== JSON.stringify(docAntigos)) { // caso tenha diferença nos documentos
         const idEtapa = [];
         const idEtapaIdDocumento = [];
         for (const i in processoAntigo.etapas) {
           if (JSON.stringify(processoAntigo.etapas[i].documentos) !== JSON.stringify(processoNovo.etapas[i].documentos)) {
-            idEtapa.push(processoAntigo.etapas[i].id)
+            idEtapa.push(processoAntigo.etapas[i].id);
           }
         }
         console.log(idEtapa);
@@ -150,8 +151,8 @@ class Processo {
           if (!idEtapa.includes(processoNovo.etapas[j].id)) {
             continue;
           }
-          for (const k in processoNovo.etapas[j].documentos){
-            idEtapaIdDocumento.push({ idetapa: processoNovo.etapas[j].id, idtipodocumento: processoNovo.etapas[j].documentos[k].id})
+          for (const k in processoNovo.etapas[j].documentos) {
+            idEtapaIdDocumento.push({ idetapa: processoNovo.etapas[j].id, idtipodocumento: processoNovo.etapas[j].documentos[k].id });
           }
         }
         await knex('etapa_tipodocumento').insert(idEtapaIdDocumento);
@@ -188,8 +189,8 @@ class Processo {
   async getAllBySupervisor(sub) {
     try {
       const idorientador = await knex('usuario').select('id')
-        .where({ sub: sub })
-      const estagios = await knex.raw("SELECT json_agg( json_build_object( 'id', e.id, 'idaluno', e.idaluno, 'idorientador', e.idorientador, 'criado', TO_CHAR(e.criado, 'DD/MM/YYYY'), 'fechado', TO_CHAR(e.fechado, 'DD/MM/YYYY'), 'cargahoraria', e.cargahoraria, 'processo', e.processo -> 'nome', 'tickets', tickets, 'aluno', aluno, 'status', statusEstagio ) ORDER BY e.id ASC ) processos FROM estagio e LEFT JOIN ( SELECT idestagio, json_agg( json_build_object( 'id', t.id, 'idestagio', t.idestagio, 'mensagem', t.mensagem, 'resposta', t.resposta, 'diastrabalhados', t.diastrabalhados, 'datacriado', TO_CHAR(t.datacriado, 'DD/MM/YYYY'), 'datafechado', TO_CHAR(t.datafechado, 'DD/MM/YYYY'), 'aceito', t.aceito, 'etapa', json_build_object( 'nome', t.etapa -> 'etapa' -> 'nome', 'etapa', json_build_object('loop', t.etapa -> 'etapa' -> 'loop') ), 'envolvidos', t.envolvidos, 'documentos', documentos ) ORDER BY t.id ASC ) tickets FROM ticket t LEFT JOIN ( SELECT idticket, json_agg( json_build_object('arquivo', d.arquivo, 'nome', d.nome) ORDER BY d.nome ASC ) documentos FROM documento d GROUP BY idticket ) d on t.id = d.idticket GROUP BY idestagio ) t on e.id = t.idestagio LEFT JOIN ( SELECT ua.id, json_build_object( 'nome', ua.nome, 'email', ua.email, 'foto', ua.foto, 'sub', ua.sub, 'prontuario', ua.prontuario, 'cargatotal', ua.cargatotal, 'curso', curso ) aluno FROM usuario ua LEFT JOIN ( SELECT c.id, json_build_object('nome', c.nome) curso FROM curso c ) c on ua.idcurso = c.id ) ua on e.idaluno = ua.id LEFT JOIN ( SELECT s.id, json_build_object( 'nome', s.nome ) statusEstagio FROM status s ) s on e.idstatus = s.id WHERE e.idorientador = " + idorientador[0].id + ";") 
+        .where({ sub: sub });
+      const estagios = await knex.raw("SELECT json_agg( json_build_object( 'id', e.id, 'idaluno', e.idaluno, 'idorientador', e.idorientador, 'criado', TO_CHAR(e.criado, 'DD/MM/YYYY'), 'fechado', TO_CHAR(e.fechado, 'DD/MM/YYYY'), 'cargahoraria', e.cargahoraria, 'processo', e.processo -> 'nome', 'tickets', tickets, 'aluno', aluno, 'status', statusEstagio ) ORDER BY e.id ASC ) processos FROM estagio e LEFT JOIN ( SELECT idestagio, json_agg( json_build_object( 'id', t.id, 'idestagio', t.idestagio, 'mensagem', t.mensagem, 'resposta', t.resposta, 'diastrabalhados', t.diastrabalhados, 'datacriado', TO_CHAR(t.datacriado, 'DD/MM/YYYY'), 'datafechado', TO_CHAR(t.datafechado, 'DD/MM/YYYY'), 'aceito', t.aceito, 'etapa', json_build_object( 'nome', t.etapa -> 'etapa' -> 'nome', 'etapa', json_build_object('loop', t.etapa -> 'etapa' -> 'loop') ), 'envolvidos', t.envolvidos, 'documentos', documentos ) ORDER BY t.id ASC ) tickets FROM ticket t LEFT JOIN ( SELECT idticket, json_agg( json_build_object('arquivo', d.arquivo, 'nome', d.nome) ORDER BY d.nome ASC ) documentos FROM documento d GROUP BY idticket ) d on t.id = d.idticket GROUP BY idestagio ) t on e.id = t.idestagio LEFT JOIN ( SELECT ua.id, json_build_object( 'nome', ua.nome, 'email', ua.email, 'foto', ua.foto, 'sub', ua.sub, 'prontuario', ua.prontuario, 'cargatotal', ua.cargatotal, 'curso', curso ) aluno FROM usuario ua LEFT JOIN ( SELECT c.id, json_build_object('nome', c.nome) curso FROM curso c ) c on ua.idcurso = c.id ) ua on e.idaluno = ua.id LEFT JOIN ( SELECT s.id, json_build_object( 'nome', s.nome ) statusEstagio FROM status s ) s on e.idstatus = s.id WHERE e.idorientador = " + idorientador[0].id + ';');
       if (estagios.rows === 0) return { response: null, status: 200 };
 
       return { response: estagios.rows[0], status: 200 };
@@ -199,19 +200,7 @@ class Processo {
     }
   }
 
-  async test(documentos) {
-    try {
-      await knex.insert(documentos)
-        .table('documento');
-      return { response: 'inserido com sucesso', status: 200 };
-    } catch (error) {
-      console.log(error);
-      return { response: 'Erro ao limpar banco', status: 400 };
-    }
-  }
-
   async compareObjects(obj1, obj2, mainKey) {
-    console.time("jorge");
     for (const key in obj1) {
       if (typeof obj1[key] === 'object') {
         if (key === 'documentos') {
@@ -219,7 +208,7 @@ class Processo {
         }
         if (!isNaN(key)) {
           this.compareObjects(obj1[key], obj2[key], mainKey);
-        } else{
+        } else {
           this.compareObjects(obj1[key], obj2[key], key);
         }
       } else {

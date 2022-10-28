@@ -1,11 +1,11 @@
 /* eslint-disable linebreak-style */
+/* eslint-disable no-console */
 /* eslint-disable consistent-return */
 /* eslint-disable object-shorthand */
 /* eslint-disable dot-notation */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable linebreak-style */
 /* eslint-disable class-methods-use-this */
-const { getAll } = require('../models/Ticket');
 const Ticket = require('../models/Ticket');
 const Validate = require('../modules/validate');
 
@@ -33,7 +33,6 @@ class TicketController {
       res.status(500).json(error);
     }
   }
-
 
   async tickets(req, res) {
     try {
@@ -210,7 +209,7 @@ class TicketController {
   async deletePendingTicket(req, res) {
     try {
       const {
-        idTicket, sub
+        idTicket, sub,
       } = req.body;
       const data = {
         idTicket: idTicket,

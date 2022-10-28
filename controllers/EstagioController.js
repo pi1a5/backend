@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable consistent-return */
 /* eslint-disable object-shorthand */
 /* eslint-disable class-methods-use-this */
@@ -16,7 +17,7 @@ class EstagioController {
 
   async getStatus(req, res) {
     try {
-      const { 
+      const {
         sub,
       } = req.body;
       const data = {
@@ -28,7 +29,7 @@ class EstagioController {
       const status = await Estagio.getStatus(sub);
       res.status(status.status).json(status.response);
     } catch (error) {
-
+      res.status(500).json(error);
     }
   }
 
@@ -118,8 +119,8 @@ class EstagioController {
 
   async transferInternship(req, res) {
     try {
-      const { 
-        idestagio, idorientador
+      const {
+        idestagio, idorientador,
       } = req.body;
 
       const data = {

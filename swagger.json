@@ -102,11 +102,23 @@
         "get": {
           "summary": "Retorna todos os processos de estágio do sistema.",
           "x-swagger-router-controller": "/controllers/UserController",
-          "operationId": "4",
+          "operationId": "5",
           "tags": ["Estágio"],
           "description": "Listar todos os estágios",
           "responses": { "200": {
                           "description": "Estágios encontrados"
+                        }}
+        }
+      },
+      "/api/processos": {
+        "get": {
+          "summary": "Retorna todos os processos de estágio do sistema.",
+          "x-swagger-router-controller": "/controllers/ProcessoController",
+          "operationId": "6",
+          "tags": ["Processo"],
+          "description": "Listar todos os processos",
+          "responses": { "200": {
+                          "description": "Processos encontrados"
                         }}
         }
       }

@@ -1,3 +1,5 @@
+/* eslint-disable linebreak-style */
+/* eslint-disable import/newline-after-import */
 /* eslint-disable no-console */
 const express = require('express');
 const bodyParser = require('body-parser');
