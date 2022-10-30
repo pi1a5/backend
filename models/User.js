@@ -330,7 +330,6 @@ class User {
           .where({ 'u.sub': sub });
         const dataPrevista = new Date(prazoEtapa[prazoEtapa.length - 1].datafechado);
         dataPrevista.setMonth(dataPrevista.getMonth() + prazoEtapa[prazoEtapa.length - 1].valor);
-        dataPrevista.setDate(dataPrevista.getDate() + prazoEtapa[prazoEtapa.length - 1].prazo);
         status[0]['dataPrevista'] = dataPrevista;
         status[0]['dias'] = Math.round((dataPrevista - dataAtual) / (1000 * 60 * 60 * 24));
       }
