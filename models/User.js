@@ -305,6 +305,7 @@ class User {
         .leftJoin('estagio AS e', 'e.idstatus', 's.id')
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
         .where({ 'u.sub': sub });
+      console.log(status);
       if (status.length === 0) return { response: null, status: 200 };
 
       if (status[0].nome === 'Atrasado') {

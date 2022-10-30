@@ -1,8 +1,8 @@
+/* eslint-disable linebreak-style */
 /* eslint-disable guard-for-in */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
-/* eslint-disable linebreak-style */
 /* eslint-disable no-console */
 
 const CronJob = require('node-cron');

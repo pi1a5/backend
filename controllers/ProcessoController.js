@@ -18,7 +18,7 @@ class ProcessoController {
     }
   }
 
-  async findAllByCourse(req, res) {
+  async findAllByArea(req, res) {
     try {
       const {
         sub,
@@ -29,7 +29,7 @@ class ProcessoController {
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const estagio = await Processo.findAllByCourse(sub);
+      const estagio = await Processo.findAllByArea(sub);
       res.status(estagio.status).json(estagio.response);
     } catch (error) {
       res.status(500).json(error);

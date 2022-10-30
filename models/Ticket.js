@@ -277,7 +277,7 @@ class Ticket {
                 console.log(diastrabalhados);
                 const carga = await knex('usuario').returning('cargatotal').increment('cargatotal', estagio[0].cargahoraria * diastrabalhados[0].diastrabalhados)
                   .where({ id: estagio[0].idaluno });
-                await knex('ticket').update({ horasadicionadas: estagio[0].cargahoraria * diastrabalhados[0].diastrabalhados })
+                await knex('ticket').update({ adicionahorasdas: estagio[0].cargahoraria * diastrabalhados[0].diastrabalhados })
                   .where({ id: idTicket });
                 console.log(carga);
                 const cargaCurso = await knex.select('c.carga')
