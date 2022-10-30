@@ -49,7 +49,7 @@
       },
       "/api/newUser": {
         "post": {
-          "summary": "Retorna um usuário específico do sistema.",
+          "summary": "Cria um novo usuário no sistema.",
           "x-swagger-router-controller": "home",
           "operationId": "2",
           "tags": ["Usuário"],
