@@ -9,8 +9,9 @@ const CronJob = require('node-cron');
 const knex = require('../database/connection');
 
 exports.initScheduledJobs = () => {
-  const scheduledJobFunction = CronJob.schedule('* * 1 * * *', async () => {
+  const scheduledJobFunction = CronJob.schedule('1 * * * * *', async () => {
     try {
+      console.log('entrou');
       const estagios = await knex.select('e.id', 'e.processo', 'f.valor', 's.nome', knex.raw('json_agg(t.datacriado) as tickets'))
         .from('estagio AS e')
         .leftJoin('ticket AS t', 't.idestagio', 'e.id')

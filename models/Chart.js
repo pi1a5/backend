@@ -63,14 +63,14 @@ class Chart {
         .from('status AS s')
         .leftJoin('estagio AS e', 'e.idstatus', 's.id')
         .leftJoin('usuario AS u', 'u.id', 'e.idorientador')
-        .where({ 'u.sub': sub });
+        .where({ 'u.sub': sub })
+        .whereNot({ 's.nome': 'Aberto' });
+      if (estagios.length === 0) return { response: null, status: 200 };
       const status = await knex.select('nome')
-        .from('status');
+        .from('status')
+        .whereNot({ nome: 'Aberto' });
 
       for (const i in status) {
-        if (status[i].nome === 'Aberto') {
-          continue;
-        }
         total[status[i].nome] = estagios.filter((obj) => obj.nome === status[i].nome).length;
       }
       return { response: total, status: 200 };
