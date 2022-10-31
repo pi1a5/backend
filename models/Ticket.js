@@ -287,7 +287,7 @@ class Ticket {
                 if (carga[0].cargatotal >= cargaCurso[0].carga) { // se tiver finalizado loop
                   processoAtual[0].processo.etapas[indexAtual].atual = false;
                   processoAtual[0].processo.etapas[indexAtual + 1].atual = true;
-                  await knex('estagio').update({ processo: processoAtual[0].processo, idstatus: 7 })
+                  await knex('estagio').update({ processo: processoAtual[0].processo, idstatus: 8 })
                     .where({ id: estagio[0].id });
                 } else {
                   await knex('estagio').update({ idstatus: 7 })
