@@ -310,14 +310,17 @@ class User {
 
       if (status[0].nome === 'Atrasado') {
         const dataAtual = new Date();
-        const prazoEtapa = await knex.select('t.datafechado', knex.raw("etapa->'etapa'->'prazo' as prazo"))
+        const prazoEtapa = await knex.select('t.datafechado', 'f.valor', knex.raw("etapa->'etapa'->'prazo' as prazo"))
           .from('ticket AS t')
           .leftJoin('estagio AS e', 'e.id', 't.idestagio')
+          .leftJoin('frequencia AS f', 'f.id', 'e.idfrequencia')
           .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
-          .where({ 'u.sub': sub })
-          .first();
-        const dia = dataAtual.getDate();
-        status[0]['dias'] = dia - prazoEtapa.prazo;
+          .where({ 'u.sub': sub });
+        const dataPrevista = new Date(prazoEtapa[prazoEtapa.length - 1].datafechado);
+        dataPrevista.setMonth(dataPrevista.getMonth() + prazoEtapa[prazoEtapa.length - 1].valor);
+        dataPrevista.setDate(dataPrevista.getDate() + prazoEtapa[prazoEtapa.length - 1].prazo);
+        status[0]['dataPrevista'] = dataPrevista;
+        status[0]['dias'] = Math.round((dataAtual - dataPrevista) / (1000 * 60 * 60 * 24));
       }
 
       if (status[0].nome === 'Em Dia') {
