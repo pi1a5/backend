@@ -1,3 +1,4 @@
+/* eslint-disable arrow-parens */
 /* eslint-disable linebreak-style */
 /* eslint-disable guard-for-in */
 /* eslint-disable prefer-destructuring */
@@ -19,6 +20,7 @@ exports.initScheduledJobs = () => {
         .leftJoin('frequencia AS f', 'f.id', 'e.idfrequencia')
         .where({ 's.nome': 'Atrasado', 'e.etapaunica': false })
         .orWhere({ 's.nome': 'Em Dia', 'e.etapaunica': false })
+        .orWhere({ 's.nome': 'Sem Ticket', 'e.etapaunica': false })
         .whereNot({ 's.nome': 'Aberto' })
         .groupBy('e.id')
         .groupBy('s.nome')
@@ -30,24 +32,23 @@ exports.initScheduledJobs = () => {
       for (const i in estagios) {
         const indexTicketAtual = estagios[i].tickets.length;
         const datavencimentoticket = new Date(estagios[i].tickets[indexTicketAtual - 1]);
-        for (const j in estagios[0].processo.etapas) {
-          if (estagios[0].processo.etapas[j].atual === true) {
-            const prazo = estagios[0].processo.etapas[j].prazo;
-            datavencimentoticket.setDate(datavencimentoticket.getDate() + prazo);
-            break;
-          }
-        }
+        const prazo = estagios[i].processo.etapas.filter(x => x.atual === true).prazo;
         datavencimentoticket.setMonth(datavencimentoticket.getMonth() + estagios[i].valor);
         console.log(estagios[i]);
         console.log(datavencimentoticket);
         if (estagios[i].nome === 'Em Dia') {
           if (dataAtual > datavencimentoticket) {
-            await knex('estagio').update({ idstatus: 5 }).where({ id: estagios[0].id });
+            await knex('estagio').update({ idstatus: 8 }).where({ id: estagios[0].id });
           }
-        } else {
+        } else if (estagios[i].nome === 'Atrasado') {
+          datavencimentoticket.setDate(datavencimentoticket.getDate() + prazo);
           datavencimentoticket.setDate(datavencimentoticket.getDate() + 10);
           if (dataAtual > datavencimentoticket) {
             // await knex('estagio').update({ idstatus: 5 }).where({ id: estagios[0].id });
+          }
+        } else if (estagios[i].nome === 'Sem Ticket') {
+          if (dataAtual > datavencimentoticket) {
+            await knex('estagio').update({ idstatus: 5 }).where({ id: estagios[0].id });
           }
         }
       }

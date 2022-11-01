@@ -316,9 +316,10 @@ class User {
           .leftJoin('frequencia AS f', 'f.id', 'e.idfrequencia')
           .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
           .where({ 'u.sub': sub });
-        const dataPrevista = new Date(prazoEtapa[prazoEtapa.length - 1].datafechado);
-        dataPrevista.setMonth(dataPrevista.getMonth() + prazoEtapa[prazoEtapa.length - 1].valor);
-        dataPrevista.setDate(dataPrevista.getDate() + prazoEtapa[prazoEtapa.length - 1].prazo);
+        console.log(prazoEtapa);
+        const dataPrevista = new Date(prazoEtapa[0].datafechado);
+        dataPrevista.setMonth(dataPrevista.getMonth() + prazoEtapa[0].valor);
+        dataPrevista.setDate(dataPrevista.getDate() + prazoEtapa[0].prazo);
         status[0]['dataPrevista'] = dataPrevista;
         status[0]['dias'] = Math.round((dataAtual - dataPrevista) / (1000 * 60 * 60 * 24));
       }
