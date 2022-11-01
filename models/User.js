@@ -1,3 +1,7 @@
+/* eslint-disable no-loop-func */
+/* eslint-disable prefer-template */
+/* eslint-disable arrow-parens */
+/* eslint-disable no-useless-concat */
 /* eslint-disable linebreak-style */
 /* eslint-disable no-unused-vars */
 /* eslint-disable dot-notation */
@@ -295,6 +299,33 @@ class User {
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao deletar orientador', status: 400 };
+    }
+  }
+
+  async createRandomStudent(id) {
+    try {
+      let nomeAluno = 'Aluno' + Math.floor(Math.random() * 100000);
+      const cursos = await knex('curso').select('id', 'carga');
+      const usuarios = await knex('usuario').select('nome');
+      while (usuarios.some(x => x.nome === nomeAluno)) {
+        nomeAluno = 'Aluno' + Math.floor(Math.random() * 100000);
+      }
+      const estudante = {
+        idcurso: cursos[Math.floor(Math.random() * cursos.length)].id,
+        nome: nomeAluno,
+        email: nomeAluno + '@aluno.ifsp.edu.br',
+        sub: nomeAluno,
+        foto: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+        prontuario: 'SP' + nomeAluno,
+        cargatotal: 0,
+        idtipousuario: 1,
+      };
+      console.log(estudante);
+      await knex('usuario').insert(estudante);
+      return { response: 'Estudante criado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao criar estudante', status: 400 };
     }
   }
 

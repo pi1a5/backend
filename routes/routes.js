@@ -93,6 +93,7 @@ router.get('/api/processos', HeaderMiddleware, ProcessoController.processos);
 router.get('/api/createExample', HeaderMiddleware, ProcessoController.createExample);
 router.post('/api/deletar', HeaderMiddleware, DocumentController.delete);
 router.get('/api/testeRotas', HeaderMiddleware, UserController.teste);
+router.get('/api/createRandomStudent', HeaderMiddleware, UserController.createRandomStudent);
 
 // Para Gráficos
 router.post('/api/checkOrientadoresAmount', HeaderMiddleware, ChartController.checkOrientadoresAmount);

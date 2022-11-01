@@ -194,6 +194,15 @@ class UserController {
       res.status(500).json(error);
     }
   }
+
+  async createRandomStudent(req, res) {
+    try {
+      const response = await User.createRandomStudent();
+      res.status(response.status).json(response.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
 }
 
 module.exports = new UserController();
