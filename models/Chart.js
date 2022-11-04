@@ -172,6 +172,48 @@ class Chart {
       return { response: 'Erro ao encontrar os tickets por data', status: 400 };
     }
   }
+
+  async getInternshipsAmountByMonth(sub) {
+    try {
+      const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
+      ];
+      const total = {};
+      const idarea = await knex.select('c.idarea')
+        .from('curso AS c')
+        .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
+        .where({ 'u.sub': sub });
+      const estagios = await knex.select('e.criado', 'e.fechado')
+        .from('estagio AS e')
+        .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
+        .leftJoin('curso AS c', 'c.id', 'u.idcurso')
+        .where({ 'c.idarea': idarea[0].idarea });
+
+      console.log(estagios);
+
+      for (const i in estagios) {
+        let dataCriado = new Date(estagios[i].criado);
+        let anoCriado = dataCriado.getFullYear();
+        let mesCriado = dataCriado.getMonth();
+        if (total.hasOwnProperty(anoCriado)) {
+          total[anoCriado][meses[mesCriado]].criado = total[anoCriado][meses[mesCriado]].criado + 1;
+        } else {
+          total[anoCriado] = {};
+          for (const m in meses) {
+            if (meses[m] === meses[mesCriado]) {
+              total[anoCriado][meses[m]] = { criado: 1, fechado: 0 };
+            } else {
+              total[anoCriado][meses[m]] = { criado: 0, fechado: 0 };
+            }
+          }
+        }
+      }
+      return { response: total, status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao encontrar os processos dos outros orientadores', status: 400 };
+    }
+  }
 }
 
 module.exports = new Chart();

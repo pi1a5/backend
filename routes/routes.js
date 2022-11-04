@@ -100,6 +100,8 @@ router.post('/api/checkOrientadoresAmount', HeaderMiddleware, ChartController.ch
 router.post('/api/getInternshipsAmountByStatus', HeaderMiddleware, ChartController.getInternshipsAmountByStatus);
 router.post('/api/getInternshipsAmountByCourse', HeaderMiddleware, ChartController.getInternshipsAmountByCourse);
 router.post('/api/getTicketsStatusByDate', HeaderMiddleware, ChartController.getTicketsStatusByDate);
+router.post('/api/getInternshipsAmountByMonth', HeaderMiddleware, ChartController.getInternshipsAmountByMonth);
+
 
 // Limpar BD
 router.get('/api/limparBanco', HeaderMiddleware, ProcessoController.limparBanco);
