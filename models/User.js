@@ -302,7 +302,7 @@ class User {
     }
   }
 
-  async createRandomStudent(id) {
+  async createRandomStudent() {
     try {
       let nomeAluno = 'Aluno' + Math.floor(Math.random() * 100000);
       const cursos = await knex('curso').select('id', 'carga');
@@ -323,6 +323,15 @@ class User {
       console.log(estudante);
       await knex('usuario').insert(estudante);
       return { response: 'Estudante criado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao criar estudante', status: 400 };
+    }
+  }
+
+  async createRandomInternship(id) {
+    try {
+      console.log('a');
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao criar estudante', status: 400 };

@@ -101,7 +101,8 @@ router.post('/api/getInternshipsAmountByStatus', HeaderMiddleware, ChartControll
 router.post('/api/getInternshipsAmountByCourse', HeaderMiddleware, ChartController.getInternshipsAmountByCourse);
 router.post('/api/getTicketsStatusByDate', HeaderMiddleware, ChartController.getTicketsStatusByDate);
 router.post('/api/getInternshipsAmountByMonth', HeaderMiddleware, ChartController.getInternshipsAmountByMonth);
-
+router.post('/api/getUserTicketAmountAndTotalHours', HeaderMiddleware, ChartController.getUserTicketAmountAndTotalHours);
+router.post('/api/getCourseAverageWorkedHours', HeaderMiddleware, ChartController.getCourseAverageWorkedHours);
 
 // Limpar BD
 router.get('/api/limparBanco', HeaderMiddleware, ProcessoController.limparBanco);
