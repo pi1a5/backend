@@ -204,6 +204,15 @@ class UserController {
     }
   }
 
+  async createRandomSupervisor(req, res) {
+    try {
+      const response = await User.createRandomSupervisor();
+      res.status(response.status).json(response.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
   async getFakeStudents(req, res) {
     try {
       const response = await User.getFakeStudents();

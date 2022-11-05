@@ -340,6 +340,32 @@ class User {
     }
   }
 
+  async createRandomSupervisor() {
+    try {
+      let nomeOrientador = 'Orientador-' + Math.floor(Math.random() * 100000);
+      const cursos = await knex('curso').select('id', 'carga');
+      const usuarios = await knex('usuario').select('nome');
+      while (usuarios.some(x => x.nome === nomeOrientador)) {
+        nomeOrientador = 'Orientador-' + Math.floor(Math.random() * 100000);
+      }
+      const estudante = {
+        idcurso: cursos[Math.floor(Math.random() * cursos.length)].id,
+        nome: nomeOrientador,
+        email: nomeOrientador + '@ifsp.edu.br',
+        sub: nomeOrientador,
+        foto: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+        prontuario: null,
+        cargatotal: 0,
+        idtipousuario: 2,
+      };
+      await knex('usuario').insert(estudante);
+      return { response: 'Orientador criado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao criar estudante', status: 400 };
+    }
+  }
+
   async getFakeStudents() {
     try {
       const alunos = await knex.select('u.*', 'c.nome AS curso')
