@@ -203,6 +203,15 @@ class UserController {
       res.status(500).json(error);
     }
   }
+
+  async getFakeStudents(req, res) {
+    try {
+      const response = await User.getFakeStudents();
+      res.status(response.status).json(response.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
 }
 
 module.exports = new UserController();

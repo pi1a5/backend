@@ -307,11 +307,11 @@ class User {
 
   async createRandomStudent() {
     try {
-      let nomeAluno = 'Aluno' + Math.floor(Math.random() * 100000);
+      let nomeAluno = 'Aluno-' + Math.floor(Math.random() * 100000);
       const cursos = await knex('curso').select('id', 'carga');
       const usuarios = await knex('usuario').select('nome');
       while (usuarios.some(x => x.nome === nomeAluno)) {
-        nomeAluno = 'Aluno' + Math.floor(Math.random() * 100000);
+        nomeAluno = 'Aluno-' + Math.floor(Math.random() * 100000);
       }
       const estudante = {
         idcurso: cursos[Math.floor(Math.random() * cursos.length)].id,
@@ -330,6 +330,17 @@ class User {
       await Estagio.newEstagio(processos[Math.floor(Math.random() * processos.length)].id, nomeAluno, 6);
       await Ticket.new('');
       return { response: 'Estudante criado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao criar estudante', status: 400 };
+    }
+  }
+
+  async getFakeStudents() {
+    try {
+      const alunos = await knex('usuario').select('*')
+        .whereLike('nome', '%Aluno-%');
+      return { response: alunos, status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao criar estudante', status: 400 };
