@@ -10,7 +10,7 @@ const CronJob = require('node-cron');
 const knex = require('../database/connection');
 
 exports.initScheduledJobs = () => {
-  const scheduledJobFunction = CronJob.schedule('0 1 * * * *', async () => {
+  const scheduledJobFunction = CronJob.schedule('1 * * * * *', async () => {
     try {
       console.log('entrou');
       const estagios = await knex.select('e.id', 'e.processo', 'f.valor', 's.nome', knex.raw('json_agg(t.datacriado) as tickets'))
@@ -27,7 +27,6 @@ exports.initScheduledJobs = () => {
         .groupBy('f.valor');
       if (estagios.length === 0) return { response: null, status: 200 };
       const dataAtual = new Date();
-      console.log(estagios);
 
       for (const i in estagios) {
         const indexTicketAtual = estagios[i].tickets.length;
@@ -38,7 +37,7 @@ exports.initScheduledJobs = () => {
         console.log(datavencimentoticket);
         if (estagios[i].nome === 'Em Dia') {
           if (dataAtual > datavencimentoticket) {
-            await knex('estagio').update({ idstatus: 8 }).where({ id: estagios[0].id });
+            await knex('estagio').update({ idstatus: 8 }).where({ id: estagios[i].id });
           }
         } else if (estagios[i].nome === 'Atrasado') {
           datavencimentoticket.setDate(datavencimentoticket.getDate() + prazo);
@@ -48,7 +47,7 @@ exports.initScheduledJobs = () => {
           }
         } else if (estagios[i].nome === 'Sem Ticket') {
           if (dataAtual > datavencimentoticket) {
-            await knex('estagio').update({ idstatus: 5 }).where({ id: estagios[0].id });
+            await knex('estagio').update({ idstatus: 5 }).where({ id: estagios[i].id });
           }
         }
       }

@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable linebreak-style */
 /* eslint-disable arrow-parens */
 /* eslint-disable no-lonely-if */
@@ -283,20 +284,16 @@ class Ticket {
 
   async updateFeedbackStatusLateOrWithoutTicket(estagio, datafechado, aceito, idTicket) {
     if (aceito === true) {
-      console.log('Aceito!');
       const processoAtual = await knex('estagio').select('processo')
         .where({ id: estagio[0].id });
       const indexAtual = processoAtual[0].processo.etapas.findIndex(x => x.atual === true);
       if (processoAtual[0].processo.etapas[indexAtual].loop === true) { // se etapa for loop
-        console.log('b');
         const diastrabalhados = await knex('ticket').select('diastrabalhados')
           .where({ id: idTicket });
-        console.log(diastrabalhados);
         const carga = await knex('usuario').returning('cargatotal').increment('cargatotal', estagio[0].cargahoraria * diastrabalhados[0].diastrabalhados)
           .where({ id: estagio[0].idaluno });
         await knex('ticket').update({ horasadicionadas: estagio[0].cargahoraria * diastrabalhados[0].diastrabalhados, datafechado: datafechado })
           .where({ id: idTicket });
-        console.log(carga);
         const cargaCurso = await knex.select('c.carga')
           .from('curso AS c')
           .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
@@ -311,7 +308,8 @@ class Ticket {
             .where({ id: estagio[0].id });
         }
       } else {
-        processoAtual[0].processo.etapas[i].atual = false;
+        const indexAtual = processoAtual[0].processo.etapas.findIndex(x => x.atual === true);
+        processoAtual[0].processo.etapas[indexAtual].atual = false;
         await knex('estagio').update({ fechado: datafechado, idstatus: 2 })
           .where({ id: estagio[0].id });
       }
