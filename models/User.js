@@ -324,7 +324,6 @@ class User {
         idtipousuario: 1,
       };
       const idcurso = await knex('usuario').returning('idcurso').insert(estudante);
-
       const processos = await knex('processo').select('id').where({ idcurso: idcurso[0].idcurso });
 
       await Estagio.newEstagio(processos[Math.floor(Math.random() * processos.length)].id, nomeAluno, 6);
@@ -338,8 +337,10 @@ class User {
 
   async getFakeStudents() {
     try {
-      const alunos = await knex('usuario').select('*')
-        .whereLike('nome', '%Aluno-%');
+      const alunos = await knex.select('u.*', 'c.nome AS curso')
+        .from('usuario AS u')
+        .leftJoin('curso AS c', 'c.id', 'u.idcurso')
+        .whereLike('u.nome', '%Aluno-%');
       return { response: alunos, status: 200 };
     } catch (error) {
       console.log(error);
