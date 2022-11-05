@@ -61,10 +61,12 @@ class Ticket {
       });
       const documentos = [];
 
-      for (const file in files) {
-        documentos.push({ idticket: ticketid[0].id, arquivo: await Aws.uploadFile(files[file], sub), nome: file });
+      if (files !== null) {
+        for (const file in files) {
+          documentos.push({ idticket: ticketid[0].id, arquivo: await Aws.uploadFile(files[file], sub), nome: file });
+        }
+        await knex('documento').insert(documentos);
       }
-      await knex('documento').insert(documentos);
 
       return { response: 'Ticket criado com sucesso', status: 200 };
     } catch (error) {

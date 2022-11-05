@@ -323,11 +323,16 @@ class User {
         cargatotal: 0,
         idtipousuario: 1,
       };
-      const idcurso = await knex('usuario').returning('idcurso').insert(estudante);
+      const idcurso = await knex('usuario').returning('*').insert(estudante);
       const processos = await knex('processo').select('id').where({ idcurso: idcurso[0].idcurso });
 
       await Estagio.newEstagio(processos[Math.floor(Math.random() * processos.length)].id, nomeAluno, 6);
-      await Ticket.new('');
+      const etapaunica = await knex('estagio').select('etapaunica').where({ idaluno: idcurso[0].id });
+      if (etapaunica) {
+        await Ticket.new('Olá Orientador, gostaria de realizar meu processo de estágio!', nomeAluno, null, 30);
+      } else {
+        await Ticket.new('Olá Orientador, gostaria de realizar meu processo de estágio!', nomeAluno, null, null);
+      }
       return { response: 'Estudante criado com sucesso', status: 200 };
     } catch (error) {
       console.log(error);

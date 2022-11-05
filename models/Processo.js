@@ -40,8 +40,7 @@ class Processo {
         .where({ 'u.sub': sub });
       if (idArea.length === 0) return { response: 'Curso do usuário não encontrado', status: 404 };
 
-
-      const processos = await knex.raw("SELECT json_agg( json_build_object('nome', p.nome, 'id', p.id, 'etapas', etapas) ORDER BY p.id ASC ) processos FROM processo p LEFT JOIN ( SELECT idprocesso, json_agg( json_build_object( 'id', e.id, 'loop', e.loop, 'nome', e.nome, 'prazo', e.prazo, 'documentos', etapatipodocumento ) ORDER BY e.id ASC ) etapas FROM etapa e LEFT JOIN ( SELECT idetapa, json_agg(tipodocumento) etapatipodocumento FROM etapa_tipodocumento et LEFT JOIN ( SELECT td.id, json_build_object( 'id', td.id, 'nome', td.nome, 'template', td.template, 'sigla', td.sigla ) tipodocumento FROM tipodocumento td LEFT JOIN curso c on c.idarea = " + idArea[0].idarea + ' group by td.id ) td on et.idtipodocumento = td.id group by idetapa ) et on e.id = et.idetapa group by idprocesso ) e on p.id = e.idprocesso');
+      const processos = await knex.raw("SELECT json_agg( json_build_object('nome', p.nome, 'id', p.id, 'etapas', etapas) ORDER BY p.id ASC ) processos FROM processo p LEFT JOIN ( SELECT idprocesso, json_agg( json_build_object( 'id', e.id, 'loop', e.loop, 'nome', e.nome, 'prazo', e.prazo, 'documentos', etapatipodocumento ) ORDER BY e.id ASC ) etapas FROM etapa e LEFT JOIN ( SELECT idetapa, json_agg(tipodocumento) etapatipodocumento FROM etapa_tipodocumento et LEFT JOIN ( SELECT td.id, json_build_object( 'id', td.id, 'nome', td.nome, 'template', td.template, 'sigla', td.sigla ) tipodocumento FROM tipodocumento td group by td.id ) td on et.idtipodocumento = td.id group by idetapa ) et on e.id = et.idetapa group by idprocesso ) e on p.id = e.idprocesso LEFT JOIN curso c on c.id = p.idcurso WHERE c.idarea =" + idArea[0].idarea);
       result.processos = processos.rows[0].processos;
 
       if (idArea[0].email.includes('@aluno.ifsp') !== true) {
