@@ -281,14 +281,12 @@ class Ticket {
     }
   }
 
-  async updateFeedbackStatusLateOrWithoutTicket(estagio, datafechado, aceito) {
+  async updateFeedbackStatusLateOrWithoutTicket(estagio, datafechado, aceito, idTicket) {
     if (aceito === true) {
       console.log('Aceito!');
       const processoAtual = await knex('estagio').select('processo')
         .where({ id: estagio[0].id });
       const indexAtual = processoAtual[0].processo.etapas.findIndex(x => x.atual === true);
-      console.log(indexAtual);
-      console.log(processoAtual[0].processo.etapas[indexAtual]);
       if (processoAtual[0].processo.etapas[indexAtual].loop === true) { // se etapa for loop
         console.log('b');
         const diastrabalhados = await knex('ticket').select('diastrabalhados')
