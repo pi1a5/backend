@@ -230,11 +230,11 @@ class Ticket {
       await knex.transaction(async (trx) => {
         switch (estagio[0].status) {
           case 'Aberto':
-            await this.updateFeedbackStatusOpen(estagio, datafechado);
+            await this.updateFeedbackStatusOpen(estagio, datafechado, aceito, sub, idfrequencia);
             break;
           case 'Atrasado':
           case 'Sem Resposta':
-            await this.updateFeedbackStatusLateOrWithoutTicket(estagio, datafechado);
+            await this.updateFeedbackStatusLateOrWithoutTicket(estagio, datafechado, aceito);
             break;
           default:
             break;
@@ -251,7 +251,7 @@ class Ticket {
     }
   }
 
-  async updateFeedbackStatusOpen(estagio, datafechado) {
+  async updateFeedbackStatusOpen(estagio, datafechado, aceito, sub, idfrequencia) {
     if (estagio[0].etapaunica) {
       if (aceito === true) {
         const cargaCurso = await knex.select('c.carga')
@@ -281,7 +281,7 @@ class Ticket {
     }
   }
 
-  async updateFeedbackStatusLateOrWithoutTicket(estagio, datafechado) {
+  async updateFeedbackStatusLateOrWithoutTicket(estagio, datafechado, aceito) {
     if (aceito === true) {
       console.log('Aceito!');
       const processoAtual = await knex('estagio').select('processo')
