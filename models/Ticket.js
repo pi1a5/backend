@@ -234,7 +234,7 @@ class Ticket {
             break;
           case 'Atrasado':
           case 'Sem Resposta':
-            await this.updateFeedbackStatusLateOrWithoutTicket(estagio, datafechado, aceito);
+            await this.updateFeedbackStatusLateOrWithoutTicket(estagio, datafechado, aceito, idTicket);
             break;
           default:
             break;
