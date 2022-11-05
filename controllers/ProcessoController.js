@@ -18,7 +18,7 @@ class ProcessoController {
     }
   }
 
-  async findAllByCourse(req, res) {
+  async findAllByArea(req, res) {
     try {
       const {
         sub,
@@ -29,7 +29,7 @@ class ProcessoController {
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const estagio = await Processo.findAllByCourse(sub);
+      const estagio = await Processo.findAllByArea(sub);
       res.status(estagio.status).json(estagio.response);
     } catch (error) {
       res.status(500).json(error);
@@ -107,7 +107,7 @@ class ProcessoController {
   async createExample(req, res) {
     try {
       const processo = {
-        "sub": "teste",
+        "sub": "108209164670727566020",
         "processo": {
           "id": 0,
           "nome": "Padrão",
@@ -118,16 +118,10 @@ class ProcessoController {
               "prazo": 10,
               "documentos": [
                 {
-                  "id": 0,
+                  "id": 1,
                   "nome": "docteste1",
                   "sigla": "dc1",
                   "template": "aoba",
-                },
-                {
-                  "id": 1,
-                  "nome": "docteste2",
-                  "sigla": "dc2",
-                  "template": "aoba2",
                 },
               ],
             },
@@ -137,7 +131,7 @@ class ProcessoController {
               "prazo": 15,
               "documentos": [
                 {
-                  "id": 0,
+                  "id": 7,
                   "nome": "docteste1",
                   "sigla": "dc1",
                   "template": "aoba",
@@ -150,16 +144,10 @@ class ProcessoController {
               "prazo": 5,
               "documentos": [
                 {
-                  "id": 0,
+                  "id": 5,
                   "nome": "docteste1",
                   "sigla": "dc1",
                   "template": "aoba",
-                },
-                {
-                  "id": 1,
-                  "nome": "docteste2",
-                  "sigla": "dc2",
-                  "template": "aoba2",
                 },
               ],
             },

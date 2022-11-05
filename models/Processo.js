@@ -31,18 +31,19 @@ class Processo {
     }
   }
 
-  async findAllByCourse(sub) { // para visualização na hora de selecionar um processo
+  async findAllByArea(sub) { // para visualização na hora de selecionar um processo
     try {
       const result = {};
-      const idCurso = await knex.select('idcurso', 'email')
-        .table('usuario')
-        .where({ sub: sub });
-      if (idCurso.length === 0) return { response: 'Curso do usuário não encontrado', status: 404 };
+      const idArea = await knex.select('c.idarea', 'u.email')
+        .from('curso AS c')
+        .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
+        .where({ 'u.sub': sub });
+      if (idArea.length === 0) return { response: 'Curso do usuário não encontrado', status: 404 };
 
-      const processos = await knex.raw("SELECT json_agg( json_build_object('nome', p.nome, 'id', p.id, 'etapas', etapas) ORDER BY p.id ASC ) processos FROM processo p LEFT JOIN ( SELECT idprocesso, json_agg( json_build_object( 'id', e.id, 'loop', e.loop, 'nome', e.nome, 'prazo', e.prazo, 'documentos', etapatipodocumento ) ORDER BY e.id ASC ) etapas FROM etapa e LEFT JOIN ( SELECT idetapa, json_agg(tipodocumento) etapatipodocumento FROM etapa_tipodocumento et LEFT JOIN ( SELECT id, json_build_object( 'id', td.id, 'nome', td.nome, 'template', td.template, 'sigla', td.sigla ) tipodocumento FROM tipodocumento td group by id ) td on et.idtipodocumento = td.id group by idetapa ) et on e.id = et.idetapa group by idprocesso ) e on p.id = e.idprocesso WHERE p.idcurso = " + idCurso[0].idcurso + ';');
+      const processos = await knex.raw("SELECT json_agg( json_build_object('nome', p.nome, 'id', p.id, 'etapas', etapas) ORDER BY p.id ASC ) processos FROM processo p LEFT JOIN ( SELECT idprocesso, json_agg( json_build_object( 'id', e.id, 'loop', e.loop, 'nome', e.nome, 'prazo', e.prazo, 'documentos', etapatipodocumento ) ORDER BY e.id ASC ) etapas FROM etapa e LEFT JOIN ( SELECT idetapa, json_agg(tipodocumento) etapatipodocumento FROM etapa_tipodocumento et LEFT JOIN ( SELECT td.id, json_build_object( 'id', td.id, 'nome', td.nome, 'template', td.template, 'sigla', td.sigla ) tipodocumento FROM tipodocumento td group by td.id ) td on et.idtipodocumento = td.id group by idetapa ) et on e.id = et.idetapa group by idprocesso ) e on p.id = e.idprocesso LEFT JOIN curso c on c.id = p.idcurso WHERE c.idarea =" + idArea[0].idarea);
       result.processos = processos.rows[0].processos;
 
-      if (idCurso[0].email.includes('@aluno.ifsp') !== true) {
+      if (idArea[0].email.includes('@aluno.ifsp') !== true) {
         const tiposDocumento = await knex.select('*')
           .table('tipodocumento')
           .orderBy('nome');
@@ -190,7 +191,7 @@ class Processo {
     try {
       const idorientador = await knex('usuario').select('id')
         .where({ sub: sub });
-      const estagios = await knex.raw("SELECT json_agg( json_build_object( 'id', e.id, 'idaluno', e.idaluno, 'idorientador', e.idorientador, 'criado', TO_CHAR(e.criado, 'DD/MM/YYYY'), 'fechado', TO_CHAR(e.fechado, 'DD/MM/YYYY'), 'cargahoraria', e.cargahoraria, 'processo', e.processo -> 'nome', 'tickets', tickets, 'aluno', aluno, 'status', statusEstagio ) ORDER BY e.id ASC ) processos FROM estagio e LEFT JOIN ( SELECT idestagio, json_agg( json_build_object( 'id', t.id, 'idestagio', t.idestagio, 'mensagem', t.mensagem, 'resposta', t.resposta, 'diastrabalhados', t.diastrabalhados, 'datacriado', TO_CHAR(t.datacriado, 'DD/MM/YYYY'), 'datafechado', TO_CHAR(t.datafechado, 'DD/MM/YYYY'), 'aceito', t.aceito, 'etapa', json_build_object( 'nome', t.etapa -> 'etapa' -> 'nome', 'etapa', json_build_object('loop', t.etapa -> 'etapa' -> 'loop') ), 'envolvidos', t.envolvidos, 'documentos', documentos ) ORDER BY t.id ASC ) tickets FROM ticket t LEFT JOIN ( SELECT idticket, json_agg( json_build_object('arquivo', d.arquivo, 'nome', d.nome) ORDER BY d.nome ASC ) documentos FROM documento d GROUP BY idticket ) d on t.id = d.idticket GROUP BY idestagio ) t on e.id = t.idestagio LEFT JOIN ( SELECT ua.id, json_build_object( 'nome', ua.nome, 'email', ua.email, 'foto', ua.foto, 'sub', ua.sub, 'prontuario', ua.prontuario, 'cargatotal', ua.cargatotal, 'curso', curso ) aluno FROM usuario ua LEFT JOIN ( SELECT c.id, json_build_object('nome', c.nome) curso FROM curso c ) c on ua.idcurso = c.id ) ua on e.idaluno = ua.id LEFT JOIN ( SELECT s.id, json_build_object( 'nome', s.nome ) statusEstagio FROM status s ) s on e.idstatus = s.id WHERE e.idorientador = " + idorientador[0].id + ';');
+      const estagios = await knex.raw("SELECT json_agg( json_build_object( 'id', e.id, 'idaluno', e.idaluno, 'idorientador', e.idorientador, 'criado', TO_CHAR(e.criado, 'DD/MM/YYYY'), 'fechado', TO_CHAR(e.fechado, 'DD/MM/YYYY'), 'cargahoraria', e.cargahoraria, 'processo', e.processo -> 'nome', 'tickets', tickets, 'aluno', aluno, 'status', statusEstagio ) ORDER BY e.id ASC ) processos FROM estagio e LEFT JOIN ( SELECT idestagio, json_agg( json_build_object( 'id', t.id, 'idestagio', t.idestagio, 'mensagem', t.mensagem, 'resposta', t.resposta, 'diastrabalhados', t.diastrabalhados, 'horasadicionadas', t.horasadicionadas, 'datacriado', TO_CHAR(t.datacriado, 'DD/MM/YYYY'), 'datafechado', TO_CHAR(t.datafechado, 'DD/MM/YYYY'), 'aceito', t.aceito, 'etapa', json_build_object( 'nome', t.etapa -> 'etapa' -> 'nome', 'etapa', json_build_object('loop', t.etapa -> 'etapa' -> 'loop') ), 'envolvidos', t.envolvidos, 'documentos', documentos ) ORDER BY t.id ASC ) tickets FROM ticket t LEFT JOIN ( SELECT idticket, json_agg( json_build_object('arquivo', d.arquivo, 'nome', d.nome) ORDER BY d.nome ASC ) documentos FROM documento d GROUP BY idticket ) d on t.id = d.idticket GROUP BY idestagio ) t on e.id = t.idestagio LEFT JOIN ( SELECT ua.id, json_build_object( 'nome', ua.nome, 'email', ua.email, 'foto', ua.foto, 'sub', ua.sub, 'prontuario', ua.prontuario, 'cargatotal', ua.cargatotal, 'curso', curso ) aluno FROM usuario ua LEFT JOIN ( SELECT c.id, json_build_object('nome', c.nome) curso FROM curso c ) c on ua.idcurso = c.id ) ua on e.idaluno = ua.id LEFT JOIN ( SELECT s.id, json_build_object( 'nome', s.nome ) statusEstagio FROM status s ) s on e.idstatus = s.id WHERE e.idorientador = " + idorientador[0].id + ';');
       if (estagios.rows === 0) return { response: null, status: 200 };
 
       return { response: estagios.rows[0], status: 200 };

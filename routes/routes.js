@@ -44,7 +44,7 @@ router.post('/api/getStatus', HeaderMiddleware, UserController.getStatus);
 
 // Para Processos
 
-router.post('/api/findAllByCourse', HeaderMiddleware, ProcessoController.findAllByCourse);
+router.post('/api/findAllByCourse', HeaderMiddleware, ProcessoController.findAllByArea);
 router.post('/api/deleteProcesso', HeaderMiddleware, ProcessoController.deleteProcesso);
 router.post('/api/createNewProcesso', HeaderMiddleware, ProcessoController.createNewProcesso);
 router.post('/api/updateProcesso', HeaderMiddleware, ProcessoController.updateProcesso);
@@ -93,12 +93,18 @@ router.get('/api/processos', HeaderMiddleware, ProcessoController.processos);
 router.get('/api/createExample', HeaderMiddleware, ProcessoController.createExample);
 router.post('/api/deletar', HeaderMiddleware, DocumentController.delete);
 router.get('/api/testeRotas', HeaderMiddleware, UserController.teste);
+router.get('/api/createRandomStudent', HeaderMiddleware, UserController.createRandomStudent);
+router.get('/api/createRandomSupervisor', HeaderMiddleware, UserController.createRandomSupervisor);
+router.get('/api/getFakeStudents', HeaderMiddleware, UserController.getFakeStudents);
 
 // Para Gráficos
 router.post('/api/checkOrientadoresAmount', HeaderMiddleware, ChartController.checkOrientadoresAmount);
 router.post('/api/getInternshipsAmountByStatus', HeaderMiddleware, ChartController.getInternshipsAmountByStatus);
 router.post('/api/getInternshipsAmountByCourse', HeaderMiddleware, ChartController.getInternshipsAmountByCourse);
 router.post('/api/getTicketsStatusByDate', HeaderMiddleware, ChartController.getTicketsStatusByDate);
+router.post('/api/getInternshipsAmountByMonth', HeaderMiddleware, ChartController.getInternshipsAmountByMonth);
+router.post('/api/getUserTicketAmountAndTotalHours', HeaderMiddleware, ChartController.getUserTicketAmountAndTotalHours);
+router.post('/api/getCourseAverageWorkedHours', HeaderMiddleware, ChartController.getCourseAverageWorkedHours);
 
 // Limpar BD
 router.get('/api/limparBanco', HeaderMiddleware, ProcessoController.limparBanco);

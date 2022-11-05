@@ -42,6 +42,42 @@ class ChartController {
     }
   }
 
+  async getInternshipsAmountByMonth(req, res) {
+    try {
+      const {
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const status = await Chart.getInternshipsAmountByMonth(sub);
+      res.status(status.status).json(status.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async getUserTicketAmountAndTotalHours(req, res) {
+    try {
+      const {
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const status = await Chart.getUserTicketAmountAndTotalHours(sub);
+      res.status(status.status).json(status.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
   async getInternshipsAmountByCourse(req, res) {
     try {
       const {
@@ -73,6 +109,24 @@ class ChartController {
 
       const tickets = await Chart.getTicketsStatusByDate(sub);
       res.status(tickets.status).json(tickets.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
+  async getCourseAverageWorkedHours(req, res) {
+    try {
+      const {
+        sub,
+      } = req.body;
+      const data = {
+        sub: sub,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const horas = await Chart.getCourseAverageWorkedHours(sub);
+      res.status(horas.status).json(horas.response);
     } catch (error) {
       res.status(500).json(error);
     }

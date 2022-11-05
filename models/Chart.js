@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 /* eslint-disable linebreak-style */
 /* eslint-disable operator-assignment */
 /* eslint-disable no-prototype-builtins */
@@ -63,14 +64,14 @@ class Chart {
         .from('status AS s')
         .leftJoin('estagio AS e', 'e.idstatus', 's.id')
         .leftJoin('usuario AS u', 'u.id', 'e.idorientador')
-        .where({ 'u.sub': sub });
+        .where({ 'u.sub': sub })
+        .whereNot({ 's.nome': 'Aberto' });
+      if (estagios.length === 0) return { response: null, status: 200 };
       const status = await knex.select('nome')
-        .from('status');
+        .from('status')
+        .whereNot({ nome: 'Aberto' });
 
       for (const i in status) {
-        if (status[i].nome === 'Aberto') {
-          continue;
-        }
         total[status[i].nome] = estagios.filter((obj) => obj.nome === status[i].nome).length;
       }
       return { response: total, status: 200 };
@@ -170,6 +171,107 @@ class Chart {
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao encontrar os tickets por data', status: 400 };
+    }
+  }
+
+  async getInternshipsAmountByMonth(sub) {
+    try {
+      const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
+      ];
+      let total = {};
+      const idarea = await knex.select('c.idarea')
+        .from('curso AS c')
+        .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
+        .where({ 'u.sub': sub });
+      const estagios = await knex.select('e.criado', 'e.fechado')
+        .from('estagio AS e')
+        .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
+        .leftJoin('curso AS c', 'c.id', 'u.idcurso')
+        .where({ 'c.idarea': idarea[0].idarea });
+
+      for (const i in estagios) {
+        const dataCriado = new Date(estagios[i].criado);
+        const anoCriado = dataCriado.getFullYear();
+        const mesCriado = dataCriado.getMonth();
+        if (total.hasOwnProperty(anoCriado)) {
+          total[anoCriado][meses[mesCriado]].criado = total[anoCriado][meses[mesCriado]].criado + 1;
+          if (estagios[i].fechado !== null) {
+            const dataFechado = new Date(estagios[i].criado);
+            const anoFechado = dataFechado.getFullYear();
+            const mesFechado = dataFechado.getMonth();
+            if (total.hasOwnProperty(anoFechado)) {
+              total[anoFechado][meses[mesFechado]].fechado = total[anoFechado][meses[mesFechado]].fechado + 1;
+            } else {
+              total[anoFechado] = {};
+              total = await this.populateTotalYear(total, anoCriado, mesCriado, meses);
+            }
+          } else {
+            continue;
+          }
+        } else {
+          total[anoCriado] = {};
+          total = await this.populateTotalYear(total, anoCriado, mesCriado, meses);
+        }
+      }
+      return { response: total, status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao encontrar a quantidade de estágios criados e fechados por mês', status: 400 };
+    }
+  }
+
+  async populateTotalYear(total, ano, mes, meses) {
+    for (const m in meses) {
+      if (meses[m] === meses[mes]) {
+        total[ano][meses[m]] = { criado: 1, fechado: 0 };
+      } else {
+        total[ano][meses[m]] = { criado: 0, fechado: 0 };
+      }
+    }
+    return total;
+  }
+
+  async getUserTicketAmountAndTotalHours(sub) {
+    try {
+      const idarea = await knex.select('c.idarea')
+        .from('curso AS c')
+        .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
+        .where({ 'u.sub': sub });
+      const usuarios = await knex.select('u.email', 'u.cargatotal', knex.raw('count(t.id) as count'))
+        .from('usuario AS u')
+        .leftJoin('estagio AS e', 'e.idaluno', 'u.id')
+        .leftJoin('ticket AS t', 't.idestagio', 'e.id')
+        .leftJoin('curso AS c', 'c.id', 'u.idcurso')
+        .where({ 'c.idarea': idarea[0].idarea })
+        .where({ 'u.idtipousuario': 1 })
+        .groupBy('u.email')
+        .groupBy('u.cargatotal');
+
+      return { response: usuarios, status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao encontrar os tickets e as horas de estágio dos alunos', status: 400 };
+    }
+  }
+
+  async getCourseAverageWorkedHours(sub) {
+    try {
+      const idarea = await knex.select('c.idarea')
+        .from('curso AS c')
+        .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
+        .where({ 'u.sub': sub });
+      const horas = await knex.select('c.nome', knex.raw('AVG(u.cargatotal)'))
+        .from('curso AS c')
+        .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
+        .where({ 'c.idarea': idarea[0].idarea })
+        .where({ 'u.idtipousuario': 1 })
+        .groupBy('c.nome');
+
+      return { response: horas, status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao encontrar os tickets e as horas de estágio dos alunos', status: 400 };
     }
   }
 }

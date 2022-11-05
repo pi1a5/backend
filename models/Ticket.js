@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable linebreak-style */
 /* eslint-disable arrow-parens */
 /* eslint-disable no-lonely-if */
@@ -61,10 +62,12 @@ class Ticket {
       });
       const documentos = [];
 
-      for (const file in files) {
-        documentos.push({ idticket: ticketid[0].id, arquivo: await Aws.uploadFile(files[file], sub), nome: file });
+      if (files !== null) {
+        for (const file in files) {
+          documentos.push({ idticket: ticketid[0].id, arquivo: await Aws.uploadFile(files[file], sub), nome: file });
+        }
+        await knex('documento').insert(documentos);
       }
-      await knex('documento').insert(documentos);
 
       return { response: 'Ticket criado com sucesso', status: 200 };
     } catch (error) {
@@ -225,82 +228,14 @@ class Ticket {
         .groupBy('s.nome')
         .groupBy('e.id');
 
-      console.log(estagio[0].status);
-
       await knex.transaction(async (trx) => {
         switch (estagio[0].status) {
           case 'Aberto':
-            if (estagio[0].etapaunica) {
-              if (aceito === true) {
-                const cargaCurso = await knex.select('c.carga')
-                  .from('curso AS c')
-                  .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
-                  .where({ 'u.id': estagio[0].idaluno });
-                await knex('usuario').update('cargatotal', cargaCurso[0].carga)
-                  .where({ id: estagio[0].idaluno });
-                const idorientador = await knex('usuario').select('id')
-                  .where({ sub: sub });
-                await knex('estagio').update({ idorientador: idorientador[0].id, idstatus: 2, fechado: datafechado })
-                  .where({ id: estagio[0].id });
-              }
-            } else {
-              if (aceito === true) {
-                const processoAtual = await knex('estagio').select('processo')
-                  .where({ id: estagio[0].id });
-                const idorientador = await knex('usuario').select('id')
-                  .where({ sub: sub });
-                processoAtual[0].processo.etapas[0].atual = false;
-                processoAtual[0].processo.etapas[1].atual = true;
-                await knex('estagio').update({
-                  idorientador: idorientador[0].id, idstatus: 8, processo: processoAtual[0].processo, idfrequencia: idfrequencia,
-                })
-                  .where({ id: estagio[0].id });
-              }
-            }
-            await knex('ticket').update({ resposta: feedback, datafechado: datafechado, aceito: aceito })
-              .where({ id: idTicket });
+            await this.updateFeedbackStatusOpen(estagio, datafechado, aceito, sub, idfrequencia);
             break;
           case 'Atrasado':
           case 'Sem Resposta':
-            console.log('asdasd');
-            if (aceito === true) {
-              console.log('Aceito!');
-              const processoAtual = await knex('estagio').select('processo')
-                .where({ id: estagio[0].id });
-              const indexAtual = processoAtual[0].processo.etapas.findIndex(x => x.atual === true);
-              console.log(indexAtual);
-              console.log(processoAtual[0].processo.etapas[indexAtual]);
-              if (processoAtual[0].processo.etapas[indexAtual].loop === true) { // se etapa for loop
-                console.log('b');
-                const diastrabalhados = await knex('ticket').select('diastrabalhados')
-                  .where({ id: idTicket });
-                console.log(diastrabalhados);
-                const carga = await knex('usuario').returning('cargatotal').increment('cargatotal', estagio[0].cargahoraria * diastrabalhados[0].diastrabalhados)
-                  .where({ id: estagio[0].idaluno });
-                await knex('ticket').update({ horasadicionadas: estagio[0].cargahoraria * diastrabalhados[0].diastrabalhados })
-                  .where({ id: idTicket });
-                console.log(carga);
-                const cargaCurso = await knex.select('c.carga')
-                  .from('curso AS c')
-                  .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
-                  .where({ 'u.id': estagio[0].idaluno });
-                if (carga[0].cargatotal >= cargaCurso[0].carga) { // se tiver finalizado loop
-                  processoAtual[0].processo.etapas[indexAtual].atual = false;
-                  processoAtual[0].processo.etapas[indexAtual + 1].atual = true;
-                  await knex('estagio').update({ processo: processoAtual[0].processo, idstatus: 7 })
-                    .where({ id: estagio[0].id });
-                } else {
-                  await knex('estagio').update({ idstatus: 7 })
-                    .where({ id: estagio[0].id });
-                }
-              } else {
-                processoAtual[0].processo.etapas[i].atual = false;
-                await knex('estagio').update({ fechado: datafechado, idstatus: 2 })
-                  .where({ id: estagio[0].id });
-              }
-            }
-            await knex('ticket').update({ resposta: feedback, datafechado: datafechado, aceito: aceito })
-              .where({ id: idTicket });
+            await this.updateFeedbackStatusLateOrWithoutTicket(estagio, datafechado, aceito, idTicket);
             break;
           default:
             break;
@@ -317,81 +252,67 @@ class Ticket {
     }
   }
 
-  async updateeeeeeeFeedback(sub, idTicket, feedback, aceito, etapa, idfrequencia, status, etapaunica) {
-    try {
-      const datafechado = new Date();
-      const estagio = await knex.select('e.cargahoraria', 'e.id', 'e.idaluno')
-        .from('estagio AS e')
-        .leftJoin('ticket AS t', 't.idestagio', 'e.id')
-        .where({ 't.id': idTicket });
+  async updateFeedbackStatusOpen(estagio, datafechado, aceito, sub, idfrequencia) {
+    if (estagio[0].etapaunica) {
+      if (aceito === true) {
+        const cargaCurso = await knex.select('c.carga')
+          .from('curso AS c')
+          .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
+          .where({ 'u.id': estagio[0].idaluno });
+        await knex('usuario').update('cargatotal', cargaCurso[0].carga)
+          .where({ id: estagio[0].idaluno });
+        const idorientador = await knex('usuario').select('id')
+          .where({ sub: sub });
+        await knex('estagio').update({ idorientador: idorientador[0].id, idstatus: 2, fechado: datafechado })
+          .where({ id: estagio[0].id });
+      }
+    } else {
+      if (aceito === true) {
+        const processoAtual = await knex('estagio').select('processo')
+          .where({ id: estagio[0].id });
+        const idorientador = await knex('usuario').select('id')
+          .where({ sub: sub });
+        processoAtual[0].processo.etapas[0].atual = false;
+        processoAtual[0].processo.etapas[1].atual = true;
+        await knex('estagio').update({
+          idorientador: idorientador[0].id, idstatus: 8, processo: processoAtual[0].processo, idfrequencia: idfrequencia,
+        })
+          .where({ id: estagio[0].id });
+      }
+    }
+  }
+
+  async updateFeedbackStatusLateOrWithoutTicket(estagio, datafechado, aceito, idTicket) {
+    if (aceito === true) {
       const processoAtual = await knex('estagio').select('processo')
         .where({ id: estagio[0].id });
-
-      if (etapa.etapa.loop === true) { // se a etapa depender de banco de horas
-        if (aceito === true) {
-          const carga = await knex('usuario').returning('cargatotal').increment('cargatotal', estagio[0].cargahoraria)
-            .where({ id: estagio[0].idaluno });
-          const cargaCurso = await knex.select('c.carga')
-            .from('curso AS c')
-            .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
-            .where({ 'u.id': estagio[0].idaluno });
-          if (carga[0].cargatotal >= cargaCurso[0].carga) { // se tiver finalizado
-            for (const j in processoAtual[0].processo.etapas) {
-              if (processoAtual[0].processo.etapas[j].atual === true) {
-                if (Number(j) === 0) {
-                  const idorientador = await knex('usuario').select('id')
-                    .where({ sub: sub });
-                  await knex('estagio').update({ idorientador: idorientador[0].id })
-                    .where({ id: estagio[0].id });
-                }
-                processoAtual[0].processo.etapas[j].atual = false;
-                processoAtual[0].processo.etapas[Number(j) + 1].atual = true;
-                break;
-              }
-            }
-            await knex('estagio').update({ processo: processoAtual[0].processo })
-              .where({ id: estagio[0].id });
-          }
-        }
-        await knex('ticket').update({ resposta: feedback, datafechado: datafechado, aceito: aceito })
+      const indexAtual = processoAtual[0].processo.etapas.findIndex(x => x.atual === true);
+      if (processoAtual[0].processo.etapas[indexAtual].loop === true) { // se etapa for loop
+        const diastrabalhados = await knex('ticket').select('diastrabalhados')
           .where({ id: idTicket });
-      } else { // se for etapa única
-        await knex.transaction(async (trx) => {
-          if (aceito === true) {
-            for (const i in processoAtual[0].processo.etapas) {
-              if (processoAtual[0].processo.etapas[i].atual === true) { // procurando etapa atual
-                if (Number(i) === 0) { // se a etapa for a primeira
-                  const idorientador = await knex('usuario').select('id')
-                    .where({ sub: sub });
-                  await knex('estagio').update({ idorientador: idorientador[0].id })
-                    .where({ id: estagio[0].id });
-                }
-                if (Number(i) + 1 === processoAtual[0].processo.etapas.length) { // se etapa atual for a ultima
-                  processoAtual[0].processo.etapas[i].atual = false;
-                  await knex('estagio').update({ fechado: datafechado })
-                    .where({ id: estagio[0].id });
-                  break;
-                } else { // se não for a ultima
-                  processoAtual[0].processo.etapas[i].atual = false;
-                  processoAtual[0].processo.etapas[Number(i) + 1].atual = true;
-                  break;
-                }
-              }
-            }
-            await knex('estagio').update({ processo: processoAtual[0].processo })
-              .where({ id: estagio[0].id });
-          }
-
-          await knex('ticket').update({ resposta: feedback, datafechado: datafechado, aceito: aceito })
-            .where({ id: idTicket });
-          await trx.commit;
-        });
+        const carga = await knex('usuario').returning('cargatotal').increment('cargatotal', estagio[0].cargahoraria * diastrabalhados[0].diastrabalhados)
+          .where({ id: estagio[0].idaluno });
+        await knex('ticket').update({ horasadicionadas: estagio[0].cargahoraria * diastrabalhados[0].diastrabalhados, datafechado: datafechado })
+          .where({ id: idTicket });
+        const cargaCurso = await knex.select('c.carga')
+          .from('curso AS c')
+          .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
+          .where({ 'u.id': estagio[0].idaluno });
+        if (carga[0].cargatotal >= cargaCurso[0].carga) { // se tiver finalizado loop
+          processoAtual[0].processo.etapas[indexAtual].atual = false;
+          processoAtual[0].processo.etapas[indexAtual + 1].atual = true;
+          await knex('estagio').update({ processo: processoAtual[0].processo, idstatus: 8 })
+            .where({ id: estagio[0].id });
+        } else {
+          await knex('estagio').update({ idstatus: 7 })
+            .where({ id: estagio[0].id });
+        }
+      } else {
+        const indexAtual = processoAtual[0].processo.etapas.findIndex(x => x.atual === true);
+        processoAtual[0].processo.etapas[indexAtual].atual = false;
+        await knex('estagio').update({ fechado: datafechado, idstatus: 2 })
+          .where({ id: estagio[0].id });
       }
-
-      return { response: 'Atualizado com sucesso', status: 200 };
-    } catch (error) {
-      console.log(error);
-      return { response: 'Erro ao atualizar feedback do ticket', status: 404 };
     }
   }
 

@@ -1,3 +1,7 @@
+/* eslint-disable no-loop-func */
+/* eslint-disable prefer-template */
+/* eslint-disable arrow-parens */
+/* eslint-disable no-useless-concat */
 /* eslint-disable linebreak-style */
 /* eslint-disable no-unused-vars */
 /* eslint-disable dot-notation */
@@ -15,6 +19,9 @@
 const { EC2MetadataCredentials } = require('aws-sdk');
 const { index } = require('../controllers/HomeController');
 const knex = require('../database/connection');
+const Estagio = require('./Estagio');
+const Ticket = require('./Ticket');
+
 
 class User {
   async new(name, email, picture, token, sub) {
@@ -298,6 +305,80 @@ class User {
     }
   }
 
+  async createRandomStudent() {
+    try {
+      let nomeAluno = 'Aluno-' + Math.floor(Math.random() * 100000);
+      const cursos = await knex('curso').select('id', 'carga');
+      const usuarios = await knex('usuario').select('nome');
+      while (usuarios.some(x => x.nome === nomeAluno)) {
+        nomeAluno = 'Aluno-' + Math.floor(Math.random() * 100000);
+      }
+      const estudante = {
+        idcurso: cursos[Math.floor(Math.random() * cursos.length)].id,
+        nome: nomeAluno,
+        email: nomeAluno + '@aluno.ifsp.edu.br',
+        sub: nomeAluno,
+        foto: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+        prontuario: 'SP' + nomeAluno,
+        cargatotal: 0,
+        idtipousuario: 1,
+      };
+      const idcurso = await knex('usuario').returning('*').insert(estudante);
+      const processos = await knex('processo').select('id').where({ idcurso: idcurso[0].idcurso });
+
+      await Estagio.newEstagio(processos[Math.floor(Math.random() * processos.length)].id, nomeAluno, 6);
+      const etapaunica = await knex('estagio').select('etapaunica').where({ idaluno: idcurso[0].id });
+      if (etapaunica) {
+        await Ticket.new('Olá Orientador, gostaria de realizar meu processo de estágio!', nomeAluno, null, 30);
+      } else {
+        await Ticket.new('Olá Orientador, gostaria de realizar meu processo de estágio!', nomeAluno, null, null);
+      }
+      return { response: 'Estudante criado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao criar estudante', status: 400 };
+    }
+  }
+
+  async createRandomSupervisor() {
+    try {
+      let nomeOrientador = 'Orientador-' + Math.floor(Math.random() * 100000);
+      const cursos = await knex('curso').select('id', 'carga');
+      const usuarios = await knex('usuario').select('nome');
+      while (usuarios.some(x => x.nome === nomeOrientador)) {
+        nomeOrientador = 'Orientador-' + Math.floor(Math.random() * 100000);
+      }
+      const estudante = {
+        idcurso: cursos[Math.floor(Math.random() * cursos.length)].id,
+        nome: nomeOrientador,
+        email: nomeOrientador + '@ifsp.edu.br',
+        sub: nomeOrientador,
+        foto: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+        prontuario: null,
+        cargatotal: 0,
+        idtipousuario: 2,
+      };
+      await knex('usuario').insert(estudante);
+      return { response: 'Orientador criado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao criar estudante', status: 400 };
+    }
+  }
+
+  async getFakeStudents() {
+    try {
+      const alunos = await knex.select('u.*', 'c.nome AS curso')
+        .from('usuario AS u')
+        .leftJoin('curso AS c', 'c.id', 'u.idcurso')
+        .whereLike('u.nome', '%Aluno-%');
+      return { response: alunos, status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao criar estudante', status: 400 };
+    }
+  }
+
   async getStatus(sub) {
     try {
       const status = await knex.select('s.nome')
@@ -305,18 +386,37 @@ class User {
         .leftJoin('estagio AS e', 'e.idstatus', 's.id')
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
         .where({ 'u.sub': sub });
+      console.log(status);
       if (status.length === 0) return { response: null, status: 200 };
 
       if (status[0].nome === 'Atrasado') {
         const dataAtual = new Date();
-        const prazoEtapa = await knex.select('t.datafechado', knex.raw("etapa->'etapa'->'prazo' as prazo"))
+        const prazoEtapa = await knex.select('t.datafechado', 'f.valor', knex.raw("etapa->'etapa'->'prazo' as prazo"))
           .from('ticket AS t')
           .leftJoin('estagio AS e', 'e.id', 't.idestagio')
+          .leftJoin('frequencia AS f', 'f.id', 'e.idfrequencia')
           .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
-          .where({ 'u.sub': sub })
-          .first();
-        const dia = dataAtual.getDate();
-        status[0]['dias'] = dia - prazoEtapa.prazo;
+          .where({ 'u.sub': sub });
+        console.log(prazoEtapa);
+        const dataPrevista = new Date(prazoEtapa[0].datafechado);
+        dataPrevista.setMonth(dataPrevista.getMonth() + prazoEtapa[0].valor);
+        dataPrevista.setDate(dataPrevista.getDate() + prazoEtapa[0].prazo);
+        status[0]['dataPrevista'] = dataPrevista;
+        status[0]['dias'] = Math.round((dataAtual - dataPrevista) / (1000 * 60 * 60 * 24));
+      }
+
+      if (status[0].nome === 'Em Dia') {
+        const dataAtual = new Date();
+        const prazoEtapa = await knex.select('t.datafechado', 'f.valor', knex.raw("etapa->'etapa'->'prazo' as prazo"))
+          .from('ticket AS t')
+          .leftJoin('estagio AS e', 'e.id', 't.idestagio')
+          .leftJoin('frequencia AS f', 'f.id', 'e.idfrequencia')
+          .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
+          .where({ 'u.sub': sub });
+        const dataPrevista = new Date(prazoEtapa[prazoEtapa.length - 1].datafechado);
+        dataPrevista.setMonth(dataPrevista.getMonth() + prazoEtapa[prazoEtapa.length - 1].valor);
+        status[0]['dataPrevista'] = dataPrevista;
+        status[0]['dias'] = Math.round((dataPrevista - dataAtual) / (1000 * 60 * 60 * 24));
       }
       return { response: status[0], status: 200 };
     } catch (error) {

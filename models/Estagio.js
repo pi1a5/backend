@@ -75,9 +75,11 @@ class Estagio {
 
       const processo = await knex.raw("SELECT json_agg( json_build_object( 'nome', p.nome, 'id', p.id, 'etapas', etapas ) ORDER BY p.id ASC) processos FROM processo p LEFT JOIN ( SELECT idprocesso, json_agg( json_build_object( 'id', e.id, 'nome', e.nome, 'loop', e.loop, 'prazo', e.prazo, 'documentos', etapatipodocumento ) ORDER BY e.id ASC) etapas FROM etapa e LEFT JOIN ( SELECT idetapa, json_agg( tipodocumento ) etapatipodocumento FROM etapa_tipodocumento et LEFT JOIN ( SELECT id,  json_build_object( 'id', td.id, 'nome', td.nome, 'template', td.template, 'sigla', td.sigla )  tipodocumento FROM tipodocumento td group by id ) td on et.idtipodocumento = td.id group by idetapa ) et on e.id = et.idetapa group by idprocesso ) e on p.id = e.idprocesso WHERE p.id = " + idProcesso + ";");
       for (const i in processo.rows[0].processos[0].etapas) {
-        if (i === 0) {
+        if (Number(i) === 0) {
+          console.log('a')
           processo.rows[0].processos[0].etapas[i]['atual'] = true
         } else {
+          console.log('b')
           processo.rows[0].processos[0].etapas[i]['atual'] = false;
         }
       }
