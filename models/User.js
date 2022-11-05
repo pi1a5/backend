@@ -19,6 +19,9 @@
 const { EC2MetadataCredentials } = require('aws-sdk');
 const { index } = require('../controllers/HomeController');
 const knex = require('../database/connection');
+const Estagio = require('./Estagio');
+const Ticket = require('./Ticket');
+
 
 class User {
   async new(name, email, picture, token, sub) {
@@ -320,18 +323,13 @@ class User {
         cargatotal: 0,
         idtipousuario: 1,
       };
-      console.log(estudante);
-      await knex('usuario').insert(estudante);
-      return { response: 'Estudante criado com sucesso', status: 200 };
-    } catch (error) {
-      console.log(error);
-      return { response: 'Erro ao criar estudante', status: 400 };
-    }
-  }
+      const idcurso = await knex('usuario').returning('idcurso').insert(estudante);
 
-  async createRandomInternship(id) {
-    try {
-      console.log('a');
+      const processos = await knex('processo').select('id').where({ idcurso: idcurso[0].idcurso });
+
+      await Estagio.newEstagio(processos[Math.floor(Math.random() * processos.length)].id, nomeAluno, 6);
+      await Ticket.new('');
+      return { response: 'Estudante criado com sucesso', status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao criar estudante', status: 400 };
