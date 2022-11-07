@@ -374,6 +374,7 @@ class User {
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')
         .where({ 'e.idaluno': id })
         .where({ 't.resposta': null });
+        console.log(idticket)
       await Ticket.updateFeedback(sub, idticket[0].id, 'Tudo certo!', true, 1);
       return { response: 'Ticket criado com sucesso', status: 200 };
     } catch (error) {
