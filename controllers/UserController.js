@@ -222,6 +222,24 @@ class UserController {
     }
   }
 
+  async createTicketForRandomStudent(req, res) {
+    try {
+      const {
+        id,
+      } = req.body;
+      const data = {
+        id: id,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const response = await User.createTicketForRandomStudent(id);
+      res.status(response.status).json(response.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
   async getFakeStudents(req, res) {
     try {
       const response = await User.getFakeStudents();

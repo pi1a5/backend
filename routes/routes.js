@@ -95,6 +95,7 @@ router.post('/api/deletar', HeaderMiddleware, DocumentController.delete);
 router.get('/api/testeRotas', HeaderMiddleware, UserController.teste);
 router.get('/api/createRandomStudent', HeaderMiddleware, UserController.createRandomStudent);
 router.post('/api/createRandomSupervisorForStudent', HeaderMiddleware, UserController.createRandomSupervisorForStudent);
+router.post('/api/createTicketForRandomStudent', HeaderMiddleware, UserController.createTicketForRandomStudent);
 router.get('/api/getFakeStudents', HeaderMiddleware, UserController.getFakeStudents);
 
 // Para Gráficos

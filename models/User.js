@@ -340,6 +340,24 @@ class User {
     }
   }
 
+  async createTicketForRandomStudent(id) {
+    try {
+      const processo = await knex('estagio').select('processo', 'id').where({ idaluno: id });
+      await knex('estagio').update({ idstatus: 4 }).where({ id: processo[0].id });
+      const sub = await knex('usuario').select('sub').where({ id: id });
+      const indexAtual = processo[0].processo.etapas.findIndex(x => x.atual === true);
+      if (indexAtual < processo[0].processo.etapas.length - 1) {
+        await Ticket.new('Olá Orientador, gostaria de realizar meu processo de estágio!', sub[0].sub, null, 30);
+      } else {
+        await Ticket.new('Olá Orientador, gostaria de finalizar meu processo de estágio!', sub[0].sub, null, null);
+      }
+      return { response: 'Estudante criado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao criar estudante', status: 400 };
+    }
+  }
+
   async createRandomSupervisorForStudent(id) {
     try {
       let nomeOrientador = 'Orientador-' + Math.floor(Math.random() * 100000);
