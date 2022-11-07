@@ -384,9 +384,10 @@ class User {
 
   async getFakeStudents() {
     try {
-      const alunos = await knex.select('u.*', 'c.nome AS curso')
+      const alunos = await knex.select('u.*', 'c.nome AS curso', 'e.idorientador')
         .from('usuario AS u')
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
+        .leftJoin('estagio AS e', 'e.idaluno', 'u.id')
         .whereLike('u.nome', '%Aluno-%');
       return { response: alunos, status: 200 };
     } catch (error) {
