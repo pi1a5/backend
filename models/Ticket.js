@@ -143,7 +143,7 @@ class Ticket {
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
         .leftJoin('status AS s', 's.id', 'e.idstatus')
-        .where({ 'e.idstatus': 1, 't.resposta': null, 'c.idarea': area[0].idarea })
+        .where({ 'e.idstatus': 1, 't.resposta': null, 'c.idarea': area[0].idarea, 'e.idorientador': null })
         .orderBy('t.id', 'asc')
         .groupBy('s.nome')
         .groupBy('e.etapaunica')
@@ -254,6 +254,8 @@ class Ticket {
 
   async updateFeedbackStatusOpen(estagio, datafechado, aceito, sub, idfrequencia) {
     if (estagio[0].etapaunica) {
+      const idorientador = await knex('usuario').select('id')
+        .where({ sub: sub });
       if (aceito === true) {
         const cargaCurso = await knex.select('c.carga')
           .from('curso AS c')
@@ -261,22 +263,26 @@ class Ticket {
           .where({ 'u.id': estagio[0].idaluno });
         await knex('usuario').update('cargatotal', cargaCurso[0].carga)
           .where({ id: estagio[0].idaluno });
-        const idorientador = await knex('usuario').select('id')
-          .where({ sub: sub });
         await knex('estagio').update({ idorientador: idorientador[0].id, idstatus: 2, fechado: datafechado })
+          .where({ id: estagio[0].id });
+      } else {
+        await knex('estagio').update({ idorientador: idorientador[0].id})
           .where({ id: estagio[0].id });
       }
     } else {
+      const idorientador = await knex('usuario').select('id')
+        .where({ sub: sub });
       if (aceito === true) {
         const processoAtual = await knex('estagio').select('processo')
           .where({ id: estagio[0].id });
-        const idorientador = await knex('usuario').select('id')
-          .where({ sub: sub });
         processoAtual[0].processo.etapas[0].atual = false;
         processoAtual[0].processo.etapas[1].atual = true;
         await knex('estagio').update({
           idorientador: idorientador[0].id, idstatus: 8, processo: processoAtual[0].processo, idfrequencia: idfrequencia,
         })
+          .where({ id: estagio[0].id });
+      } else {
+        await knex('estagio').update({ idorientador: idorientador[0].id})
           .where({ id: estagio[0].id });
       }
     }

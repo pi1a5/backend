@@ -204,9 +204,18 @@ class UserController {
     }
   }
 
-  async createRandomSupervisor(req, res) {
+  async createRandomSupervisorForStudent(req, res) {
     try {
-      const response = await User.createRandomSupervisor();
+      const {
+        id,
+      } = req.body;
+      const data = {
+        id: id,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const response = await User.createRandomSupervisorForStudent(id);
       res.status(response.status).json(response.response);
     } catch (error) {
       res.status(500).json(error);

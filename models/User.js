@@ -340,16 +340,16 @@ class User {
     }
   }
 
-  async createRandomSupervisor() {
+  async createRandomSupervisorForStudent(id) {
     try {
       let nomeOrientador = 'Orientador-' + Math.floor(Math.random() * 100000);
-      const cursos = await knex('curso').select('id', 'carga');
+      const idcurso = await knex('usuario').select('idcurso').where({ id: id });
       const usuarios = await knex('usuario').select('nome');
       while (usuarios.some(x => x.nome === nomeOrientador)) {
         nomeOrientador = 'Orientador-' + Math.floor(Math.random() * 100000);
       }
-      const estudante = {
-        idcurso: cursos[Math.floor(Math.random() * cursos.length)].id,
+      const orientador = {
+        idcurso: idcurso[0].idcurso,
         nome: nomeOrientador,
         email: nomeOrientador + '@ifsp.edu.br',
         sub: nomeOrientador,
@@ -358,11 +358,27 @@ class User {
         cargatotal: 0,
         idtipousuario: 2,
       };
-      await knex('usuario').insert(estudante);
+      const sub = await knex('usuario').returning('sub').insert(orientador);
+      await this.answerFakeStudentTicket(sub[0].sub, id);
       return { response: 'Orientador criado com sucesso', status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao criar estudante', status: 400 };
+    }
+  }
+
+  async answerFakeStudentTicket(sub, id) {
+    try {
+      const idticket = await knex.select('t.id')
+        .from('ticket AS t')
+        .leftJoin('estagio AS e', 'e.id', 't.idestagio')
+        .where({ 'e.idaluno': id })
+        .where({ 't.resposta': null });
+      await Ticket.updateFeedback(sub, idticket[0].id, 'Tudo certo!', true, 1);
+      return { response: 'Ticket criado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao responder ticket', status: 400 };
     }
   }
 
@@ -375,7 +391,7 @@ class User {
       return { response: alunos, status: 200 };
     } catch (error) {
       console.log(error);
-      return { response: 'Erro ao criar estudante', status: 400 };
+      return { response: 'Erro ao retornar estudantes', status: 400 };
     }
   }
 

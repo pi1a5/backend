@@ -117,6 +117,17 @@ class Estagio {
     }
   }
 
+  async end(idestagio) {
+    try {
+      await knex('estagio').update({ idstatus: 3 })
+        .where({ id: idestagio });
+      return { response: 'Estágio encerrado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao encerrar estágio', status: 400 };
+    }
+  }
+
   async transfer(idestagio, idorientador) {
     try {
       await knex('estagio').update({ idorientador: idorientador })
