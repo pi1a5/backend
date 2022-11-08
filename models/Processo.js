@@ -69,7 +69,7 @@ class Processo {
 
       await knex.transaction(async function (t) {
         const idProcesso = await knex.returning('*').insert({
-          idcurso: idCurso[0].idcurso, nome: processo.nome, criador: idCurso[0].nome, modificador: null,
+          idcurso: idCurso[0].idcurso, nome: processo.nome, criador: idCurso[0].nome, modificador: idCurso[0].nome,
         }).table('processo');
         if (idCurso.length === 0) return { response: 'Erro ao criar processo', status: 404 };
         processoCriado.processo = idProcesso[0];
