@@ -20,7 +20,7 @@ const knex = require('../database/connection');
 class Chart {
   async checkAmount(sub) {
     try {
-      const total = [];
+      let total = [];
       const area = await knex.select(['idarea'])
         .from('curso AS c')
         .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
@@ -42,13 +42,12 @@ class Chart {
       const data = await knex.distinct().select('idaluno', 'idorientador')
         .table('estagio')
         .whereIn('idorientador', colegasids)
-        .where('idstatus', 2);
+        .whereNot('idstatus', 2);
 
       for (const i in colegas) {
         total.push({ quantidade: data.filter(function (d) { return d.idorientador === colegas[i].id;}).length, nome: colegas[i].nome });
       }
-      console.log(total);
-      console.log(data);
+      total = total.sort((a, b) => parseFloat(b.quantidade) - parseFloat(a.quantidade));
 
       return { response: total, status: 200 };
     } catch (error) {
@@ -116,31 +115,10 @@ class Chart {
         .from('ticket AS t')
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')
         .leftJoin('usuario AS u', 'u.id', 'e.idorientador')
+        .whereNotNull('t.datafechado')
         .where({ 'u.sub': sub });
+      console.log(tickets);
       if (tickets.length === 0) return { response: null, status: 200 };
-      // for (const i in tickets) {
-      //     let data = new Date(tickets[i].datafechado);
-      //     let ano = data.getFullYear();
-      //     if (total.hasOwnProperty(ano)) {
-      //         data = meses[data.getMonth()];
-      //         if (total[ano].hasOwnProperty(data)) {
-      //             if (tickets[i].aceito === true) {
-      //                 total[ano][data].aceito = total[ano][data].aceito + 1;
-      //             } else {
-      //                 total[ano][data].recusado = total[ano][data].recusado + 1;
-      //             }
-      //         } else {
-      //             if (tickets[i].aceito === true) {
-      //                 total[ano][data] = { aceito: 1, recusado: 0 };
-      //             } else {
-      //                 total[ano][data] = { recusado: 1, aceito: 0 };
-      //             }
-      //         }
-      //     } else {
-      //         total[ano] = {};
-      //     }
-
-      // }
       for (const i in tickets) {
         let data = new Date(tickets[i].datafechado);
         const ano = data.getFullYear();

@@ -23,7 +23,6 @@ const knex = require('../database/connection');
 const Estagio = require('./Estagio');
 const Ticket = require('./Ticket');
 
-
 class User {
   async new(name, email, picture, token, sub) {
     try {
@@ -104,6 +103,28 @@ class User {
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao atualizar idcurso prontuario', status: 404 };
+    }
+  }
+
+  async updateName(sub, nome) {
+    try {
+      await knex('usuario').update({ nome: nome })
+        .where({ sub: sub });
+      return { response: 'Nome atualizado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao atualizar nome', status: 404 };
+    }
+  }
+
+  async updateProntuario(sub, prontuario) {
+    try {
+      await knex('usuario').update({ prontuario: prontuario })
+        .where({ sub: sub });
+      return { response: 'Prontuário atualizado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao atualizar prontuário', status: 404 };
     }
   }
 
@@ -309,13 +330,16 @@ class User {
   async createRandomStudent() {
     try {
       let nomeAluno = 'Aluno-' + Math.floor(Math.random() * 100000);
-      const cursos = await knex('curso').select('id', 'carga');
+      const cursos = await knex('curso').select('id', 'carga')
+        .where({ idarea: 28 })
+        .orWhere({ idarea: 48 });
+      console.log(cursos);
       const usuarios = await knex('usuario').select('nome');
       while (usuarios.some(x => x.nome === nomeAluno)) {
         nomeAluno = 'Aluno-' + Math.floor(Math.random() * 100000);
       }
       const estudante = {
-        idcurso: cursos[Math.floor(Math.random() * cursos.length)].id,
+        idcurso: cursos[Math.floor(Math.random() * cursos.length) - 1].id,
         nome: nomeAluno,
         email: nomeAluno + '@aluno.ifsp.edu.br',
         sub: nomeAluno,
@@ -386,29 +410,31 @@ class User {
     }
   }
 
-  async createRandomSupervisorsForCourse(idcurso) {
+  async createRandomSupervisorsForCourse(cursos) {
     try {
       const orientadores = [];
-      for (let i = 2; i <= Math.floor(Math.random() * 3) + 2; i++) {
-        let nomeOrientador = 'Orientador-' + Math.floor(Math.random() * 100000);
-        const usuarios = await knex('usuario').select('nome');
-        while (usuarios.some(x => x.nome === nomeOrientador)) {
-          nomeOrientador = 'Orientador-' + Math.floor(Math.random() * 100000);
+      for (const j in cursos) {
+        for (let i = 2; i <= Math.floor(Math.random() * 3) + 2; i++) {
+          let nomeOrientador = 'Orienta-' + Math.floor(Math.random() * 100000);
+          const usuarios = await knex('usuario').select('nome');
+          while (usuarios.some(x => x.nome === nomeOrientador)) {
+            nomeOrientador = 'Orienta-' + Math.floor(Math.random() * 100000);
+          }
+          usuarios.push({ nome: nomeOrientador });
+          orientadores.push({
+            idcurso: cursos[j].id,
+            nome: nomeOrientador,
+            email: nomeOrientador + '@ifsp.edu.br',
+            sub: nomeOrientador,
+            foto: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+            prontuario: nomeOrientador,
+            cargatotal: 0,
+            idtipousuario: 2,
+          });
         }
-        orientadores.push({
-          idcurso: idcurso,
-          nome: nomeOrientador,
-          email: nomeOrientador + '@ifsp.edu.br',
-          sub: nomeOrientador,
-          foto: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
-          prontuario: null,
-          cargatotal: 0,
-          idtipousuario: 2,
-        });
       }
-      const subs = await knex('usuario').returning('id').insert(orientadores);
-      console.log(subs);
-      return { response: 'Orientadores criados com sucesso', status: 200 };
+      const ids = await knex('usuario').returning('*').insert(orientadores);
+      return { response: ids, status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao criar estudante', status: 400 };
@@ -418,10 +444,51 @@ class User {
   async populateCoursesWithStudentsAndSupervisors() {
     try {
       const cursos = await knex('curso').select('id');
-      for (const i in cursos) {
-        this.createRandomSupervisorsForCourse(cursos[i].id);
-      }
+      const idsOrientadores = await this.createRandomSupervisorsForCourse(cursos);
+      await this.createRandomStudentsForSupervisor(idsOrientadores.response);
       return { response: 'Banco populado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao retornar estudantes', status: 400 };
+    }
+  }
+
+  async createRandomStudentsForSupervisor(idsOrientadores) {
+    try {
+      const usuarios = await knex('usuario').select('nome');
+      for (const i in idsOrientadores) {
+        for (let j = 3; j <= Math.floor(Math.random() * 10) + 3; j++) {
+          let nomeAluno = 'AlunoP-' + Math.floor(Math.random() * 100000);
+          while (usuarios.some(x => x.nome === nomeAluno)) {
+            nomeAluno = 'AlunoP-' + Math.floor(Math.random() * 100000);
+          }
+          usuarios.push({ nome: nomeAluno });
+          let aluno = {
+            idcurso: idsOrientadores[i].idcurso,
+            nome: nomeAluno,
+            email: nomeAluno + '@aluno.ifsp.edu.br',
+            sub: nomeAluno,
+            foto: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+            prontuario: 'SP' + nomeAluno,
+            cargatotal: 0,
+            idtipousuario: 1,
+          };
+          const id = await knex('usuario').returning('*').insert(aluno);
+
+          const processos = await knex('processo').select('id').where({ idcurso: id[0].idcurso });
+          await Estagio.newEstagio(processos[Math.floor(Math.random() * processos.length)].id, nomeAluno, 6);
+          const etapaunica = await knex('estagio').select('etapaunica').where({ idaluno: id[0].id });
+          if (etapaunica) {
+            await Ticket.new('Olá Orientador, gostaria de realizar meu processo de estágio!', nomeAluno, null, Math.floor(Math.random() * 10) + 21);
+          } else {
+            await Ticket.new('Olá Orientador, gostaria de realizar meu processo de estágio!', nomeAluno, null, null);
+          }
+          await this.answerFakeStudentTicket(idsOrientadores[i].sub, id[0].id);
+          await this.createTicketForRandomStudent(id[0].id);
+          await this.answerFakeStudentTicket(idsOrientadores[i].sub, id[0].id);
+        }
+      }
+      return { response: 'ok', status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao retornar estudantes', status: 400 };
@@ -469,16 +536,20 @@ class User {
 
       if (status[0].nome === 'Atrasado') {
         const dataAtual = new Date();
-        const prazoEtapa = await knex.select('t.datafechado', 'f.valor', knex.raw("etapa->'etapa'->'prazo' as prazo"))
+        const prazoEtapa = await knex.select('t.datafechado', 't.datacriado', 't.resposta', 'f.valor', knex.raw("etapa->'etapa'->'prazo' as prazo"))
           .from('ticket AS t')
           .leftJoin('estagio AS e', 'e.id', 't.idestagio')
           .leftJoin('frequencia AS f', 'f.id', 'e.idfrequencia')
           .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
           .where({ 'u.sub': sub });
-        console.log(prazoEtapa);
-        const dataPrevista = new Date(prazoEtapa[0].datafechado);
-        dataPrevista.setMonth(dataPrevista.getMonth() + prazoEtapa[0].valor);
-        dataPrevista.setDate(dataPrevista.getDate() + prazoEtapa[0].prazo);
+
+        const indexTicketAtual = prazoEtapa.length;
+        // if (prazoEtapa[indexTicketAtual - 1].resposta === null) {
+        //   status[0].nome = 'Sem Resposta';
+        // } 
+        const dataPrevista = new Date(prazoEtapa[indexTicketAtual - 1].datacriado);
+        dataPrevista.setMonth(dataPrevista.getMonth() + prazoEtapa[indexTicketAtual - 1].valor);
+        dataPrevista.setDate(dataPrevista.getDate() + prazoEtapa[indexTicketAtual - 1].prazo);
         status[0]['dataPrevista'] = dataPrevista;
         status[0]['dias'] = Math.round((dataAtual - dataPrevista) / (1000 * 60 * 60 * 24));
       }

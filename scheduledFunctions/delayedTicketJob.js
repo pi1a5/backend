@@ -10,7 +10,7 @@ const CronJob = require('node-cron');
 const knex = require('../database/connection');
 
 exports.initScheduledJobs = () => {
-  const scheduledJobFunction = CronJob.schedule('1 * * * * *', async () => {
+  const scheduledJobFunction = CronJob.schedule('0 2 * * * *', async () => {
     try {
       console.log('entrou');
       const estagios = await knex.select('e.id', 'e.processo', 'f.valor', 's.nome', knex.raw('json_agg(t.datacriado) as tickets'))
@@ -46,6 +46,7 @@ exports.initScheduledJobs = () => {
             // await knex('estagio').update({ idstatus: 5 }).where({ id: estagios[0].id });
           }
         } else if (estagios[i].nome === 'Sem Ticket') {
+          datavencimentoticket.setDate(datavencimentoticket.getDate() + prazo);
           if (dataAtual > datavencimentoticket) {
             await knex('estagio').update({ idstatus: 5 }).where({ id: estagios[i].id });
           }
