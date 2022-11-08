@@ -306,7 +306,17 @@ class Ticket {
             datavencimentoticket.setDate(datavencimentoticket.getDate() + prazo);
             datavencimentoticket.setDate(datavencimentoticket.getDate() + 10);
             if (estagio[i].tickets[indexTicketAtual - 1].dataCriado > datavencimentoticket) {
-              // await knex('estagio').update({ idstatus: 5 }).where({ id: estagios[0].id });
+              const diastrabalhados = await knex('ticket').select('diastrabalhados')
+                .where({ id: idTicket });
+              const horasAdicionadas = -(estagio[0].cargahoraria * diastrabalhados[0].diastrabalhados);
+              const cargaTotal = await knex('usuario').returning('cargatotal').increment('cargatotal', horasAdicionadas)
+                .where({ id: estagio[0].idaluno });
+              if (cargaTotal < 0) {
+                await knex('usuario').update('cargatotal', 0)
+                  .where({ id: estagio[0].idaluno });
+              }
+              await knex('ticket').update({ horasadicionadas: horasAdicionadas, datafechado: datafechado })
+                .where({ id: idTicket });
             }
           }
           const diastrabalhados = await knex('ticket').select('diastrabalhados')
