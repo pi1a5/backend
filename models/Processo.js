@@ -158,6 +158,10 @@ class Processo {
         }
         await knex('etapa_tipodocumento').insert(idEtapaIdDocumento);
       }
+      const nomeModificador = await knex('usuario').select('nome')
+        .where({ sub: sub })
+      await knex('processo').update({ modificador: nomeModificador[0].nome })
+        .where({ id: processoAntigo.id });
 
       return { response: 'Etapa atualizada com sucesso', status: 200 };
     } catch (error) {
