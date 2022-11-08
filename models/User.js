@@ -536,16 +536,20 @@ class User {
 
       if (status[0].nome === 'Atrasado') {
         const dataAtual = new Date();
-        const prazoEtapa = await knex.select('t.datafechado', 'f.valor', knex.raw("etapa->'etapa'->'prazo' as prazo"))
+        const prazoEtapa = await knex.select('t.datafechado', 't.datacriado', 't.resposta', 'f.valor', knex.raw("etapa->'etapa'->'prazo' as prazo"))
           .from('ticket AS t')
           .leftJoin('estagio AS e', 'e.id', 't.idestagio')
           .leftJoin('frequencia AS f', 'f.id', 'e.idfrequencia')
           .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
           .where({ 'u.sub': sub });
-        console.log(prazoEtapa);
-        const dataPrevista = new Date(prazoEtapa[0].datafechado);
-        dataPrevista.setMonth(dataPrevista.getMonth() + prazoEtapa[0].valor);
-        dataPrevista.setDate(dataPrevista.getDate() + prazoEtapa[0].prazo);
+
+        const indexTicketAtual = prazoEtapa.length;
+        // if (prazoEtapa[indexTicketAtual - 1].resposta === null) {
+        //   status[0].nome = 'Sem Resposta';
+        // } 
+        const dataPrevista = new Date(prazoEtapa[indexTicketAtual - 1].datacriado);
+        dataPrevista.setMonth(dataPrevista.getMonth() + prazoEtapa[indexTicketAtual - 1].valor);
+        dataPrevista.setDate(dataPrevista.getDate() + prazoEtapa[indexTicketAtual - 1].prazo);
         status[0]['dataPrevista'] = dataPrevista;
         status[0]['dias'] = Math.round((dataAtual - dataPrevista) / (1000 * 60 * 60 * 24));
       }
