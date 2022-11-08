@@ -289,11 +289,11 @@ class Ticket {
   }
 
   async updateFeedbackStatusLateOrWithoutTicket(estagio, datafechado, aceito, idTicket) {
+    const dadosEstagio = await knex('estagio').select('processo', 'obrigatorio')
+      .where({ id: estagio[0].id });
     if (aceito === true) {
-      const processoAtual = await knex('estagio').select('processo')
-        .where({ id: estagio[0].id });
-      const indexAtual = processoAtual[0].processo.etapas.findIndex(x => x.atual === true);
-      if (processoAtual[0].processo.etapas[indexAtual].loop === true) { // se etapa for loop
+      const indexAtual = dadosEstagio[0].processo.etapas.findIndex(x => x.atual === true);
+      if (dadosEstagio[0].processo.etapas[indexAtual].loop === true) { // se etapa for loop
         const diastrabalhados = await knex('ticket').select('diastrabalhados')
           .where({ id: idTicket });
         const carga = await knex('usuario').returning('cargatotal').increment('cargatotal', estagio[0].cargahoraria * diastrabalhados[0].diastrabalhados)
@@ -305,17 +305,17 @@ class Ticket {
           .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
           .where({ 'u.id': estagio[0].idaluno });
         if (carga[0].cargatotal >= cargaCurso[0].carga) { // se tiver finalizado loop
-          processoAtual[0].processo.etapas[indexAtual].atual = false;
-          processoAtual[0].processo.etapas[indexAtual + 1].atual = true;
-          await knex('estagio').update({ processo: processoAtual[0].processo, idstatus: 8 })
+          dadosEstagio[0].processo.etapas[indexAtual].atual = false;
+          dadosEstagio[0].processo.etapas[indexAtual + 1].atual = true;
+          await knex('estagio').update({ processo: dadosEstagio[0].processo, idstatus: 8 })
             .where({ id: estagio[0].id });
         } else {
           await knex('estagio').update({ idstatus: 7 })
             .where({ id: estagio[0].id });
         }
       } else {
-        const indexAtual = processoAtual[0].processo.etapas.findIndex(x => x.atual === true);
-        processoAtual[0].processo.etapas[indexAtual].atual = false;
+        const indexAtual = dadosEstagio[0].processo.etapas.findIndex(x => x.atual === true);
+        dadosEstagio[0].processo.etapas[indexAtual].atual = false;
         await knex('estagio').update({ fechado: datafechado, idstatus: 2 })
           .where({ id: estagio[0].id });
       }
