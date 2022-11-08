@@ -106,6 +106,28 @@ class User {
     }
   }
 
+  async updateName(sub, nome) {
+    try {
+      await knex('usuario').update({ nome: nome })
+        .where({ sub: sub });
+      return { response: 'Nome atualizado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao atualizar nome', status: 404 };
+    }
+  }
+
+  async updateProntuario(sub, prontuario) {
+    try {
+      await knex('usuario').update({ prontuario: prontuario })
+        .where({ sub: sub });
+      return { response: 'Prontuário atualizado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao atualizar prontuário', status: 404 };
+    }
+  }
+
   async login(name, email, picture, token, sub) {
     try {
       const user = await knex.select(['id', 'email', 'nome', 'foto', 'idcurso', 'prontuario'])
