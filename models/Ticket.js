@@ -266,7 +266,7 @@ class Ticket {
         await knex('estagio').update({ idorientador: idorientador[0].id, idstatus: 2, fechado: datafechado })
           .where({ id: estagio[0].id });
       } else {
-        await knex('estagio').update({ idorientador: idorientador[0].id})
+        await knex('estagio').update({ idorientador: idorientador[0].id, idstatus: 8 })
           .where({ id: estagio[0].id });
       }
     } else {

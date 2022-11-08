@@ -23,7 +23,6 @@ const knex = require('../database/connection');
 const Estagio = require('./Estagio');
 const Ticket = require('./Ticket');
 
-
 class User {
   async new(name, email, picture, token, sub) {
     try {
