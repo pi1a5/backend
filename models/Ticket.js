@@ -218,7 +218,7 @@ class Ticket {
   async updateFeedback(sub, idTicket, feedback, aceito, idfrequencia, obrigatorio) {
     try {
       const datafechado = new Date();
-      const estagio = await knex.select('e.cargahoraria', 'e.id', 'e.idaluno', 'e.idfrequencia', 'f.valor AS frequencia', 's.nome AS status', 'e.etapaunica')
+      const estagio = await knex.select('e.cargahoraria', 'e.id', 'e.idaluno', 'e.idfrequencia', 'e.obrigatorio', 'f.valor AS frequencia', 's.nome AS status', 'e.etapaunica')
         .from('estagio AS e')
         .leftJoin('ticket AS t', 't.idestagio', 'e.id')
         .leftJoin('frequencia AS f', 'f.id', 'e.idfrequencia')
