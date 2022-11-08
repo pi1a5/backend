@@ -308,7 +308,10 @@ class User {
   async createRandomStudent() {
     try {
       let nomeAluno = 'Aluno-' + Math.floor(Math.random() * 100000);
-      const cursos = await knex('curso').select('id', 'carga');
+      const cursos = await knex('curso').select('id', 'carga')
+        .where({ idarea: 28 })
+        .orWhere({ idarea: 48 });
+      console.log(cursos);
       const usuarios = await knex('usuario').select('nome');
       while (usuarios.some(x => x.nome === nomeAluno)) {
         nomeAluno = 'Aluno-' + Math.floor(Math.random() * 100000);
