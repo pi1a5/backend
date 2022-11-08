@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable linebreak-style */
 /* eslint-disable no-console */
 /* eslint-disable consistent-return */
@@ -167,7 +168,7 @@ class TicketController {
   async feedbackTicket(req, res) {
     try {
       const {
-        sub, idTicket, feedback, aceito, idfrequencia,
+        sub, idTicket, feedback, aceito, idfrequencia, obrigatorio,
       } = req.body;
       const data = {
         sub: sub,
@@ -175,11 +176,12 @@ class TicketController {
         feedback: feedback,
         aceito: aceito,
         idfrequencia: idfrequencia,
+        obrigatorio: obrigatorio,
       };
       const val = Validate(data);
       if (val !== true) return res.status(400).json(val);
 
-      const ticket = await Ticket.updateFeedback(sub, idTicket, feedback, aceito, idfrequencia);
+      const ticket = await Ticket.updateFeedback(sub, idTicket, feedback, aceito, idfrequencia, obrigatorio);
 
       res.status(ticket.status).json(ticket.response);
     } catch (error) {

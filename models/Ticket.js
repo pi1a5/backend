@@ -215,7 +215,7 @@ class Ticket {
     }
   }
 
-  async updateFeedback(sub, idTicket, feedback, aceito, idfrequencia) {
+  async updateFeedback(sub, idTicket, feedback, aceito, idfrequencia, obrigatorio) {
     try {
       const datafechado = new Date();
       const estagio = await knex.select('e.cargahoraria', 'e.id', 'e.idaluno', 'e.idfrequencia', 'f.valor AS frequencia', 's.nome AS status', 'e.etapaunica')
@@ -231,7 +231,7 @@ class Ticket {
       await knex.transaction(async (trx) => {
         switch (estagio[0].status) {
           case 'Aberto':
-            await this.updateFeedbackStatusOpen(estagio, datafechado, aceito, sub, idfrequencia);
+            await this.updateFeedbackStatusOpen(estagio, datafechado, aceito, sub, idfrequencia, obrigatorio);
             break;
           case 'Atrasado':
           case 'Sem Resposta':
@@ -252,7 +252,7 @@ class Ticket {
     }
   }
 
-  async updateFeedbackStatusOpen(estagio, datafechado, aceito, sub, idfrequencia) {
+  async updateFeedbackStatusOpen(estagio, datafechado, aceito, sub, idfrequencia, obrigatorio) {
     if (estagio[0].etapaunica) {
       const idorientador = await knex('usuario').select('id')
         .where({ sub: sub });
@@ -278,7 +278,7 @@ class Ticket {
         processoAtual[0].processo.etapas[0].atual = false;
         processoAtual[0].processo.etapas[1].atual = true;
         await knex('estagio').update({
-          idorientador: idorientador[0].id, idstatus: 8, processo: processoAtual[0].processo, idfrequencia: idfrequencia,
+          idorientador: idorientador[0].id, idstatus: 8, processo: processoAtual[0].processo, idfrequencia: idfrequencia, obrigatorio: obrigatorio,
         })
           .where({ id: estagio[0].id });
       } else {
