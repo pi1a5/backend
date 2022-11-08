@@ -339,7 +339,7 @@ class User {
         nomeAluno = 'Aluno-' + Math.floor(Math.random() * 100000);
       }
       const estudante = {
-        idcurso: cursos[Math.floor(Math.random() * cursos.length)].id,
+        idcurso: cursos[Math.floor(Math.random() * cursos.length) - 1].id,
         nome: nomeAluno,
         email: nomeAluno + '@aluno.ifsp.edu.br',
         sub: nomeAluno,
