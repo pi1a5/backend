@@ -61,7 +61,7 @@ class Processo {
     try {
       const etapas = [{}];
       const documentos = [{}];
-      const idCurso = await knex.select('idcurso', 'nome')
+      const idCurso = await knex.select('idcurso', 'nome', 'email')
         .table('usuario')
         .where({ sub: sub });
       if (idCurso.length === 0) return { response: 'Curso do usuário não encontrado', status: 404 };
@@ -69,7 +69,7 @@ class Processo {
 
       await knex.transaction(async function (t) {
         const idProcesso = await knex.returning('*').insert({
-          idcurso: idCurso[0].idcurso, nome: processo.nome, criador: idCurso[0].nome, modificador: idCurso[0].nome,
+          idcurso: idCurso[0].idcurso, nome: processo.nome, criador: idCurso[0].nome, modificador: idCurso[0].email,
         }).table('processo');
         if (idCurso.length === 0) return { response: 'Erro ao criar processo', status: 404 };
         processoCriado.processo = idProcesso[0];
@@ -158,9 +158,9 @@ class Processo {
         }
         await knex('etapa_tipodocumento').insert(idEtapaIdDocumento);
       }
-      const nomeModificador = await knex('usuario').select('nome')
+      const nomeModificador = await knex('usuario').select('email')
         .where({ sub: sub })
-      await knex('processo').update({ modificador: nomeModificador[0].nome })
+      await knex('processo').update({ modificador: nomeModificador[0].email })
         .where({ id: processoAntigo.id });
 
       return { response: 'Etapa atualizada com sucesso', status: 200 };
