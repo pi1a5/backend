@@ -20,7 +20,7 @@ const knex = require('../database/connection');
 class Chart {
   async checkAmount(sub) {
     try {
-      const total = [];
+      let total = [];
       const area = await knex.select(['idarea'])
         .from('curso AS c')
         .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
@@ -42,13 +42,12 @@ class Chart {
       const data = await knex.distinct().select('idaluno', 'idorientador')
         .table('estagio')
         .whereIn('idorientador', colegasids)
-        .where('idstatus', 2);
+        .whereNot('idstatus', 2);
 
       for (const i in colegas) {
         total.push({ quantidade: data.filter(function (d) { return d.idorientador === colegas[i].id;}).length, nome: colegas[i].nome });
       }
-      console.log(total);
-      console.log(data);
+      total = total.sort((a, b) => parseFloat(b.quantidade) - parseFloat(a.quantidade));
 
       return { response: total, status: 200 };
     } catch (error) {

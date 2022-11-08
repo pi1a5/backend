@@ -386,29 +386,31 @@ class User {
     }
   }
 
-  async createRandomSupervisorsForCourse(idcurso) {
+  async createRandomSupervisorsForCourse(cursos) {
     try {
       const orientadores = [];
-      for (let i = 2; i <= Math.floor(Math.random() * 3) + 2; i++) {
-        let nomeOrientador = 'Orientador-' + Math.floor(Math.random() * 100000);
-        const usuarios = await knex('usuario').select('nome');
-        while (usuarios.some(x => x.nome === nomeOrientador)) {
-          nomeOrientador = 'Orientador-' + Math.floor(Math.random() * 100000);
+      for (const j in cursos) {
+        for (let i = 2; i <= Math.floor(Math.random() * 3) + 2; i++) {
+          let nomeOrientador = 'Orienta-' + Math.floor(Math.random() * 100000);
+          const usuarios = await knex('usuario').select('nome');
+          while (usuarios.some(x => x.nome === nomeOrientador)) {
+            nomeOrientador = 'Orienta-' + Math.floor(Math.random() * 100000);
+          }
+          usuarios.push({ nome: nomeOrientador });
+          orientadores.push({
+            idcurso: cursos[j].id,
+            nome: nomeOrientador,
+            email: nomeOrientador + '@ifsp.edu.br',
+            sub: nomeOrientador,
+            foto: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+            prontuario: nomeOrientador,
+            cargatotal: 0,
+            idtipousuario: 2,
+          });
         }
-        orientadores.push({
-          idcurso: idcurso,
-          nome: nomeOrientador,
-          email: nomeOrientador + '@ifsp.edu.br',
-          sub: nomeOrientador,
-          foto: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
-          prontuario: null,
-          cargatotal: 0,
-          idtipousuario: 2,
-        });
       }
-      const subs = await knex('usuario').returning('id').insert(orientadores);
-      console.log(subs);
-      return { response: 'Orientadores criados com sucesso', status: 200 };
+      const ids = await knex('usuario').returning('*').insert(orientadores);
+      return { response: ids, status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao criar estudante', status: 400 };
@@ -418,10 +420,51 @@ class User {
   async populateCoursesWithStudentsAndSupervisors() {
     try {
       const cursos = await knex('curso').select('id');
-      for (const i in cursos) {
-        this.createRandomSupervisorsForCourse(cursos[i].id);
-      }
+      const idsOrientadores = await this.createRandomSupervisorsForCourse(cursos);
+      await this.createRandomStudentsForSupervisor(idsOrientadores.response);
       return { response: 'Banco populado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao retornar estudantes', status: 400 };
+    }
+  }
+
+  async createRandomStudentsForSupervisor(idsOrientadores) {
+    try {
+      const usuarios = await knex('usuario').select('nome');
+      for (const i in idsOrientadores) {
+        for (let j = 3; j <= Math.floor(Math.random() * 10) + 3; j++) {
+          let nomeAluno = 'AlunoP-' + Math.floor(Math.random() * 100000);
+          while (usuarios.some(x => x.nome === nomeAluno)) {
+            nomeAluno = 'AlunoP-' + Math.floor(Math.random() * 100000);
+          }
+          usuarios.push({ nome: nomeAluno });
+          let aluno = {
+            idcurso: idsOrientadores[i].idcurso,
+            nome: nomeAluno,
+            email: nomeAluno + '@aluno.ifsp.edu.br',
+            sub: nomeAluno,
+            foto: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+            prontuario: 'SP' + nomeAluno,
+            cargatotal: 0,
+            idtipousuario: 1,
+          };
+          const id = await knex('usuario').returning('*').insert(aluno);
+
+          const processos = await knex('processo').select('id').where({ idcurso: id[0].idcurso });
+          await Estagio.newEstagio(processos[Math.floor(Math.random() * processos.length)].id, nomeAluno, 6);
+          const etapaunica = await knex('estagio').select('etapaunica').where({ idaluno: id[0].id });
+          if (etapaunica) {
+            await Ticket.new('Olá Orientador, gostaria de realizar meu processo de estágio!', nomeAluno, null, Math.floor(Math.random() * 10) + 21);
+          } else {
+            await Ticket.new('Olá Orientador, gostaria de realizar meu processo de estágio!', nomeAluno, null, null);
+          }
+          await this.answerFakeStudentTicket(idsOrientadores[i].sub, id[0].id);
+          await this.createTicketForRandomStudent(id[0].id);
+          await this.answerFakeStudentTicket(idsOrientadores[i].sub, id[0].id);
+        }
+      }
+      return { response: 'ok', status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao retornar estudantes', status: 400 };
