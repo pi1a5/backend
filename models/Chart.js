@@ -115,31 +115,10 @@ class Chart {
         .from('ticket AS t')
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')
         .leftJoin('usuario AS u', 'u.id', 'e.idorientador')
+        .whereNotNull('t.datafechado')
         .where({ 'u.sub': sub });
+      console.log(tickets);
       if (tickets.length === 0) return { response: null, status: 200 };
-      // for (const i in tickets) {
-      //     let data = new Date(tickets[i].datafechado);
-      //     let ano = data.getFullYear();
-      //     if (total.hasOwnProperty(ano)) {
-      //         data = meses[data.getMonth()];
-      //         if (total[ano].hasOwnProperty(data)) {
-      //             if (tickets[i].aceito === true) {
-      //                 total[ano][data].aceito = total[ano][data].aceito + 1;
-      //             } else {
-      //                 total[ano][data].recusado = total[ano][data].recusado + 1;
-      //             }
-      //         } else {
-      //             if (tickets[i].aceito === true) {
-      //                 total[ano][data] = { aceito: 1, recusado: 0 };
-      //             } else {
-      //                 total[ano][data] = { recusado: 1, aceito: 0 };
-      //             }
-      //         }
-      //     } else {
-      //         total[ano] = {};
-      //     }
-
-      // }
       for (const i in tickets) {
         let data = new Date(tickets[i].datafechado);
         const ano = data.getFullYear();
