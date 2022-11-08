@@ -240,6 +240,15 @@ class UserController {
     }
   }
 
+  async populateCoursesWithStudentsAndSupervisors(req, res) {
+    try {
+      const response = await User.populateCoursesWithStudentsAndSupervisors();
+      res.status(response.status).json(response.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
   async getFakeStudents(req, res) {
     try {
       const response = await User.getFakeStudents();

@@ -97,6 +97,8 @@ router.get('/api/createRandomStudent', HeaderMiddleware, UserController.createRa
 router.post('/api/createRandomSupervisorForStudent', HeaderMiddleware, UserController.createRandomSupervisorForStudent);
 router.post('/api/createTicketForRandomStudent', HeaderMiddleware, UserController.createTicketForRandomStudent);
 router.get('/api/getFakeStudents', HeaderMiddleware, UserController.getFakeStudents);
+router.get('/api/populateCoursesWithStudentsAndSupervisors', HeaderMiddleware, UserController.populateCoursesWithStudentsAndSupervisors);
+
 
 // Para Gráficos
 router.post('/api/checkOrientadoresAmount', HeaderMiddleware, ChartController.checkOrientadoresAmount);

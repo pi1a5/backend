@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable no-loop-func */
 /* eslint-disable prefer-template */
 /* eslint-disable arrow-parens */
@@ -385,6 +386,48 @@ class User {
     }
   }
 
+  async createRandomSupervisorsForCourse(idcurso) {
+    try {
+      const orientadores = [];
+      for (let i = 2; i <= Math.floor(Math.random() * 3) + 2; i++) {
+        let nomeOrientador = 'Orientador-' + Math.floor(Math.random() * 100000);
+        const usuarios = await knex('usuario').select('nome');
+        while (usuarios.some(x => x.nome === nomeOrientador)) {
+          nomeOrientador = 'Orientador-' + Math.floor(Math.random() * 100000);
+        }
+        orientadores.push({
+          idcurso: idcurso,
+          nome: nomeOrientador,
+          email: nomeOrientador + '@ifsp.edu.br',
+          sub: nomeOrientador,
+          foto: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+          prontuario: null,
+          cargatotal: 0,
+          idtipousuario: 2,
+        });
+      }
+      const subs = await knex('usuario').returning('id').insert(orientadores);
+      console.log(subs);
+      return { response: 'Orientadores criados com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao criar estudante', status: 400 };
+    }
+  }
+
+  async populateCoursesWithStudentsAndSupervisors() {
+    try {
+      const cursos = await knex('curso').select('id');
+      for (const i in cursos) {
+        this.createRandomSupervisorsForCourse(cursos[i].id);
+      }
+      return { response: 'Banco populado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao retornar estudantes', status: 400 };
+    }
+  }
+
   async answerFakeStudentTicket(sub, id) {
     try {
       const idticket = await knex.select('t.id')
@@ -392,7 +435,6 @@ class User {
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')
         .where({ 'e.idaluno': id })
         .where({ 't.resposta': null });
-        console.log(idticket)
       await Ticket.updateFeedback(sub, idticket[0].id, 'Tudo certo!', true, 1);
       return { response: 'Ticket criado com sucesso', status: 200 };
     } catch (error) {
