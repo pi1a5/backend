@@ -139,7 +139,7 @@ class Ticket {
         .leftJoin('usuario AS u', 'u.idcurso', 'c.id')
         .where({ 'u.sub': sub });
       if (area.length === 0) return { response: 'Usuario não tem area', status: 404 };
-      const tickets = await knex.select('t.*', 's.nome AS status', 'e.etapaunica', knex.raw('json_agg(d.*) as documentos'), knex.raw('json_agg(DISTINCT u.*) as usuario'), knex.raw('json_agg(DISTINCT c.nome) as curso'))
+      const tickets = await knex.select('t.*', 's.nome AS status', 'e.etapaunica', knex.raw("e.processo -> 'etapas' -> 0 -> 'atual' AS inicio"), knex.raw('json_agg(d.*) as documentos'), knex.raw('json_agg(DISTINCT u.*) as usuario'), knex.raw('json_agg(DISTINCT c.nome) as curso'))
         .from('ticket AS t')
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')
         .leftJoin('documento AS d', 'd.idticket', 't.id')
@@ -150,6 +150,7 @@ class Ticket {
         .orderBy('t.id', 'asc')
         .groupBy('s.nome')
         .groupBy('e.etapaunica')
+        .groupBy('e.processo')
         .groupBy('t.id');
       if (tickets.length === 0) return { response: null, status: 200 };
 
@@ -164,7 +165,7 @@ class Ticket {
     try {
       const id = await knex('usuario').select('id').where({ sub: sub });
       if (id.length === 0) return { response: 'Usuario não tem encontrado', status: 404 };
-      const tickets = await knex.select('t.*', knex.raw("e.processo -> 'etapas' -> 0 -> 'atual' AS inicio"), knex.raw('json_agg(d.*) as documentos'), knex.raw('json_agg(DISTINCT u.*) as usuario'), knex.raw('json_agg(DISTINCT c.nome) as curso'))
+      const tickets = await knex.select('t.*', 'e.etapaunica', knex.raw("e.processo -> 'etapas' -> 0 -> 'atual' AS inicio"), knex.raw('json_agg(d.*) as documentos'), knex.raw('json_agg(DISTINCT u.*) as usuario'), knex.raw('json_agg(DISTINCT c.nome) as curso'))
         .from('ticket AS t')
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')
         .leftJoin('documento AS d', 'd.idticket', 't.id')
@@ -173,8 +174,8 @@ class Ticket {
         .where({ 'e.idorientador': id[0].id, 't.resposta': null })
         .orderBy('t.id', 'asc')
         .groupBy('e.processo')
+        .groupBy('e.etapaunica')
         .groupBy('t.id');
-        console.log(tickets)
       if (tickets.length === 0) return { response: null, status: 200 };
 
       return { response: tickets, status: 200 };
