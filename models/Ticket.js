@@ -164,7 +164,7 @@ class Ticket {
     try {
       const id = await knex('usuario').select('id').where({ sub: sub });
       if (id.length === 0) return { response: 'Usuario não tem encontrado', status: 404 };
-      const tickets = await knex.select('t.*', knex.raw('json_agg(d.*) as documentos'), knex.raw('json_agg(DISTINCT u.*) as usuario'), knex.raw('json_agg(DISTINCT c.nome) as curso'))
+      const tickets = await knex.select('t.*', knex.raw("e.processo -> 'etapas' -> 0 -> 'atual'"), knex.raw('json_agg(d.*) as documentos'), knex.raw('json_agg(DISTINCT u.*) as usuario'), knex.raw('json_agg(DISTINCT c.nome) as curso'))
         .from('ticket AS t')
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')
         .leftJoin('documento AS d', 'd.idticket', 't.id')
@@ -172,6 +172,7 @@ class Ticket {
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
         .where({ 'e.idorientador': id[0].id, 't.resposta': null })
         .orderBy('t.id', 'asc')
+        .groupBy('e.processo')
         .groupBy('t.id');
       if (tickets.length === 0) return { response: null, status: 200 };
 
