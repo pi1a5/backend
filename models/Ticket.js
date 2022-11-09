@@ -262,7 +262,7 @@ class Ticket {
     if (estagio[0].etapaunica) {
       await this.handleOpenSingleStepInternship(estagio, sub, aceito, datafechado);
     } else {
-      await this.handleOpenThreeStepInternship(estagio, sub, aceito, datafechado, idfrequencia, obrigatorio);
+      await this.handleOpenThreeStepInternship(estagio, sub, aceito, idfrequencia, obrigatorio);
     }
   }
 
