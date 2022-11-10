@@ -527,6 +527,7 @@ class User {
         .where({ 'e.idaluno': id })
         .groupBy('t.id')
         .groupBy('f.valor');
+      console.log(idticket);
       const dataCriado = new Date(idticket[idticket.length - 1].datacriado);
       dataCriado.setMonth(dataCriado.getMonth() - idticket[0].valor);
       dataCriado.setDate(dataCriado.getDate() - 5);
