@@ -529,10 +529,10 @@ class User {
         .groupBy('f.valor');
       console.log(idticket);
       const dataCriado = new Date(idticket[idticket.length - 1].datacriado);
-      dataCriado.setMonth(dataCriado.getMonth() - idticket[0].valor);
+      dataCriado.setMonth(dataCriado.getMonth() - idticket[idticket.length - 1].valor);
       dataCriado.setDate(dataCriado.getDate() - 5);
       await knex('ticket').update({ datacriado: dataCriado })
-        .where({ id: idticket[0].id });
+        .where({ id: idticket[idticket.length - 1].id });
       return { response: 'Ticket atualizado com sucesso', status: 200 };
     } catch (error) {
       console.log(error);
