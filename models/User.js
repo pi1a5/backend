@@ -525,6 +525,7 @@ class User {
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')
         .leftJoin('frequencia AS f', 'f.id', 'e.idfrequencia')
         .where({ 'e.idaluno': id })
+        .groupBy('t.id')
         .groupBy('f.valor');
       const dataCriado = new Date(idticket[idticket.length - 1].datacriado);
       dataCriado.setMonth(dataCriado.getMonth() - idticket[0].valor);
