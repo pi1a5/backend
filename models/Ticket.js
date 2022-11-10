@@ -291,7 +291,7 @@ class Ticket {
       estagio[0].processo.etapas[0].atual = false;
       estagio[0].processo.etapas[1].atual = true;
       await knex('estagio').update({
-        idorientador: idorientador[0].id, idstatus: 8, processo: estagio[0].processo, idfrequencia: idfrequencia, obrigatorio: obrigatorio,
+        idorientador: idorientador[0].id, idstatus: 7, processo: estagio[0].processo, idfrequencia: idfrequencia, obrigatorio: obrigatorio,
       })
         .where({ id: estagio[0].id });
     } else {
@@ -335,8 +335,6 @@ class Ticket {
               if (dataComparar > datavencimentoticket) {
                 const diastrabalhados = await knex('ticket').select('diastrabalhados')
                   .where({ id: idTicket });
-                console.log("oi");
-                console.log("oi");
                 const horasAdicionadas = -(estagio[0].cargahoraria * diastrabalhados[0].diastrabalhados);
                 console.log(horasAdicionadas)
                 const cargaTotal = await knex('usuario').returning('cargatotal').increment('cargatotal', horasAdicionadas)

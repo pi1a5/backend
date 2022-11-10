@@ -525,8 +525,8 @@ class User {
         .leftJoin('estagio AS e', 'e.id', 't.idestagio')
         .leftJoin('frequencia AS f', 'f.id', 'e.idfrequencia')
         .where({ 'e.idaluno': id })
-        .where({ 't.resposta': null });
-      const dataCriado = new Date(idticket[0].datacriado);
+        .groupBy('f.valor');
+      const dataCriado = new Date(idticket[idticket.length - 1].datacriado);
       dataCriado.setMonth(dataCriado.getMonth() - idticket[0].valor);
       dataCriado.setDate(dataCriado.getDate() - 5);
       await knex('ticket').update({ datacriado: dataCriado })
