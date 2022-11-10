@@ -529,7 +529,7 @@ class User {
       const dataCriado = new Date(idticket[0].datacriado);
       dataCriado.setMonth(dataCriado.getMonth() + idticket[0].valor);
       dataCriado.setDate(dataCriado.getDate() + 1);
-      await Ticket.update({ datacriado: dataCriado })
+      await knex('ticket').update({ datacriado: dataCriado })
         .where({ id: idticket[0].id });
       return { response: 'Ticket atualizado com sucesso', status: 200 };
     } catch (error) {
