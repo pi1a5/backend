@@ -335,6 +335,8 @@ class Ticket {
               if (dataComparar > datavencimentoticket) {
                 const diastrabalhados = await knex('ticket').select('diastrabalhados')
                   .where({ id: idTicket });
+                console.log("oi");
+                console.log("oi");
                 const horasAdicionadas = -(estagio[0].cargahoraria * diastrabalhados[0].diastrabalhados);
                 console.log(horasAdicionadas)
                 const cargaTotal = await knex('usuario').returning('cargatotal').increment('cargatotal', horasAdicionadas)

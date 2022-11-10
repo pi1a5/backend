@@ -30,7 +30,7 @@ class User {
 
       if (email.indexOf('@aluno.ifsp.edu.br') !== -1 || email === 'teste.aluno.g5.pi2a6@gmail.com') {
         tipousuario = 1;
-      } else if (email.indexOf('@ifsp.edu.br') !== -1 || email === 'pl1a5.grupo5@gmail.com' || email === 'teste.orientador.g5.pi2a6@gmail.com') {
+      } else if (email.indexOf('@ifsp.edu.br') !== -1 || email === 'pl1a5.grupo5@gmail.com' || email === 'teste.orientador.g5.pi2a6@gmail.com' || email === 'professororientador.teste@gmail.com') {
         tipousuario = 2;
       } else if (email === 'adm.g5.pi2a6@gmail.com') {
         tipousuario = 3;
