@@ -276,7 +276,7 @@ class Ticket {
         .where({ 'u.id': estagio[0].idaluno });
       await knex('usuario').update('cargatotal', cargaCurso[0].carga)
         .where({ id: estagio[0].idaluno });
-      await knex('estagio').update({ idorientador: idorientador[0].id, idstatus: 2, fechado: datafechado })
+      await knex('estagio').update({ idorientador: idorientador[0].id, idstatus: 2, fechado: datafechado, obrigatorio: 'Obrigatório' })
         .where({ id: estagio[0].id });
     } else {
       await knex('estagio').update({ idorientador: idorientador[0].id, idstatus: 8 })
@@ -309,7 +309,7 @@ class Ticket {
           .where({ 'u.id': estagio[0].idaluno });
         await knex('usuario').update('cargatotal', cargaCurso[0].carga)
           .where({ id: estagio[0].idaluno });
-        await knex('estagio').update({ idstatus: 2, fechado: datafechado })
+        await knex('estagio').update({ idstatus: 2, fechado: datafechado, obrigatorio: 'Obrigatório' })
           .where({ id: estagio[0].id });
       } else {
         await knex('estagio').update({ idstatus: 8 })
@@ -401,7 +401,7 @@ class Ticket {
             estagio[0].processo.etapas[0].atual = false;
             estagio[0].processo.etapas[1].atual = true;
             await knex('estagio').update({
-              idstatus: 8, processo: estagio[0].processo, idfrequencia: idfrequencia, obrigatorio: obrigatorio,
+              idstatus: 7, processo: estagio[0].processo, idfrequencia: idfrequencia, obrigatorio: obrigatorio,
             })
               .where({ id: estagio[0].id });
           } else {

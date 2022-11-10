@@ -518,6 +518,26 @@ class User {
     }
   }
 
+  async delayStudentTicket(id) {
+    try {
+      const idticket = await knex.select('t.id', 't.datacriado', 'f.valor')
+        .from('ticket AS t')
+        .leftJoin('estagio AS e', 'e.id', 't.idestagio')
+        .leftJoin('frequencia AS f', 'f.id', 'e.idfrequencia')
+        .where({ 'e.idaluno': id })
+        .where({ 't.resposta': null });
+      const dataCriado = new Date(idticket[0].datacriado);
+      dataCriado.setMonth(dataCriado.getMonth() + idticket[0].valor);
+      dataCriado.setDate(dataCriado.getDate() + 1);
+      await Ticket.update({ datacriado: dataCriado })
+        .where({ id: idticket[0].id });
+      return { response: 'Ticket atualizado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao atualizar ticket', status: 400 };
+    }
+  }
+
   async getFakeStudents() {
     try {
       const alunos = await knex.select('u.*', 'c.nome AS curso', 'e.idorientador')
