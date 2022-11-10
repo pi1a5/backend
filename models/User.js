@@ -331,8 +331,7 @@ class User {
     try {
       let nomeAluno = 'Aluno-' + Math.floor(Math.random() * 100000);
       const cursos = await knex('curso').select('id', 'carga')
-        .where({ idarea: 28 })
-        .orWhere({ idarea: 48 });
+        .where({ idarea: 28 });
       console.log(cursos);
       const usuarios = await knex('usuario').select('nome');
       while (usuarios.some(x => x.nome === nomeAluno)) {
@@ -443,7 +442,8 @@ class User {
 
   async populateCoursesWithStudentsAndSupervisors() {
     try {
-      const cursos = await knex('curso').select('id');
+      const cursos = await knex('curso').select('id')
+        .where({ idarea: 28 });
       const idsOrientadores = await this.createRandomSupervisorsForCourse(cursos);
       await this.createRandomStudentsForSupervisor(idsOrientadores.response);
       return { response: 'Banco populado com sucesso', status: 200 };
@@ -476,7 +476,7 @@ class User {
           const id = await knex('usuario').returning('*').insert(aluno);
 
           const processos = await knex('processo').select('id').where({ idcurso: id[0].idcurso });
-          await Estagio.newEstagio(processos[Math.floor(Math.random() * processos.length)].id, nomeAluno, 6);
+          await Estagio.newEstagio(processos[Math.floor(Math.random() * processos.length) - 1].id, nomeAluno, 6);
           const etapaunica = await knex('estagio').select('etapaunica').where({ idaluno: id[0].id });
           if (etapaunica) {
             await Ticket.new('Olá Orientador, gostaria de realizar meu processo de estágio!', nomeAluno, null, Math.floor(Math.random() * 10) + 21);
