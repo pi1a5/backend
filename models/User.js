@@ -28,9 +28,9 @@ class User {
     try {
       let tipousuario = 0;
 
-      if (email.indexOf('@aluno.ifsp.edu.br') !== -1 || email === 'teste.aluno.g5.pi2a6@gmail.com') {
+      if (email.indexOf('@aluno.ifsp.edu.br') !== -1 || email === 'alunofake.teste@gmail.com') {
         tipousuario = 1;
-      } else if (email.indexOf('@ifsp.edu.br') !== -1 || email === 'pl1a5.grupo5@gmail.com' || email === 'teste.orientador.g5.pi2a6@gmail.com') {
+      } else if (email.indexOf('@ifsp.edu.br') !== -1 || email === 'pl1a5.grupo5@gmail.com' || email === 'teste.orientador.g5.pi2a6@gmail.com' || email === 'professororientador.teste@gmail.com') {
         tipousuario = 2;
       } else if (email === 'adm.g5.pi2a6@gmail.com') {
         tipousuario = 3;
@@ -244,7 +244,7 @@ class User {
 
   async getUserInternshipData(sub) {
     try {
-      const estagio = await knex.select('e.id', knex.raw("TO_CHAR(e.criado, 'DD/MM/YYYY') as criado"), 'c.carga AS necessario', 'u.cargatotal AS cumprido')
+      const estagio = await knex.select('e.id', 'e.obrigatorio', knex.raw("TO_CHAR(e.criado, 'DD/MM/YYYY') as criado"), 'c.carga AS necessario', 'u.cargatotal AS cumprido')
         .from('estagio AS e')
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
@@ -331,15 +331,14 @@ class User {
     try {
       let nomeAluno = 'Aluno-' + Math.floor(Math.random() * 100000);
       const cursos = await knex('curso').select('id', 'carga')
-        .where({ idarea: 28 })
-        .orWhere({ idarea: 48 });
+        .where({ idarea: 28 });
       console.log(cursos);
       const usuarios = await knex('usuario').select('nome');
       while (usuarios.some(x => x.nome === nomeAluno)) {
         nomeAluno = 'Aluno-' + Math.floor(Math.random() * 100000);
       }
       const estudante = {
-        idcurso: cursos[Math.floor(Math.random() * cursos.length) - 1].id,
+        idcurso: cursos[Math.floor(Math.random() * (cursos.length - 1))].id,
         nome: nomeAluno,
         email: nomeAluno + '@aluno.ifsp.edu.br',
         sub: nomeAluno,
@@ -443,7 +442,8 @@ class User {
 
   async populateCoursesWithStudentsAndSupervisors() {
     try {
-      const cursos = await knex('curso').select('id');
+      const cursos = await knex('curso').select('id')
+        .where({ idarea: 28 });
       const idsOrientadores = await this.createRandomSupervisorsForCourse(cursos);
       await this.createRandomStudentsForSupervisor(idsOrientadores.response);
       return { response: 'Banco populado com sucesso', status: 200 };
@@ -474,9 +474,17 @@ class User {
             idtipousuario: 1,
           };
           const id = await knex('usuario').returning('*').insert(aluno);
+          const idarea = await knex('curso').select('idarea')
+            .where({ id: id[0].idcurso });
 
-          const processos = await knex('processo').select('id').where({ idcurso: id[0].idcurso });
-          await Estagio.newEstagio(processos[Math.floor(Math.random() * processos.length)].id, nomeAluno, 6);
+          const processos = await knex.select('p.id')
+            .from('processo AS p')
+            .leftJoin('curso AS c', 'c.id', 'p.idcurso')
+            .where({ 'c.idarea': idarea[0].idarea });
+          console.log(processos.length);
+          const idprocesso = Math.floor(Math.random() * (processos.length - 1));
+          console.log(idprocesso);
+          await Estagio.newEstagio(processos[idprocesso].id, nomeAluno, 6);
           const etapaunica = await knex('estagio').select('etapaunica').where({ idaluno: id[0].id });
           if (etapaunica) {
             await Ticket.new('Olá Orientador, gostaria de realizar meu processo de estágio!', nomeAluno, null, Math.floor(Math.random() * 10) + 21);
@@ -510,13 +518,34 @@ class User {
     }
   }
 
+  async delayStudentTicket(id) {
+    try {
+      const idticket = await knex.select('t.id', 't.datacriado', 'f.valor')
+        .from('ticket AS t')
+        .leftJoin('estagio AS e', 'e.id', 't.idestagio')
+        .leftJoin('frequencia AS f', 'f.id', 'e.idfrequencia')
+        .where({ 'e.idaluno': id })
+        .groupBy('t.id')
+        .groupBy('f.valor');
+      console.log(idticket);
+      const dataCriado = new Date(idticket[idticket.length - 1].datacriado);
+      dataCriado.setMonth(dataCriado.getMonth() - idticket[idticket.length - 1].valor);
+      dataCriado.setDate(dataCriado.getDate() - 5);
+      await knex('ticket').update({ datacriado: dataCriado })
+        .where({ id: idticket[idticket.length - 1].id });
+      return { response: 'Ticket atualizado com sucesso', status: 200 };
+    } catch (error) {
+      console.log(error);
+      return { response: 'Erro ao atualizar ticket', status: 400 };
+    }
+  }
+
   async getFakeStudents() {
     try {
       const alunos = await knex.select('u.*', 'c.nome AS curso', 'e.idorientador')
         .from('usuario AS u')
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
-        .leftJoin('estagio AS e', 'e.idaluno', 'u.id')
-        .whereLike('u.nome', '%Aluno-%');
+        .leftJoin('estagio AS e', 'e.idaluno', 'u.id');
       return { response: alunos, status: 200 };
     } catch (error) {
       console.log(error);

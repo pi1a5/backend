@@ -278,6 +278,24 @@ class UserController {
     }
   }
 
+  async delayStudentTicket(req, res) {
+    try {
+      const {
+        id,
+      } = req.body;
+      const data = {
+        id: id,
+      };
+      const val = Validate(data);
+      if (val !== true) return res.status(400).json(val);
+
+      const response = await User.delayStudentTicket(id);
+      res.status(response.status).json(response.response);
+    } catch (error) {
+      res.status(500).json(error);
+    }
+  }
+
   async populateCoursesWithStudentsAndSupervisors(req, res) {
     try {
       const response = await User.populateCoursesWithStudentsAndSupervisors();

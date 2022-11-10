@@ -43,6 +43,7 @@ router.post('/api/getSupervisorsByArea', HeaderMiddleware, UserController.getSup
 router.get('/api/getSupervisors', HeaderMiddleware, UserController.getSupervisors);
 router.post('/api/deleteSupervisor', HeaderMiddleware, UserController.deleteSupervisor);
 router.post('/api/getStatus', HeaderMiddleware, UserController.getStatus);
+router.post('/api/delayStudentTicket', HeaderMiddleware, UserController.delayStudentTicket);
 
 // Para Processos
 
