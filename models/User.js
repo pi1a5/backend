@@ -338,7 +338,7 @@ class User {
         nomeAluno = 'Aluno-' + Math.floor(Math.random() * 100000);
       }
       const estudante = {
-        idcurso: cursos[Math.floor(Math.random() * cursos.length) - 1].id,
+        idcurso: cursos[Math.floor(Math.random() * (cursos.length - 1))].id,
         nome: nomeAluno,
         email: nomeAluno + '@aluno.ifsp.edu.br',
         sub: nomeAluno,
@@ -474,9 +474,17 @@ class User {
             idtipousuario: 1,
           };
           const id = await knex('usuario').returning('*').insert(aluno);
+          const idarea = await knex('curso').select('idarea')
+            .where({ id: id[0].idcurso });
 
-          const processos = await knex('processo').select('id').where({ idcurso: id[0].idcurso });
-          await Estagio.newEstagio(processos[Math.floor(Math.random() * processos.length) - 1].id, nomeAluno, 6);
+          const processos = await knex.select('p.id')
+            .from('processo AS p')
+            .leftJoin('curso AS c', 'c.id', 'p.idcurso')
+            .where({ 'c.idarea': idarea[0].idarea });
+          console.log(processos.length);
+          const idprocesso = Math.floor(Math.random() * (processos.length - 1));
+          console.log(idprocesso);
+          await Estagio.newEstagio(processos[idprocesso].id, nomeAluno, 6);
           const etapaunica = await knex('estagio').select('etapaunica').where({ idaluno: id[0].id });
           if (etapaunica) {
             await Ticket.new('Olá Orientador, gostaria de realizar meu processo de estágio!', nomeAluno, null, Math.floor(Math.random() * 10) + 21);
