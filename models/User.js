@@ -244,7 +244,7 @@ class User {
 
   async getUserInternshipData(sub) {
     try {
-      const estagio = await knex.select('e.id', knex.raw("TO_CHAR(e.criado, 'DD/MM/YYYY') as criado"), 'c.carga AS necessario', 'u.cargatotal AS cumprido')
+      const estagio = await knex.select('e.id', 'e.obrigatorio', knex.raw("TO_CHAR(e.criado, 'DD/MM/YYYY') as criado"), 'c.carga AS necessario', 'u.cargatotal AS cumprido')
         .from('estagio AS e')
         .leftJoin('usuario AS u', 'u.id', 'e.idaluno')
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
