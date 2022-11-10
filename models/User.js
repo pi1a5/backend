@@ -527,8 +527,8 @@ class User {
         .where({ 'e.idaluno': id })
         .where({ 't.resposta': null });
       const dataCriado = new Date(idticket[0].datacriado);
-      dataCriado.setMonth(dataCriado.getMonth() + idticket[0].valor);
-      dataCriado.setDate(dataCriado.getDate() + 1);
+      dataCriado.setMonth(dataCriado.getMonth() - idticket[0].valor);
+      dataCriado.setDate(dataCriado.getDate() - 5);
       await knex('ticket').update({ datacriado: dataCriado })
         .where({ id: idticket[0].id });
       return { response: 'Ticket atualizado com sucesso', status: 200 };
