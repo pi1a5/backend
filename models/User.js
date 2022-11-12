@@ -117,17 +117,6 @@ class User {
     }
   }
 
-  async updateProntuario(sub, prontuario) {
-    try {
-      await knex('usuario').update({ prontuario: prontuario })
-        .where({ sub: sub });
-      return { response: 'Prontuário atualizado com sucesso', status: 200 };
-    } catch (error) {
-      console.log(error);
-      return { response: 'Erro ao atualizar prontuário', status: 404 };
-    }
-  }
-
   async login(name, email, picture, token, sub) {
     try {
       const user = await knex.select(['id', 'email', 'nome', 'foto', 'idcurso', 'prontuario'])
@@ -211,10 +200,14 @@ class User {
 
   async getUserProfile(sub) {
     try {
-      const profile = await knex.select('u.*', 'c.nome AS curso')
+      const profile = await knex.select('u.*', 'c.nome AS curso', 'c.idarea', 'a.nome AS area')
         .from('usuario AS u')
         .leftJoin('curso AS c', 'c.id', 'u.idcurso')
+        .leftJoin('area AS a', 'a.id', 'c.idarea')
         .where({ sub: sub });
+      const cursos = await knex('curso').select('nome')
+        .where({ idarea: profile[0].idarea });
+      profile[0]['cursos'] = cursos;
       if (profile.length === 0) return { response: null, status: 200 };
 
       return { response: profile, status: 200 };

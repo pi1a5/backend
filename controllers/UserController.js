@@ -61,25 +61,6 @@ class UserController {
     }
   }
 
-  async updateProntuario(req, res) {
-    try {
-      const {
-        sub, prontuario,
-      } = req.body;
-      const data = {
-        sub: sub,
-        prontuario: prontuario,
-      };
-      const val = Validate(data);
-      if (val !== true) return res.status(400).json(val);
-
-      const result = await User.updateProntuario(sub, prontuario);
-      res.status(result.status).json(result.response);
-    } catch (error) {
-      res.status(500).json(error);
-    }
-  }
-
   async user(req, res) {
     try {
       const {

@@ -35,7 +35,6 @@ router.post('/api/login', HeaderMiddleware, UserController.login);
 router.post('/api/user', HeaderMiddleware, UserController.user);
 router.post('/api/setCourseProntuario', HeaderMiddleware, UserController.setCourseProntuario);
 router.post('/api/updateName', HeaderMiddleware, UserController.updateName);
-router.post('/api/updateProntuario', HeaderMiddleware, UserController.updateProntuario);
 router.post('/api/getUserProfile', HeaderMiddleware, UserController.getUserProfile);
 router.post('/api/getUserSupervisor', HeaderMiddleware, UserController.getUserSupervisor);
 router.post('/api/getUserInternshipData', HeaderMiddleware, UserController.getUserInternshipData);
