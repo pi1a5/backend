@@ -101,7 +101,6 @@ router.post('/api/createTicketForRandomStudent', HeaderMiddleware, UserControlle
 router.get('/api/getFakeStudents', HeaderMiddleware, UserController.getFakeStudents);
 router.get('/api/populateCoursesWithStudentsAndSupervisors', HeaderMiddleware, UserController.populateCoursesWithStudentsAndSupervisors);
 
-
 // Para Gráficos
 router.post('/api/checkOrientadoresAmount', HeaderMiddleware, ChartController.checkOrientadoresAmount);
 router.post('/api/getInternshipsAmountByStatus', HeaderMiddleware, ChartController.getInternshipsAmountByStatus);

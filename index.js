@@ -23,7 +23,8 @@ app.use(fileupload());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/', router);
-scheduledFunctions.initScheduledJobs();
+scheduledFunctions.updateTraineeshipsStatus();
+scheduledFunctions.sendEmailToSupervisors();
 
 http.listen(process.env.PORT || '3000', () => {
   console.log('Server is running...');

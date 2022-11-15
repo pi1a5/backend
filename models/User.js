@@ -1,3 +1,4 @@
+/* eslint-disable no-continue */
 /* eslint-disable no-plusplus */
 /* eslint-disable no-loop-func */
 /* eslint-disable prefer-template */
@@ -22,6 +23,7 @@ const { index } = require('../controllers/HomeController');
 const knex = require('../database/connection');
 const Estagio = require('./Estagio');
 const Ticket = require('./Ticket');
+const Mailer = require('../modules/mailer');
 
 class User {
   async new(name, email, picture, token, sub) {
@@ -598,47 +600,25 @@ class User {
 
   async teste() {
     try {
-      const estagios = await knex.select('e.id', 'e.processo', 'f.valor', 's.nome', knex.raw('json_agg(t.datacriado) as tickets'))
+      const total = {};
+      const orientadores = await knex('usuario').select('*')
+        .where({ idtipousuario: 2 });
+      const estagios = await knex.select('e.idorientador', 'e.idaluno')
         .from('estagio AS e')
         .leftJoin('ticket AS t', 't.idestagio', 'e.id')
-        .leftJoin('status AS s', 's.id', 'e.idstatus')
-        .leftJoin('frequencia AS f', 'f.id', 'e.idfrequencia')
-        .where({ 's.nome': 'Atrasado', 'e.etapaunica': false })
-        .orWhere({ 's.nome': 'Em Dia', 'e.etapaunica': false })
-        .whereNot({ 's.nome': 'Aberto' })
-        .groupBy('e.id')
-        .groupBy('s.nome')
-        .groupBy('f.valor');
-      if (estagios.length === 0) return { response: null, status: 200 };
-      const dataAtual = new Date();
-      console.log(estagios);
+        .where({ 't.resposta': null })
+        .whereNotNull('e.idorientador');
 
-      for (const i in estagios) {
-        const indexTicketAtual = estagios[i].tickets.length;
-        const datavencimentoticket = new Date(estagios[i].tickets[indexTicketAtual - 1]);
-        for (const j in estagios[0].processo.etapas) {
-          if (estagios[0].processo.etapas[j].atual === true) {
-            const prazo = estagios[0].processo.etapas[j].prazo;
-            datavencimentoticket.setDate(datavencimentoticket.getDate() + prazo);
-            break;
-          }
+      for (const i in orientadores) {
+        if (!estagios.some(x => x.idorientador === orientadores[i].id)) {
+          continue;
         }
-        datavencimentoticket.setMonth(datavencimentoticket.getMonth() + estagios[i].valor);
-        console.log(estagios[i]);
-        console.log(datavencimentoticket);
-        if (estagios[i].nome === 'Em Dia') {
-          if (dataAtual > datavencimentoticket) {
-            await knex('estagio').update({ idstatus: 5 }).where({ id: estagios[0].id });
-          }
-        } else {
-          datavencimentoticket.setDate(datavencimentoticket.getDate() + 10);
-          if (dataAtual > datavencimentoticket) {
-            // await knex('estagio').update({ idstatus: 5 }).where({ id: estagios[0].id });
-          }
-        }
+        total[orientadores[i].email] = { quantidade: estagios.filter(x => x.idorientador === orientadores[i].id).length, nome: orientadores[i].nome };
       }
-
-      return { response: estagios, status: 200 };
+      if (!Object.keys(total).length === 0) {
+        await Mailer.ticketSentNotification(total);
+      }
+      return { response: 'enviado com sucesso', status: 200 };
     } catch (error) {
       console.log(error);
       return { response: 'Erro ao deletar orientador', status: 400 };
