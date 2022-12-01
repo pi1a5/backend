@@ -35,7 +35,6 @@ router.post('/api/login', HeaderMiddleware, UserController.login);
 router.post('/api/user', HeaderMiddleware, UserController.user);
 router.post('/api/setCourseProntuario', HeaderMiddleware, UserController.setCourseProntuario);
 router.post('/api/updateName', HeaderMiddleware, UserController.updateName);
-router.post('/api/updateProntuario', HeaderMiddleware, UserController.updateProntuario);
 router.post('/api/getUserProfile', HeaderMiddleware, UserController.getUserProfile);
 router.post('/api/getUserSupervisor', HeaderMiddleware, UserController.getUserSupervisor);
 router.post('/api/getUserInternshipData', HeaderMiddleware, UserController.getUserInternshipData);
@@ -101,7 +100,6 @@ router.post('/api/createRandomSupervisorForStudent', HeaderMiddleware, UserContr
 router.post('/api/createTicketForRandomStudent', HeaderMiddleware, UserController.createTicketForRandomStudent);
 router.get('/api/getFakeStudents', HeaderMiddleware, UserController.getFakeStudents);
 router.get('/api/populateCoursesWithStudentsAndSupervisors', HeaderMiddleware, UserController.populateCoursesWithStudentsAndSupervisors);
-
 
 // Para Gráficos
 router.post('/api/checkOrientadoresAmount', HeaderMiddleware, ChartController.checkOrientadoresAmount);
